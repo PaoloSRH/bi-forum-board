@@ -106,6 +106,13 @@ button {
   border-radius:12px;
   width:90%;
 }
+ 
+ .comments {
+   margin-top:10px;
+   background:rgba(0,0,0,0.03);
+   padding:8px;
+   border-radius:8px;
+ }
 
 input {
   width:100%;
@@ -140,9 +147,18 @@ input {
 </div>
 </div>
 
+<!-- NAME MODAL -->
+<div class="modal" id="nameModal">
+  <div class="modal-content">
+    <h3>Willkommen — bitte Namen eingeben</h3>
+    <input id="username" placeholder="Dein Name" />
+    <button onclick="saveUsername()">Speichern</button>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, where, getDocs, serverTimestamp, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
@@ -181,10 +197,68 @@ window.addNote = async function() {
     title,
     text,
     topic:currentTab,
-    votes:0
+    votes:0,
+    author: window.username || localStorage.getItem('username') || 'Anonymous'
   });
 
   document.getElementById("modal").style.display="none";
+}
+
+window.checkUsername = function(){
+  const name = localStorage.getItem('username');
+  if(!name){
+    document.getElementById('nameModal').style.display = 'flex';
+  } else {
+    window.username = name;
+    subscribe();
+  }
+}
+
+window.saveUsername = function(){
+  const v = document.getElementById('username').value.trim();
+  if(!v) return;
+  localStorage.setItem('username', v);
+  window.username = v;
+  document.getElementById('nameModal').style.display = 'none';
+  subscribe();
+}
+
+// COMMENTS
+async function loadComments(noteId){
+  const container = document.getElementById(`comments-${noteId}`);
+  if(!container) return;
+  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'), orderBy('ts','asc'));
+  const snap = await getDocs(q);
+  const comments = snap.docs.map(d=>d.data());
+  container.innerHTML = `
+    ${comments.map(c=>`<div><strong>${c.author}</strong>: ${c.text}</div>`).join('')}
+    <div style="margin-top:8px">
+      <input id="comment-input-${noteId}" placeholder="Kommentar..." />
+      <button onclick="addComment('${noteId}')">Kommentieren</button>
+    </div>
+  `;
+  container.style.display='block';
+}
+
+window.toggleComments = function(noteId){
+  const container = document.getElementById(`comments-${noteId}`);
+  if(!container) return loadComments(noteId);
+  if(container.style.display==='block') container.style.display='none'; else loadComments(noteId);
+}
+
+window.addComment = async function(noteId){
+  const input = document.getElementById(`comment-input-${noteId}`);
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text) return;
+  const author = window.username || localStorage.getItem('username') || 'Anonymous';
+  await addDoc(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'),{
+    author,
+    text,
+    ts: serverTimestamp()
+  });
+  input.value='';
+  loadComments(noteId);
 }
 
 /* VOTE */
@@ -207,17 +281,22 @@ function subscribe(){
       notes.map(n=>`
       <div class="note">
         <h4>${n.title}</h4>
+        <small>Von: ${n.author || 'Unbekannt'}</small>
         <p>${n.text}</p>
         <div class="vote">
           Votes: ${n.votes || 0}
           <button onclick="vote('${n.id}')">👍 Vote</button>
         </div>
+        <div style="margin-top:8px">
+          <button onclick="toggleComments('${n.id}')">💬 Kommentare</button>
+        </div>
+        <div id="comments-${n.id}" class="comments" style="display:none"></div>
       </div>
       `).join("");
   });
 }
 
-subscribe();
+checkUsername();
 
 </script>
 
