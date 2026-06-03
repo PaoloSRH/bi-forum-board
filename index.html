@@ -280,6 +280,60 @@ button:disabled {
   }
 }
 
+.icon-grid {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:12px;
+  margin:20px 0;
+}
+
+.icon-option {
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  border:2px solid #e2e8f0;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  background:white;
+}
+
+.icon-option:hover {
+  border-color:#0b5cab;
+  background:#f0f9ff;
+  transform:scale(1.08);
+}
+
+.icon-option.selected {
+  border-color:#0b5cab;
+  background:#0b5cab;
+  color:white;
+}
+
+.active-users-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin:16px 0;
+}
+
+.user-item {
+  padding:14px;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  background:#f8fafc;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:0.95rem;
+}
+
+.user-icon {
+  font-size:1.5rem;
+}
+
 .note > div:last-of-type button {
   padding:6px 10px;
   font-size:0.83rem;
@@ -552,7 +606,18 @@ textarea:focus {
   <div class="modal-content">
     <h3>Willkommen — bitte Namen eingeben</h3>
     <input id="username" placeholder="Dein Name" />
-    <button onclick="saveUsername()">Speichern</button>
+    <label style="margin-top:16px; font-weight:600; color:#334155; display:block;">Wähle ein Icon</label>
+    <div class="icon-grid" id="iconGrid"></div>
+    <button id="saveUsernameBtn" onclick="saveUsername()" style="margin-top:12px;">Speichern</button>
+  </div>
+</div>
+
+<!-- ACTIVE USERS MODAL -->
+<div class="modal" id="activeUsersModal">
+  <div class="modal-content">
+    <h3>Aktive Nutzer</h3>
+    <div class="active-users-grid" id="activeUsersList"></div>
+    <button onclick="document.getElementById('activeUsersModal').style.display='none'">Schließen</button>
   </div>
 </div>
 
@@ -575,9 +640,21 @@ const BOARD_ID = "bi-forum-2026";
 
 let currentTab = "agents";
 let editingNoteId = null;
+let selectedIcon = "●";
+
+const ICONS = ["●", "○", "◆", "◇", "■", "□", "△", "▲", "★", "☆", "◐", "◑", "◈", "⬢", "◎", "◉", "✦", "✧", "◐", "◑", "◔", "▼", "◄", "►", "⬡", "◕", "✓", "✕", "⚡", "🔥"];
 
 function getCurrentUser(){
   return window.username || localStorage.getItem('username') || 'Anonymous';
+}
+
+function getUserIcon(username){
+  const icon = localStorage.getItem(`icon_${username}`);
+  return icon || "●";
+}
+
+function setUserIcon(username, icon){
+  localStorage.setItem(`icon_${username}`, icon);
 }
 
 function escapeHtml(text){
@@ -654,17 +731,35 @@ window.addNote = async function() {
 window.checkUsername = function(){
   const name = localStorage.getItem('username');
   if(!name){
+    initializeIconGrid();
     document.getElementById('nameModal').style.display = 'flex';
   } else {
     window.username = name;
+    selectedIcon = getUserIcon(name);
     subscribe();
   }
+}
+
+function initializeIconGrid(){
+  const grid = document.getElementById('iconGrid');
+  grid.innerHTML = ICONS.map((icon, idx) => 
+    `<div class="icon-option" data-icon="${icon}" onclick="selectIcon('${icon}')">${icon}</div>`
+  ).join('');
+}
+
+window.selectIcon = function(icon){
+  selectedIcon = icon;
+  document.querySelectorAll('.icon-option').forEach(el => {
+    el.classList.remove('selected');
+    if(el.dataset.icon === icon) el.classList.add('selected');
+  });
 }
 
 window.saveUsername = function(){
   const v = document.getElementById('username').value.trim();
   if(!v) return;
   localStorage.setItem('username', v);
+  setUserIcon(v, selectedIcon);
   window.username = v;
   document.getElementById('nameModal').style.display = 'none';
   updateUserDisplay();
@@ -673,14 +768,17 @@ window.saveUsername = function(){
 
 function updateUserDisplay(){
   const user = window.username || localStorage.getItem('username') || 'Anonymous';
-  document.getElementById('userDisplay').textContent = `${user}`;
+  const icon = getUserIcon(user);
+  document.getElementById('userDisplay').innerHTML = `<span style="font-size:1.1rem; margin-right:6px;">${icon}</span>${user}`;
 }
 
 function updateOnlineCount(users){
-  const count = new Set(users).size;
+  const uniqueUsers = [...new Set(users)];
+  const count = uniqueUsers.length;
   const displayEl = document.getElementById('userDisplay');
   const user = window.username || localStorage.getItem('username') || 'Anonymous';
-  displayEl.innerHTML = `${user} <span style="color:#94a3b8; font-weight:400; font-size:0.9rem;">(${count} aktiv)</span>`;
+  const icon = getUserIcon(user);
+  displayEl.innerHTML = `<span style="font-size:1.1rem; margin-right:6px; cursor:pointer;" onclick="showActiveUsers(${JSON.stringify(uniqueUsers).replace(/"/g, '&quot;')})">${icon}</span><span style="cursor:pointer;" onclick="showActiveUsers(${JSON.stringify(uniqueUsers).replace(/"/g, '&quot;')})">${user} <span style="color:#94a3b8; font-weight:400; font-size:0.9rem;">(${count} aktiv)</span></span>`;
 }
 
 function showToast(message){
@@ -692,6 +790,16 @@ function showToast(message){
     toast.style.animation = 'slideInToast 0.3s ease-out reverse';
     setTimeout(()=>toast.remove(), 300);
   }, 2500);
+}
+
+window.showActiveUsers = function(users){
+  const listEl = document.getElementById('activeUsersList');
+  const uniqueUsers = [...new Set(users)];
+  listEl.innerHTML = uniqueUsers.map(user => {
+    const icon = getUserIcon(user);
+    return `<div class="user-item"><span class="user-icon">${icon}</span>${user}</div>`;
+  }).join('');
+  document.getElementById('activeUsersModal').style.display = 'flex';
 }
 
 function formatTimestamp(ts){
@@ -719,7 +827,10 @@ async function loadComments(noteId){
   const snap = await getDocs(q);
   const comments = snap.docs.map(d=>d.data());
   container.innerHTML = `
-    ${comments.map(c=>`<div class="comment"><strong>${c.author}</strong> <small style="color:#94a3b8;">${formatTimestamp(c.ts)}</small><br>${c.text}</div>`).join('')}
+    ${comments.map(c=>{
+      const icon = getUserIcon(c.author);
+      return `<div class="comment"><strong><span style="font-size:1rem; margin-right:4px;">${icon}</span>${c.author}</strong> <small style="color:#94a3b8;">${formatTimestamp(c.ts)}</small><br>${c.text}</div>`;
+    }).join('')}
     <div class="comment-input-row">
       <input id="comment-input-${noteId}" placeholder="Kommentar..." />
       <button onclick="addComment('${noteId}')">Kommentieren</button>
@@ -812,7 +923,7 @@ function subscribe(){
             <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
             <h4 style="margin:0; flex:1;">${n.title}</h4>
           </div>
-          <small>Von: ${n.author || 'Unbekannt'}</small>
+          <small>Von: <span style="font-size:1rem; margin-right:4px;">${getUserIcon(n.author || 'Unbekannt')}</span>${n.author || 'Unbekannt'}</small>
           <p>${n.text}</p>
           <div class="card-actions">
             <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">▲ Vote</button>
