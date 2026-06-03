@@ -943,20 +943,20 @@ function subscribe(){
           const hasVoted = (n.votedBy || []).includes(currentUser);
           const isAuthor = n.author === currentUser;
           return `
-        <div class="note" id="note-${n.id}" ondblclick="vote('${n.id}')">
+        <div class="note" id="note-${n.id}">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
-            <h4 style="margin:0; flex:1;">${n.title}</h4>
+            <h4 style="margin:0; flex:1; ${isAuthor ? 'cursor:pointer;' : ''}" onclick="${isAuthor ? `openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')` : ''}">${n.title}</h4>
           </div>
           <small>Von: <span style="font-size:1rem; margin-right:4px;">${getUserIcon(n.author || 'Unbekannt')}</span>${n.author || 'Unbekannt'} <span style="color:#94a3b8;">• ${formatTimestamp(n.ts)}</span></small>
-          <p>${n.text}</p>
+          <p style="${isAuthor ? 'cursor:pointer;' : ''}" onclick="${isAuthor ? `openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')` : ''}">${n.text}</p>
           <div style="margin-top:auto; margin-bottom:8px;">
-            <button onclick="toggleComments('${n.id}')" style="width:100%;">◉ Kommentare</button>
+            <button onclick="toggleComments('${n.id}')" style="width:100%;">💬 Kommentare</button>
           </div>
           <div id="comments-${n.id}" class="comments" style="display:none"></div>
           <div class="card-stats">
-            <span class="stat" title="Doppelklick zum Abstimmen">▲ <span class="count">${n.votes || 0}</span></span>
-            <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
+            <span class="stat" onclick="vote('${n.id}')" style="cursor:pointer;" title="Upvoten">▲ <span class="count">${n.votes || 0}</span></span>
+            <span class="stat" onclick="toggleComments('${n.id}')" style="cursor:pointer;">💬 <span id="comment-count-${n.id}" class="count">0</span></span>
           </div>
           ${isAuthor ? `<div class="card-actions">
             <button class="edit" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')" title="Bearbeiten">✎</button>
