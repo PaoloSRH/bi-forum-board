@@ -1,374 +1,1782 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meine App</title>
-  <style>
-    :root {
-      --bg: #f6f7f9;
-      --surface: #ffffff;
-      --surface-soft: #f3f5f8;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --primary: #2563eb;
-      --primary-soft: #dbeafe;
-      --danger: #dc2626;
-      --danger-soft: #fee2e2;
-      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
-      --radius: 18px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BI Forum Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-elevated: #eef3f8;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-strong: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-accent: rgba(37, 99, 235, 0.08);
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-soft: #94a3b8;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: rgba(37, 99, 235, 0.12);
+  --success: #15803d;
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.12);
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --content: 1160px;
+}
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --bg-elevated: #111827;
+  --surface: rgba(17, 24, 39, 0.82);
+  --surface-strong: #111827;
+  --surface-soft: #172033;
+  --surface-accent: rgba(96, 165, 250, 0.12);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text: #e5edf8;
+  --text-muted: #94a3b8;
+  --text-soft: #64748b;
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --primary-soft: rgba(96, 165, 250, 0.16);
+  --success: #4ade80;
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.38);
+}
 
-    .app {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 28px 18px 48px;
-    }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0b1220;
+    --bg-elevated: #111827;
+    --surface: rgba(17, 24, 39, 0.82);
+    --surface-strong: #111827;
+    --surface-soft: #172033;
+    --surface-accent: rgba(96, 165, 250, 0.12);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text: #e5edf8;
+    --text-muted: #94a3b8;
+    --text-soft: #64748b;
+    --primary: #60a5fa;
+    --primary-hover: #3b82f6;
+    --primary-soft: rgba(96, 165, 250, 0.16);
+    --success: #4ade80;
+    --danger: #f87171;
+    --danger-soft: rgba(248, 113, 113, 0.12);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.28);
+    --shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.38);
+  }
+}
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 22px;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-    .brand h1 {
-      margin: 0;
-      font-size: 1.6rem;
-      line-height: 1.1;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 22%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 18%),
+    linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 42%, var(--bg) 100%);
+}
 
-    .brand p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
+button,
+input,
+textarea {
+  font: inherit;
+}
 
-    .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
+button {
+  cursor: pointer;
+}
 
-    .panel, .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+.nav-item:focus-visible,
+.icon-option:focus-visible,
+.fab:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.18);
+  outline-offset: 2px;
+}
 
-    .panel {
-      padding: 18px;
-    }
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -40px;
+  z-index: 200;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface-strong);
+  color: var(--text);
+  border: 1px solid var(--border);
+  text-decoration: none;
+}
 
-    .card {
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-    }
+.skip-link:focus {
+  top: 16px;
+}
 
-    .card.featured {
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 18px 20px 14px;
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg) 76%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: var(--content);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 50px;
+  height: 50px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
+}
+
+.brand-copy {
+  min-width: 0;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.header-center {
+  display: flex;
+  justify-content: center;
+}
+
+.nav-shell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-item {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 14px;
+  padding: 10px 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(148, 163, 184, 0.10);
+}
+
+.nav-item.active {
+  color: var(--text);
+  background: var(--surface-strong);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.theme-toggle,
+.user-chip {
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle {
+  width: 44px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.user-chip {
+  min-width: 44px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.user-chip-icon {
+  display: inline-grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.user-chip-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.page-shell {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 24px 20px 110px;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+.hero-card,
+.kpi-strip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px;
+  border-radius: var(--radius-xl);
+}
+
+.hero-copy h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+}
+
+.hero-copy p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  max-width: 56ch;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kpi-strip {
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 10px;
+  min-width: 360px;
+}
+
+.kpi {
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+}
+
+.kpi-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.note:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+
+.note.featured {
+  border-color: rgba(37, 99, 235, 0.24);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 78%, var(--primary-soft)) 0%, var(--surface) 100%);
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.14);
+}
+
+.note.featured::after {
+  content: "Top-Usecase";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary-soft) 88%, white 12%);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .note.just-added {
+    animation: noteHighlight 1400ms ease;
+  }
+
+  @keyframes noteHighlight {
+    0% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.24), var(--shadow-lg);
+      border-color: rgba(37, 99, 235, 0.34);
+      transform: translateY(-3px);
+    }
+    45% {
+      box-shadow: 0 0 0 12px rgba(37, 99, 235, 0.08), var(--shadow-lg);
       border-color: rgba(37, 99, 235, 0.28);
-      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.14);
     }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 28px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin-bottom: 12px;
+    100% {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border);
+      transform: translateY(0);
     }
+  }
+}
 
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
+.note::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), transparent 26%);
+  pointer-events: none;
+}
+
+.note-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.note-header.has-menu {
+  padding-right: 52px;
+}
+
+.note-title-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.topic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 10px;
+}
+
+.note-title {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.note-title.editable,
+.note-body.editable {
+  cursor: pointer;
+}
+
+.note-title.editable:hover,
+.note-body.editable:hover {
+  color: var(--primary);
+}
+
+.note-menu-wrap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+}
+
+.note-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  gap: 6px;
+}
+
+.note-menu.open {
+  display: grid;
+}
+
+.menu-item {
+  min-height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.menu-item:hover {
+  background: var(--surface-soft);
+}
+
+.menu-item.delete {
+  color: var(--danger);
+}
+
+.menu-item.delete:hover {
+  background: var(--danger-soft);
+}
+
+.icon-action {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text-muted);
+  display: inline-grid;
+  place-items: center;
+  transition: all 0.18s ease;
+}
+
+.icon-action:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.icon-action.delete:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.note-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  flex-wrap: wrap;
+}
+
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+}
+
+.note-body {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 18px;
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 0.95rem;
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+.note-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  display: grid;
+  gap: 12px;
+}
+
+.primary-row,
+.secondary-row {
+  display: grid;
+  gap: 10px;
+}
+
+.primary-row {
+  grid-template-columns: 1fr;
+}
+
+.secondary-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.btn,
+.card-stat {
+  min-height: 42px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+}
+
+.btn:hover {
+  background: var(--primary-hover);
+}
+
+.btn.secondary {
+  background: var(--surface-strong);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.btn.secondary:hover {
+  background: var(--surface-soft);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.btn.ghost:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.card-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.card-stat:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.vote-toggle[aria-pressed="true"] {
+  color: white;
+  background: var(--primary);
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
+}
+
+.vote-toggle[aria-pressed="true"] .vote-icon {
+  transform: translateY(-1px);
+}
+
+.vote-icon {
+  transition: transform 0.16s ease;
+}
+
+.vote-count {
+  display: inline-block;
+  min-width: 1.5ch;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vote-count.bump {
+    animation: voteBump 220ms ease;
+  }
+
+  @keyframes voteBump {
+    0% {
+      transform: translateY(0) scale(1);
     }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font: inherit;
+    35% {
+      transform: translateY(-3px) scale(1.12);
     }
-
-    .btn {
-      min-height: 42px;
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: var(--primary);
-      color: white;
-      font-weight: 700;
+    100% {
+      transform: translateY(0) scale(1);
     }
+  }
+}
 
-    .btn.secondary {
-      background: var(--surface-soft);
-      color: var(--text);
-      border: 1px solid var(--border);
+.vote-count {
+  display: inline-block;
+  min-width: 1.5ch;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vote-count.bump {
+    animation: voteBump 220ms ease;
+  }
+
+  @keyframes voteBump {
+    0% {
+      transform: translateY(0) scale(1);
     }
-
-    .vote {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 10px 14px;
-      border-radius: 14px;
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-weight: 700;
+    35% {
+      transform: translateY(-3px) scale(1.12);
     }
-
-    .vote[aria-pressed="true"] {
-      background: var(--primary);
-      color: white;
-      border-color: transparent;
+    100% {
+      transform: translateY(0) scale(1);
     }
+  }
+}
 
-    .count {
-      display: inline-block;
-      min-width: 1.5ch;
-    }
+.comments {
+  margin-top: 14px;
+  border-radius: 18px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  padding: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  animation: fadeInDown 0.24s ease;
+}
 
-    @media (prefers-reduced-motion: no-preference) {
-      .count.bump {
-        animation: bump 220ms ease;
-      }
-      @keyframes bump {
-        0% { transform: translateY(0) scale(1); }
-        35% { transform: translateY(-3px) scale(1.12); }
-        100% { transform: translateY(0) scale(1); }
-      }
-    }
+.comments.closing {
+  animation: fadeOutUp 0.24s ease forwards;
+}
 
-    .menu-wrap {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-    }
+.comment {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
 
-    .menu-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      font-size: 1.2rem;
-    }
+.comment + .comment {
+  margin-top: 10px;
+}
 
-    .menu {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      min-width: 170px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 8px;
-      display: none;
-    }
+.comment-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
 
-    .menu.open { display: grid; gap: 6px; }
+.comment-author {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
 
-    .menu-item {
-      min-height: 40px;
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: transparent;
-      text-align: left;
-      font-weight: 700;
-    }
+.comment-time {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
 
-    .menu-item:hover { background: var(--surface-soft); }
-    .menu-item.delete { color: var(--danger); }
-    .menu-item.delete:hover { background: var(--danger-soft); }
+.comment-text {
+  color: var(--text);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
 
-    .comments {
-      margin-top: 14px;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 260ms ease, opacity 220ms ease, margin-top 220ms ease;
-    }
+.comment-input-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
 
-    .comments.open {
-      max-height: 500px;
-      opacity: 1;
-      margin-top: 14px;
-    }
+.comment-input-row input {
+  flex: 1 1 220px;
+  margin: 0;
+}
 
-    .comment {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: var(--surface-soft);
-      margin-bottom: 8px;
-    }
+.comment-input-row button {
+  flex: 0 1 150px;
+}
 
-    .highlight {
-      animation: highlight 1400ms ease;
-    }
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 54px 20px;
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--border-strong);
+  background: var(--surface);
+  text-align: center;
+  color: var(--text-muted);
+}
 
-    @media (prefers-reduced-motion: no-preference) {
-      @keyframes highlight {
-        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.24), var(--shadow); }
-        45% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0.08), var(--shadow); }
-        100% { box-shadow: var(--shadow); }
-      }
-    }
+.empty-state h3 {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 1.08rem;
+}
 
-    @media (max-width: 640px) {
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .app { padding: 18px 12px 32px; }
-    }
-  </style>
+.empty-state p {
+  margin: 0;
+}
+
+.fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 30;
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 20px 44px rgba(37, 99, 235, 0.28);
+  transition: transform 0.16s ease, box-shadow 0.18s ease;
+}
+
+.fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px rgba(37, 99, 235, 0.34);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 18px;
+  justify-content: center;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.46);
+  backdrop-filter: blur(10px);
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  width: min(560px, 100%);
+  padding: 26px;
+  border-radius: var(--radius-xl);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.modal-header h2,
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.modal-subtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.modal-form label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin: 0;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+  resize: vertical;
+  font-size: 16px;
+  line-height: 1.45;
+  transition: all 0.18s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-soft);
+}
+
+textarea {
+  min-height: 120px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.34);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  background: var(--surface-strong);
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin: 16px 0 8px;
+}
+
+.icon-option {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  transition: all 0.18s ease;
+}
+
+.icon-option:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.18);
+  background: var(--primary-soft);
+}
+
+.icon-option.selected {
+  background: var(--primary);
+  color: white;
+  border-color: transparent;
+}
+
+.active-users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+}
+
+.user-icon {
+  font-size: 1.25rem;
+}
+
+.toast {
+  position: fixed;
+  right: 22px;
+  bottom: 94px;
+  z-index: 1000;
+  max-width: 320px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.94);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.25);
+  font-size: 0.92rem;
+  font-weight: 600;
+  animation: toastIn 0.28s ease-out;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 980px) {
+  .header-inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .header-center,
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-strip {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    padding: 14px 14px 12px;
+  }
+
+  .page-shell {
+    padding: 18px 14px 100px;
+  }
+
+  .brand {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-shell {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .user-chip {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .kpi-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .board-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .secondary-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .icon-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .fab {
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .modal {
+    padding: 14px;
+  }
+
+  .modal-content {
+    padding: 22px;
+  }
+}
+</style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <h1>Meine App</h1>
-        <p>Saubere Karten, Votes, Kommentare und schnelles Feedback.</p>
+<a class="skip-link" href="#board">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="5" width="7" height="14" rx="2" fill="currentColor" opacity="0.95"/>
+          <rect x="14" y="3" width="7" height="18" rx="2" fill="currentColor" opacity="0.7"/>
+        </svg>
       </div>
-    </header>
+      <div class="brand-copy">
+        <p class="brand-title">BI Forum 2026</p>
+        <p class="brand-subtitle">Usecases sammeln, diskutieren und priorisieren</p>
+      </div>
+    </div>
 
-    <main class="content" id="board"></main>
+    <div class="header-center">
+      <nav class="nav-shell" aria-label="Themennavigation">
+        <button class="nav-item active" data-tab="agents" type="button" onclick="switchTab('agents')">
+          <span class="nav-icon">A</span>
+          <span>Agents</span>
+        </button>
+        <button class="nav-item" data-tab="mosaic" type="button" onclick="switchTab('mosaic')">
+          <span class="nav-icon">M</span>
+          <span>Mosaic</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
+        <span aria-hidden="true">◐</span>
+      </button>
+      <button class="user-chip" type="button" id="userDisplay" onclick="showActiveUsers(window.lastActiveUsers || [])" aria-label="Aktive Nutzer anzeigen">
+        <span class="user-chip-icon" aria-hidden="true">👥</span>
+        <span class="user-chip-count">0</span>
+      </button>
+    </div>
   </div>
+</header>
 
-  <script>
-    const data = [
-      {
-        id: "1",
-        title: "Usecase A",
-        text: "Das ist ein Beispiel-Usecase mit Beschreibung.",
-        votes: 12,
-        featured: true,
-        voted: false,
-        comments: ["Sieht gut aus!", "Wäre interessant für später."]
-      },
-      {
-        id: "2",
-        title: "Usecase B",
-        text: "Noch ein Beispiel, damit du die Struktur sehen kannst.",
-        votes: 5,
-        featured: false,
-        voted: false,
-        comments: ["Guter Vorschlag."]
-      }
-    ];
+<main class="page-shell">
+  <section class="topbar" aria-label="Board Überblick">
+    <div class="hero-card">
+      <div class="hero-copy">
+        <h1 id="boardTitle">Agents Board</h1>
+        <p id="boardSubtitle">Sammle gute Ideen, priorisiere spannende Usecases und halte Diskussionen an einem Ort zusammen.</p>
+      </div>
+    </div>
 
-    let openCommentsId = null;
+    <div class="kpi-strip" aria-label="Kennzahlen">
+      <div class="kpi">
+        <span class="kpi-label">Usecases</span>
+        <span class="kpi-value" id="kpiNotes">0</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Kommentare</span>
+        <span class="kpi-value" id="kpiComments">0</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Aktive Nutzer</span>
+        <span class="kpi-value" id="kpiUsers">0</span>
+      </div>
+    </div>
+  </section>
 
-    function createCard(item) {
-      return `
-        <article class="card ${item.featured ? 'featured' : ''}" id="card-${item.id}">
-          ${item.featured ? '<div class="badge">Top-Usecase</div>' : ''}
-          <div class="menu-wrap">
-            <button class="menu-btn" type="button" onclick="toggleMenu('${item.id}')" aria-label="Weitere Aktionen">⋯</button>
-            <div class="menu" id="menu-${item.id}">
-              <button class="menu-item" type="button" onclick="alert('Bearbeiten')">Bearbeiten</button>
-              <button class="menu-item delete" type="button" onclick="alert('Löschen')">Löschen</button>
-            </div>
-          </div>
+  <section>
+    <div id="board" class="board-grid" aria-live="polite"></div>
+  </section>
+</main>
 
-          <h2 style="margin: 0 0 10px;">${item.title}</h2>
-          <p style="margin: 0; color: var(--muted); line-height: 1.6;">${item.text}</p>
+<button class="fab" type="button" onclick="openModal()" aria-label="Neuen Usecase erstellen">+</button>
 
-          <div class="toolbar">
-            <button class="vote" type="button" aria-pressed="${item.voted ? 'true' : 'false'}" onclick="vote('${item.id}')">
-              ▲ <span>Upvote</span> <span class="count" id="vote-count-${item.id}">${item.votes}</span>
-            </button>
-            <button class="btn secondary" type="button" aria-expanded="false" data-comments-toggle="${item.id}" onclick="toggleComments('${item.id}')">
-              💬 Kommentare
-            </button>
-          </div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle">Neuer Usecase</h2>
+        <p class="modal-subtitle">Teile eine Idee mit Titel und kurzer Beschreibung.</p>
+      </div>
+      <button class="icon-action" type="button" onclick="closeModal()" aria-label="Dialog schließen">✕</button>
+    </div>
+    <div class="modal-form">
+      <label for="title">Titel</label>
+      <input id="title" placeholder="z. B. AI Support Assistant" />
+      <label for="text">Beschreibung</label>
+      <textarea id="text" placeholder="Welches Problem löst der Usecase?" rows="4"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button id="saveButton" class="btn" type="button" onclick="addNote()">Speichern</button>
+      <button class="btn secondary" type="button" onclick="closeModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
 
-          <div class="comments" id="comments-${item.id}">
-            ${item.comments.map(c => `<div class="comment">${c}</div>`).join('')}
-          </div>
-        </article>
-      `;
-    }
+<div class="modal" id="nameModal" role="dialog" aria-modal="true" aria-labelledby="nameModalTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <h2 id="nameModalTitle">Willkommen</h2>
+        <p class="modal-subtitle">Wähle einen Namen und ein Icon für deine Beiträge.</p>
+      </div>
+    </div>
+    <label for="username">Dein Name</label>
+    <input id="username" placeholder="Dein Name" />
+    <label for="iconGrid" style="display:block; margin-top:16px; margin-bottom:8px; font-weight:600;">Wähle ein Icon</label>
+    <div class="icon-grid" id="iconGrid"></div>
+    <div class="modal-actions">
+      <button id="saveUsernameBtn" class="btn" type="button" onclick="saveUsername()">Speichern</button>
+    </div>
+  </div>
+</div>
 
-    function render() {
-      document.getElementById('board').innerHTML = data.map(createCard).join('');
-    }
+<div class="modal" id="activeUsersModal" role="dialog" aria-modal="true" aria-labelledby="activeUsersTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <h2 id="activeUsersTitle">Aktive Nutzer</h2>
+        <p class="modal-subtitle">Alle Personen mit Beiträgen im aktuellen Board.</p>
+      </div>
+      <button class="icon-action" type="button" onclick="closeActiveUsersModal()" aria-label="Nutzerdialog schließen">✕</button>
+    </div>
+    <div class="active-users-grid" id="activeUsersList"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" onclick="closeActiveUsersModal()">Schließen</button>
+    </div>
+  </div>
+</div>
 
-    function toggleMenu(id) {
-      document.querySelectorAll('.menu').forEach(m => {
-        if (m.id !== `menu-${id}`) m.classList.remove('open');
-      });
-      document.getElementById(`menu-${id}`).classList.toggle('open');
-    }
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-    function toggleComments(id) {
-      const current = document.getElementById(`comments-${id}`);
-      const open = current.classList.contains('open');
+const firebaseConfig = {
+  apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
+  authDomain: "bi-forum-2026.firebaseapp.com",
+  projectId: "bi-forum-2026",
+  storageBucket: "bi-forum-2026.firebasestorage.app",
+  messagingSenderId: "305326324192",
+  appId: "1:305326324192:web:1152fdc525122bda0dd385"
+};
 
-      document.querySelectorAll('.comments.open').forEach(box => {
-        if (box.id !== `comments-${id}`) box.classList.remove('open');
-      });
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const BOARD_ID = "bi-forum-2026";
 
-      document.querySelectorAll('[data-comments-toggle]').forEach(btn => {
-        btn.setAttribute('aria-expanded', btn.getAttribute('data-comments-toggle') === id && !open ? 'true' : 'false');
-      });
+let currentTab = "agents";
+let editingNoteId = null;
+let selectedIcon = "●";
+let unsubscribeNotes = null;
+let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+window.lastActiveUsers = [];
 
-      current.classList.toggle('open', !open);
-      openCommentsId = !open ? id : null;
-    }
+const ICONS = ["●", "○", "◆", "◇", "■", "□", "△", "▲", "★", "☆", "◐", "◑", "◈", "⬢", "◎", "◉", "✦", "✧", "◔", "▼", "◄", "►", "⬡", "◕", "✓", "✕", "⚡", "🔥"];
 
-    function animateCount(el) {
-      el.classList.remove('bump');
-      void el.offsetWidth;
-      el.classList.add('bump');
-    }
+function applyTheme(mode) {
+  themeMode = mode;
+  document.documentElement.setAttribute('data-theme', mode);
+  const btn = document.querySelector('[data-theme-toggle]');
+  if (btn) {
+    btn.innerHTML = mode === 'dark' ? '<span aria-hidden="true">☀</span>' : '<span aria-hidden="true">☾</span>';
+    btn.setAttribute('aria-label', mode === 'dark' ? 'Zu hellem Theme wechseln' : 'Zu dunklem Theme wechseln');
+  }
+}
 
-    function vote(id) {
-      const item = data.find(x => x.id === id);
-      if (!item || item.voted) return;
+function toggleTheme() {
+  applyTheme(themeMode === 'dark' ? 'light' : 'dark');
+}
 
-      item.votes += 1;
-      item.voted = true;
+document.querySelector('[data-theme-toggle]')?.addEventListener('click', toggleTheme);
+applyTheme(themeMode);
 
-      const countEl = document.getElementById(`vote-count-${id}`);
-      const btn = countEl.closest('.vote');
-      btn.setAttribute('aria-pressed', 'true');
-      countEl.textContent = item.votes;
-      animateCount(countEl);
-    }
+function getCurrentUser(){
+  return window.username || localStorage.getItem('username') || 'Anonymous';
+}
 
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.menu-wrap')) {
-        document.querySelectorAll('.menu').forEach(m => m.classList.remove('open'));
-      }
+function getUserIcon(username){
+  const icon = localStorage.getItem(`icon_${username}`);
+  return icon || '●';
+}
+
+function setUserIcon(username, icon){
+  localStorage.setItem(`icon_${username}`, icon);
+}
+
+function escapeHtml(text){
+  if(!text) return '';
+  return text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;')
+    .replace(/`/g,'&#96;');
+}
+
+function topicMeta(tab) {
+  return tab === 'agents'
+    ? { label: 'Agents', short: 'A', subtitle: 'Erstelle Chatbots oder Agenten, die auch spezifische Aufgaben übernehmen können.' }
+    : { label: 'Mosaic', short: 'M', subtitle: 'Erstelle ad-hoc ein spezifisches Datenmodell, welches für diverse Anwendungen verwendet werden kann.' };
+}
+
+function setBoardCopy() {
+  const meta = topicMeta(currentTab);
+  document.getElementById('boardTitle').textContent = `${meta.label} Board`;
+  document.getElementById('boardSubtitle').textContent = meta.subtitle;
+}
+
+function openDialog(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('open');
+}
+
+function closeDialog(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  setBoardCopy();
+  updateUserDisplay();
+  subscribe();
+}
+
+window.openModal = () => {
+  editingNoteId = null;
+  document.getElementById('modalTitle').textContent = 'Neuer Usecase';
+  document.getElementById('saveButton').textContent = 'Speichern';
+  document.getElementById('title').value = '';
+  document.getElementById('text').value = '';
+  openDialog('modal');
+};
+
+window.openEditModal = (id,title,text) => {
+  editingNoteId = id;
+  document.getElementById('modalTitle').textContent = 'Usecase bearbeiten';
+  document.getElementById('saveButton').textContent = 'Aktualisieren';
+  document.getElementById('title').value = title;
+  document.getElementById('text').value = text;
+  openDialog('modal');
+};
+
+window.closeModal = () => {
+  editingNoteId = null;
+  document.getElementById('modalTitle').textContent = 'Neuer Usecase';
+  document.getElementById('saveButton').textContent = 'Speichern';
+  document.getElementById('title').value = '';
+  document.getElementById('text').value = '';
+  closeDialog('modal');
+};
+
+window.closeActiveUsersModal = () => closeDialog('activeUsersModal');
+
+window.addNote = async function() {
+  const title = document.getElementById('title').value.trim();
+  const text = document.getElementById('text').value.trim();
+  if(!title) return;
+
+  const noteData = {
+    title,
+    text,
+    topic: currentTab,
+    author: getCurrentUser(),
+  };
+
+  if(editingNoteId){
+    await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), {
+      ...noteData,
+      updatedAt: serverTimestamp()
     });
+    showToast('Usecase aktualisiert');
+  } else {
+    await addDoc(collection(db,'boards',BOARD_ID,'notes'), {
+      ...noteData,
+      votes: 0,
+      votedBy: [],
+      ts: serverTimestamp(),
+    });
+    showToast('Usecase hinzugefügt');
+  }
 
-    render();
-  </script>
+  closeModal();
+}
+
+window.checkUsername = function(){
+  const name = localStorage.getItem('username');
+  if(!name){
+    initializeIconGrid();
+    openDialog('nameModal');
+  } else {
+    window.username = name;
+    selectedIcon = getUserIcon(name);
+    updateUserDisplay();
+    subscribe();
+  }
+}
+
+function initializeIconGrid(){
+  const grid = document.getElementById('iconGrid');
+  grid.innerHTML = ICONS.map(icon =>
+    `<button type="button" class="icon-option ${icon === selectedIcon ? 'selected' : ''}" data-icon="${icon}" onclick="selectIcon('${icon}')" aria-label="Icon ${icon}">${icon}</button>`
+  ).join('');
+}
+
+window.selectIcon = function(icon){
+  selectedIcon = icon;
+  document.querySelectorAll('.icon-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.icon === icon);
+  });
+}
+
+window.saveUsername = function(){
+  const v = document.getElementById('username').value.trim();
+  if(!v) return;
+  localStorage.setItem('username', v);
+  setUserIcon(v, selectedIcon);
+  window.username = v;
+  closeDialog('nameModal');
+  updateUserDisplay();
+  subscribe();
+}
+
+function updateUserDisplay(activeCount = null){
+  const count = activeCount === null ? 0 : activeCount;
+  document.getElementById('userDisplay').innerHTML = `
+    <span class="user-chip-icon" aria-hidden="true">👥</span>
+    <span class="user-chip-count">${count}</span>
+  `;
+}
+
+function updateOnlineCount(users){
+  const uniqueUsers = [...new Set(users)];
+  window.lastActiveUsers = uniqueUsers;
+  updateUserDisplay(uniqueUsers.length);
+  document.getElementById('kpiUsers').textContent = uniqueUsers.length;
+}
+
+function updateKpis(notes, totalComments){
+  document.getElementById('kpiNotes').textContent = notes.length;
+  document.getElementById('kpiComments').textContent = totalComments;
+}
+
+function showToast(message){
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(() => toast.remove(), 220);
+  }, 2300);
+}
+
+window.showActiveUsers = function(users){
+  const listEl = document.getElementById('activeUsersList');
+  const uniqueUsers = [...new Set(users)];
+  listEl.innerHTML = uniqueUsers.length
+    ? uniqueUsers.map(user => {
+        const icon = getUserIcon(user);
+        return `<div class="user-item"><span class="user-icon">${icon}</span><span>${escapeHtml(user)}</span></div>`;
+      }).join('')
+    : `<div class="empty-state" style="grid-column:1/-1; padding:24px;"><h3>Noch keine aktiven Nutzer</h3><p>Im aktuellen Board wurden noch keine Beiträge erstellt.</p></div>`;
+  openDialog('activeUsersModal');
+}
+
+function formatTimestamp(ts){
+  if(!ts) return 'gerade eben';
+  const date = new Date(ts.seconds * 1000);
+  const now = new Date();
+  const diff = now - date;
+  const mins = Math.floor(diff/60000);
+  const hours = Math.floor(diff/3600000);
+  const days = Math.floor(diff/86400000);
+
+  if(mins < 1) return 'gerade eben';
+  if(mins < 60) return `vor ${mins}m`;
+  if(hours < 24) return `vor ${hours}h`;
+  if(days < 7) return `vor ${days}d`;
+
+  return date.toLocaleDateString('de-DE');
+}
+
+async function loadComments(noteId){
+  const container = document.getElementById(`comments-${noteId}`);
+  if(!container) return;
+  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'), orderBy('ts','asc'));
+  const snap = await getDocs(q);
+  const comments = snap.docs.map(d=>d.data());
+  container.innerHTML = `
+    ${comments.map(c => {
+      const icon = getUserIcon(c.author);
+      return `
+        <div class="comment">
+          <div class="comment-head">
+            <span aria-hidden="true">${icon}</span>
+            <span class="comment-author">${escapeHtml(c.author || 'Unbekannt')}</span>
+            <span class="comment-time">${formatTimestamp(c.ts)}</span>
+          </div>
+          <div class="comment-text">${escapeHtml(c.text || '')}</div>
+        </div>`;
+    }).join('')}
+    <div class="comment-input-row">
+      <input id="comment-input-${noteId}" placeholder="Kommentar schreiben..." />
+      <button class="btn" type="button" onclick="addComment('${noteId}')">Kommentieren</button>
+    </div>
+  `;
+  container.style.display = 'block';
+}
+
+window.toggleComments = function(noteId){
+  const container = document.getElementById(`comments-${noteId}`);
+  if(!container || !container.innerHTML.trim()) {
+    return loadComments(noteId);
+  }
+  if(container.style.display === 'block') {
+    container.classList.add('closing');
+    setTimeout(() => {
+      container.style.display = 'none';
+      container.classList.remove('closing');
+    }, 240);
+  } else {
+    loadComments(noteId);
+  }
+}
+
+window.addComment = async function(noteId){
+  const input = document.getElementById(`comment-input-${noteId}`);
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text) return;
+  const author = getCurrentUser();
+  await addDoc(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'),{
+    author,
+    text,
+    ts: serverTimestamp()
+  });
+  input.value='';
+  await loadComments(noteId);
+  await loadCommentCount(noteId);
+  showToast('Kommentar hinzugefügt');
+}
+
+window.vote = async function(id){
+  const username = getCurrentUser();
+  const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
+  const noteSnap = await getDoc(noteRef);
+  if(!noteSnap.exists()) return;
+  const note = noteSnap.data();
+  const votedBy = note.votedBy || [];
+  if(votedBy.includes(username)){
+    showToast('Du hast diesen Usecase bereits gevotet.');
+    return;
+  }
+  await updateDoc(noteRef,{
+    votes: increment(1),
+    votedBy: arrayUnion(username)
+  });
+
+  const countEl = document.getElementById(`vote-count-${id}`);
+  if (countEl) {
+    countEl.classList.remove('bump');
+    void countEl.offsetWidth;
+    countEl.classList.add('bump');
+  }
+}
+
+window.toggleNoteMenu = function(id){
+  document.querySelectorAll('.note-menu').forEach(menu => {
+    if(menu.id !== `menu-${id}`) menu.classList.remove('open');
+  });
+  const menu = document.getElementById(`menu-${id}`);
+  if(menu) menu.classList.toggle('open');
+}
+
+window.deleteNote = async function(id){
+  if(!confirm('Usecase wirklich löschen?')) return;
+  await deleteDoc(doc(db,'boards',BOARD_ID,'notes',id));
+  showToast('Usecase gelöscht');
+}
+
+async function loadCommentCount(noteId){
+  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'));
+  const snap = await getDocs(q);
+  const countEl = document.getElementById(`comment-count-${noteId}`);
+  if(countEl) countEl.textContent = snap.size;
+  return snap.size;
+}
+
+function renderEmptyState() {
+  document.getElementById('board').innerHTML = `
+    <div class="empty-state">
+      <h3>Noch keine Usecases</h3>
+      <p>Klicke auf „Neuer Usecase“, um den ersten Beitrag im aktuellen Board zu erstellen.</p>
+    </div>
+  `;
+}
+
+async function updateAllCommentCounts(notes) {
+  const counts = await Promise.all(notes.map(n => loadCommentCount(n.id)));
+  return counts.reduce((sum, count) => sum + count, 0);
+}
+
+function createNoteCard(n, currentUser, isFeatured = false) {
+  const hasVoted = (n.votedBy || []).includes(currentUser);
+  const isAuthor = n.author === currentUser;
+  const meta = topicMeta(n.topic || currentTab);
+  const safeTitle = escapeHtml(n.title || 'Ohne Titel');
+  const safeText = escapeHtml(n.text || '');
+  const safeAuthor = escapeHtml(n.author || 'Unbekannt');
+  const safeTitleArg = JSON.stringify(n.title || '');
+  const safeTextArg = JSON.stringify(n.text || '');
+  const editHandler = `openEditModal('${n.id}', ${safeTitleArg}, ${safeTextArg})`;
+
+  return `
+    <article class="note ${isFeatured ? 'featured' : ''}" id="note-${n.id}">
+      <div class="note-header ${isAuthor ? 'has-menu' : ''}">
+        <div class="note-title-wrap">
+          <span class="topic-badge">${meta.short} ${meta.label}</span>
+          <h2 class="note-title ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeTitle}</h2>
+        </div>
+      </div>
+
+      ${isAuthor ? `
+        <div class="note-menu-wrap">
+          <button class="icon-action" type="button" onclick="toggleNoteMenu('${n.id}')" aria-label="Weitere Aktionen öffnen" aria-haspopup="menu" aria-expanded="false">⋯</button>
+          <div class="note-menu" id="menu-${n.id}" role="menu">
+            <button class="menu-item" type="button" onclick="${editHandler}">✎ Bearbeiten</button>
+            <button class="menu-item delete" type="button" onclick="deleteNote('${n.id}')">🗑 Löschen</button>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="note-meta">
+        <span class="author-pill"><span aria-hidden="true">${getUserIcon(n.author || 'Unbekannt')}</span><span>${safeAuthor}</span></span>
+        <span>• ${formatTimestamp(n.ts)}</span>
+      </div>
+
+      <div class="note-body ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeText}</div>
+
+      <div class="note-footer">
+        <div class="primary-row">
+          <button class="btn secondary" type="button" onclick="toggleComments('${n.id}')" data-comments-toggle data-note-id="${n.id}" aria-expanded="false" aria-controls="comments-${n.id}">💬 Kommentare öffnen</button>
+        </div>
+        <div class="secondary-row">
+          <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')" title="Upvoten" aria-pressed="${hasVoted ? 'true' : 'false'}" ${hasVoted ? 'disabled' : ''}>
+            <span class="vote-icon">▲</span>
+            <span>${hasVoted ? 'Gevotet' : 'Upvote'}</span>
+            <span class="vote-count" id="vote-count-${n.id}">${n.votes || 0}</span>
+          </button>
+          <button class="card-stat" type="button" onclick="toggleComments('${n.id}')">💬 <span id="comment-count-${n.id}">0</span></button>
+        </div>
+        <div id="comments-${n.id}" class="comments" role="region" aria-label="Kommentare zu ${safeTitle}"></div>
+      </div>
+    </article>
+  `;
+}
+
+function subscribe(){
+  if (unsubscribeNotes) unsubscribeNotes();
+  const q = query(collection(db,'boards',BOARD_ID,'notes'), where('topic','==',currentTab));
+
+  unsubscribeNotes = onSnapshot(q, async (snap) => {
+    let notes = snap.docs.map(d => ({...d.data(), id:d.id}));
+    const currentUser = getCurrentUser();
+    notes.sort((a,b) => (b.votes || 0) - (a.votes || 0));
+
+    if(notes.length === 0){
+      renderEmptyState();
+      updateOnlineCount([]);
+      updateKpis([], 0);
+      return;
+    }
+
+    document.getElementById('board').innerHTML = notes.map((n, index) => createNoteCard(n, currentUser, index === 0 && (n.votes || 0) > 0)).join('');
+    updateOnlineCount(notes.map(n => n.author));
+    const totalComments = await updateAllCommentCounts(notes);
+    updateKpis(notes, totalComments);
+  });
+}
+
+window.addEventListener('click', (event) => {
+  ['modal', 'nameModal', 'activeUsersModal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (event.target === modal) modal.classList.remove('open');
+  });
+
+  if (!event.target.closest('.note-menu-wrap')) {
+    document.querySelectorAll('.note-menu').forEach(menu => menu.classList.remove('open'));
+  }
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeModal();
+    closeDialog('nameModal');
+    closeActiveUsersModal();
+  }
+});
+
+setBoardCopy();
+updateUserDisplay();
+checkUsername();
+</script>
 </body>
 </html>
