@@ -912,18 +912,29 @@ window.deleteNote = async function(id){
 // SWIPE HANDLERS
 let swipeStart = 0;
 let swiping = false;
+let currentSwipeId = null;
 
 window.startSwipe = function(e, noteId, isAuthor){
   if(!isAuthor) return;
-  swipeStart = e.touches[0].clientX;
+  if(e.touches) {
+    swipeStart = e.touches[0].clientX;
+  } else {
+    swipeStart = e.clientX;
+  }
   swiping = true;
+  currentSwipeId = noteId;
   const el = document.getElementById(`note-${noteId}`);
   el.classList.add('swiping');
 }
 
 window.moveSwipe = function(e, noteId){
-  if(!swiping) return;
-  const current = e.touches[0].clientX;
+  if(!swiping || currentSwipeId !== noteId) return;
+  let current;
+  if(e.touches) {
+    current = e.touches[0].clientX;
+  } else {
+    current = e.clientX;
+  }
   const diff = current - swipeStart;
   const el = document.getElementById(`note-${noteId}`);
   
@@ -941,10 +952,16 @@ window.moveSwipe = function(e, noteId){
 }
 
 window.endSwipe = function(e, noteId, isAuthor){
-  if(!swiping || !isAuthor) return;
+  if(!swiping || !isAuthor || currentSwipeId !== noteId) return;
   swiping = false;
+  currentSwipeId = null;
   const el = document.getElementById(`note-${noteId}`);
-  const current = e.changedTouches[0].clientX;
+  let current;
+  if(e.changedTouches) {
+    current = e.changedTouches[0].clientX;
+  } else {
+    current = e.clientX;
+  }
   const diff = current - swipeStart;
   
   el.classList.remove('swiping');
@@ -1028,9 +1045,17 @@ function subscribe(){
         const el = document.getElementById(`note-${n.id}`);
         if(el) {
           const isAuthor = n.author === currentUser;
-          el.addEventListener('touchstart', (e) => startSwipe(e, n.id, isAuthor));
-          el.addEventListener('touchmove', (e) => moveSwipe(e, n.id));
-          el.addEventListener('touchend', (e) => endSwipe(e, n.id, isAuthor));
+          // Touch events
+          el.addEventListener('touchstart', (e) => startSwipe(e, n.id, isAuthor), false);
+          el.addEventListener('touchmove', (e) => moveSwipe(e, n.id), false);
+          el.addEventListener('touchend', (e) => endSwipe(e, n.id, isAuthor), false);
+          // Mouse events (for desktop testing)
+          el.addEventListener('mousedown', (e) => startSwipe(e, n.id, isAuthor), false);
+          el.addEventListener('mousemove', (e) => moveSwipe(e, n.id), false);
+          el.addEventListener('mouseup', (e) => endSwipe(e, n.id, isAuthor), false);
+          el.addEventListener('mouseleave', (e) => {
+            if(swiping) endSwipe(e, n.id, isAuthor);
+          }, false);
         }
       });
     }
