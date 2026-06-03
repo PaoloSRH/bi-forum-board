@@ -308,6 +308,31 @@ button:disabled {
   flex:0 1 140px;
 }
 
+.badge {
+  display:inline-block;
+  background:rgba(15,23,42,0.14);
+  padding:2px 8px;
+  border-radius:12px;
+  font-size:0.85rem;
+  font-weight:600;
+  margin:0 4px;
+  min-width:24px;
+  text-align:center;
+}
+
+button .badge {
+  background:rgba(255,255,255,0.3);
+}
+
+button:disabled .badge {
+  background:rgba(255,255,255,0.2);
+}
+
+.secondary .badge,
+.danger .badge {
+  background:rgba(255,255,255,0.2);
+}
+
 input,
 textarea {
   width:100%;
@@ -609,6 +634,7 @@ window.addComment = async function(noteId){
   });
   input.value='';
   loadComments(noteId);
+  loadCommentCount(noteId);
 }
 
 /* VOTE */
@@ -653,18 +679,30 @@ function subscribe(){
         <small>Von: ${n.author || 'Unbekannt'}</small>
         <p>${n.text}</p>
         <div class="card-actions">
-          <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">👍 ${hasVoted ? 'Bereits gevotet' : 'Vote'}</button>
+          <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">👍 <span class="badge">${n.votes || 0}</span> Vote</button>
           ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✏️ Bearbeiten</button>` : ''}
           ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">🗑️ Löschen</button>` : ''}
         </div>
         <div style="margin-top:8px">
-          <button onclick="toggleComments('${n.id}')">💬 Kommentare</button>
+          <button onclick="toggleComments('${n.id}')">💬 <span id="comment-count-${n.id}" class="badge">0</span></button>
         </div>
         <div id="comments-${n.id}" class="comments" style="display:none"></div>
       </div>
       `;
       }).join("");
+
+    // Load comment counts async
+    notes.forEach(n=>{
+      loadCommentCount(n.id);
+    });
   });
+}
+
+async function loadCommentCount(noteId){
+  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'));
+  const snap = await getDocs(q);
+  const countEl = document.getElementById(`comment-count-${noteId}`);
+  if(countEl) countEl.textContent = snap.size;
 }
 
 checkUsername();
