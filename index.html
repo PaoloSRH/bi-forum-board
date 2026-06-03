@@ -229,12 +229,55 @@ button:disabled {
   padding:9px 12px;
   font-size:0.93rem;
   border-radius:8px;
+  transition:all 0.2s ease;
+}
+
+.card-actions button:hover {
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(15,23,42,0.12);
 }
 
 .note button,
 .comment-actions button,
 .modal-content button {
   width:100%;
+}
+
+.empty-state {
+  text-align:center;
+  padding:60px 20px;
+  color:#64748b;
+}
+
+.empty-state h3 {
+  color:#475569;
+  margin-bottom:12px;
+}
+
+.toast {
+  position:fixed;
+  bottom:90px;
+  right:22px;
+  background:#0b5cab;
+  color:white;
+  padding:14px 20px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(11,92,171,0.25);
+  animation:slideInToast 0.3s ease-out;
+  max-width:300px;
+  font-weight:500;
+  z-index:1000;
+}
+
+@keyframes slideInToast {
+  from {
+    transform:translateX(400px);
+    opacity:0;
+  }
+  to {
+    transform:translateX(0);
+    opacity:1;
+  }
 }
 
 .note > div:last-of-type button {
@@ -475,6 +518,9 @@ textarea:focus {
         <span>Mosaic</span>
       </button>
     </nav>
+    <div style="font-size:0.95rem; color:#475569;">
+      <span id="userDisplay" style="font-weight:600;"></span>
+    </div>
   </div>
 </header>
 
@@ -545,6 +591,7 @@ window.switchTab = function(tab) {
   document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
   const index = tab === 'agents' ? 0 : 1;
   document.querySelectorAll('.nav-item')[index].classList.add('active');
+  updateUserDisplay();
   subscribe();
 }
 
@@ -591,12 +638,14 @@ window.addNote = async function() {
 
   if(editingNoteId){
     await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), noteData);
+    showToast('Usecase aktualisiert');
   } else {
     await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
       ...noteData,
       votes:0,
       votedBy: [],
     });
+    showToast('Usecase hinzugefügt');
   }
 
   closeModal();
@@ -618,7 +667,42 @@ window.saveUsername = function(){
   localStorage.setItem('username', v);
   window.username = v;
   document.getElementById('nameModal').style.display = 'none';
+  updateUserDisplay();
   subscribe();
+}
+
+function updateUserDisplay(){
+  const user = window.username || localStorage.getItem('username') || 'Anonymous';
+  const topicLabel = currentTab === 'agents' ? 'Agents' : 'Mosaic';
+  document.getElementById('userDisplay').textContent = `${user} • ${topicLabel}`;
+}
+
+function showToast(message){
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.animation = 'slideInToast 0.3s ease-out reverse';
+    setTimeout(()=>toast.remove(), 300);
+  }, 2500);
+}
+
+function formatTimestamp(ts){
+  if(!ts) return '';
+  const date = new Date(ts.seconds * 1000);
+  const now = new Date();
+  const diff = now - date;
+  const mins = Math.floor(diff/60000);
+  const hours = Math.floor(diff/3600000);
+  const days = Math.floor(diff/86400000);
+  
+  if(mins < 1) return 'gerade eben';
+  if(mins < 60) return `vor ${mins}m`;
+  if(hours < 24) return `vor ${hours}h`;
+  if(days < 7) return `vor ${days}d`;
+  
+  return date.toLocaleDateString('de-DE');
 }
 
 // COMMENTS
@@ -629,7 +713,7 @@ async function loadComments(noteId){
   const snap = await getDocs(q);
   const comments = snap.docs.map(d=>d.data());
   container.innerHTML = `
-    ${comments.map(c=>`<div class="comment"><strong>${c.author}</strong>${c.text}</div>`).join('')}
+    ${comments.map(c=>`<div class="comment"><strong>${c.author}</strong> <small style="color:#94a3b8;">${formatTimestamp(c.ts)}</small><br>${c.text}</div>`).join('')}
     <div class="comment-input-row">
       <input id="comment-input-${noteId}" placeholder="Kommentar..." />
       <button onclick="addComment('${noteId}')">Kommentieren</button>
@@ -666,6 +750,7 @@ window.addComment = async function(noteId){
   input.value='';
   loadComments(noteId);
   loadCommentCount(noteId);
+  showToast('Kommentar hinzugefügt');
 }
 
 /* VOTE */
@@ -688,6 +773,7 @@ window.vote = async function(id){
 window.deleteNote = async function(id){
   if(!confirm('Usecase wirklich löschen?')) return;
   await deleteDoc(doc(db,'boards',BOARD_ID,'notes',id));
+  showToast('Usecase gelöscht');
 }
 
 /* LOAD */
@@ -700,36 +786,49 @@ function subscribe(){
 
     notes.sort((a,b)=>b.votes-a.votes);
 
-    document.getElementById("board").innerHTML =
-      notes.map(n=>{
-        const hasVoted = (n.votedBy || []).includes(currentUser);
-        const isAuthor = n.author === currentUser;
-        return `
-      <div class="note">
-        <h4>${n.title}</h4>
-        <small>Von: ${n.author || 'Unbekannt'}</small>
-        <p>${n.text}</p>
-        <div class="card-actions">
-          <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">▲ Vote</button>
-          ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✎ Bearbeiten</button>` : ''}
-          ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">✕ Löschen</button>` : ''}
+    if(notes.length === 0){
+      document.getElementById("board").innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <h3>Noch keine Usecases</h3>
+          <p>Klicke auf "+" um einen neuen Usecase zu erstellen</p>
         </div>
-        <div style="margin-top:8px">
-          <button onclick="toggleComments('${n.id}')">◉ Kommentare</button>
-        </div>
-        <div id="comments-${n.id}" class="comments" style="display:none"></div>
-        <div class="card-stats">
-          <span class="stat">▲ <span class="count">${n.votes || 0}</span></span>
-          <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
-        </div>
-      </div>
       `;
-      }).join("");
+    } else {
+      const topicLabel = currentTab === 'agents' ? 'A' : 'M';
+      document.getElementById("board").innerHTML =
+        notes.map(n=>{
+          const hasVoted = (n.votedBy || []).includes(currentUser);
+          const isAuthor = n.author === currentUser;
+          return `
+        <div class="note">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
+            <h4 style="margin:0; flex:1;">${n.title}</h4>
+          </div>
+          <small>Von: ${n.author || 'Unbekannt'}</small>
+          <p>${n.text}</p>
+          <div class="card-actions">
+            <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">▲ Vote</button>
+            ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✎ Bearbeiten</button>` : ''}
+            ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">✕ Löschen</button>` : ''}
+          </div>
+          <div style="margin-top:8px">
+            <button onclick="toggleComments('${n.id}')">◉ Kommentare</button>
+          </div>
+          <div id="comments-${n.id}" class="comments" style="display:none"></div>
+          <div class="card-stats">
+            <span class="stat">▲ <span class="count">${n.votes || 0}</span></span>
+            <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
+          </div>
+        </div>
+        `;
+        }).join("");
 
-    // Load comment counts async
-    notes.forEach(n=>{
-      loadCommentCount(n.id);
-    });
+      // Load comment counts async
+      notes.forEach(n=>{
+        loadCommentCount(n.id);
+      });
+    }
   });
 }
 
@@ -741,6 +840,7 @@ async function loadCommentCount(noteId){
 }
 
 checkUsername();
+updateUserDisplay();
 
 </script>
 
