@@ -1,520 +1,96 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BI Forum Board</title>
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --primary: #0078d4;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #dbe2ea;
-      --yellow: #fff3a3;
-      --green: #dff7df;
-      --blue: #dff0ff;
-      --pink: #ffe3ef;
-      --shadow: 0 8px 24px rgba(0,0,0,0.08);
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-    }
-
-    header {
-      background: linear-gradient(135deg, #0078d4, #005ea6);
-      color: white;
-      padding: 18px 16px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.3rem;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      font-size: 0.92rem;
-      opacity: 0.95;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      position: sticky;
-      top: 84px;
-      background: var(--bg);
-      z-index: 15;
-      padding-bottom: 8px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      border: 1px solid var(--border);
-      background: white;
-      color: var(--text);
-      padding: 12px 14px;
-      border-radius: 14px;
-      font-size: 0.98rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-
-    .tab-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .panel {
-      display: grid;
-      gap: 16px;
-    }
-
-    .info-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .info-card h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      font-size: 1.1rem;
-    }
-
-    .info-card p {
-      margin: 0 0 10px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .chip {
-      background: #eef5fb;
-      color: #0f4c81;
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    .board-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .board-top h2 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-
-    .count {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .notes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 14px;
-    }
-
-    .note {
-      min-height: 180px;
-      padding: 14px;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    .note.yellow { background: var(--yellow); }
-    .note.green  { background: var(--green); }
-    .note.blue   { background: var(--blue); }
-    .note.pink   { background: var(--pink); }
-
-    .note h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-      line-height: 1.25;
-      padding-right: 42px;
-    }
-
-    .note p {
-      margin: 0;
-      white-space: pre-wrap;
-      line-height: 1.4;
-      font-size: 0.94rem;
-    }
-
-    .meta {
-      margin-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .author {
-      font-size: 0.8rem;
-      color: #374151;
-      opacity: 0.85;
-    }
-
-    .vote-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: #ffffff;
-      color: #111827;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-    }
-
-    .vote-btn.voted {
-      background: #111827;
-      color: white;
-    }
-
-    .fab {
-      position: fixed;
-      right: 16px;
-      bottom: 16px;
-      border: none;
-      border-radius: 999px;
-      background: var(--primary);
-      color: white;
-      padding: 15px 18px;
-      font-size: 0.98rem;
-      font-weight: 700;
-      box-shadow: 0 10px 24px rgba(0,120,212,0.35);
-      cursor: pointer;
-      z-index: 40;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(17,24,39,0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      padding: 16px;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-    }
-
-    .modal {
-      width: 100%;
-      max-width: 520px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .modal h3 {
-      margin-top: 0;
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 6px;
-      margin-top: 12px;
-      font-size: 0.92rem;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 0.95rem;
-      outline: none;
-      font-family: inherit;
-      background: white;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .btn {
-      flex: 1;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn.secondary {
-      background: #eef2f7;
-      color: #111827;
-    }
-
-    .empty {
-      background: white;
-      border: 2px dashed var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    @media (max-width: 600px) {
-      .tabs {
-        top: 78px;
-      }
-
-      .note {
-        min-height: 160px;
-      }
-
-      .fab {
-        left: 16px;
-        right: 16px;
-        width: auto;
-        text-align: center;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BI Forum Board</title>
+<style>
+body{font-family:Arial;margin:0;background:#f4f8fc}
+header{background:#0B5CAB;color:white;padding:14px;text-align:center}
+.tabs{display:flex}
+.tab{flex:1;padding:10px;text-align:center;background:#ddd;cursor:pointer}
+.tab.active{background:white;font-weight:bold}
+.content{padding:15px}
+.card{background:white;padding:12px;margin-bottom:10px;border-radius:10px}
+.note{padding:10px;margin:8px 0;border-radius:10px;background:#fff5c2}
+button{background:#0B5CAB;color:white;border:none;padding:8px;border-radius:5px;width:100%}
+</style>
 </head>
 <body>
-  <header>
-    <h1>BI Forum – Interactive Board</h1>
-    <p>Roadmap, Use Cases & Voting für Strategy One Agents und Mosaic</p>
-  </header>
+<header><h2>BI Forum Board</h2></header>
+<div class="tabs">
+<div class="tab active" onclick="switchTab('agents')">Agents</div>
+<div class="tab" onclick="switchTab('mosaic')">Mosaic</div>
+</div>
+<div class="content" id="content"></div>
 
-  <div class="container">
-    <div class="tabs">
-      <button class="tab-btn active" data-topic="agents">Strategy One Agents</button>
-      <button class="tab-btn" data-topic="mosaic">Mosaic</button>
-    </div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-    <div class="panel">
-      <section class="info-card" id="topicInfo"></section>
-
-      <section class="info-card">
-        <div class="board-top">
-          <h2>Use Cases / Sticky Notes</h2>
-          <div class="count" id="noteCount">0 Notes</div>
-        </div>
-        <div class="notes-grid" id="notesGrid"></div>
-      </section>
-    </div>
-  </div>
-
-  <button class="fab" id="openModalBtn">+ Use Case hinzufügen</button>
-
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <h3>Neuen Use Case anlegen</h3>
-
-      <label for="topicSelect">Thema</label>
-      <select id="topicSelect">
-        <option value="agents">Strategy One Agents</option>
-        <option value="mosaic">Mosaic</option>
-      </select>
-
-      <label for="authorInput">Name / Kürzel (optional)</label>
-      <input id="authorInput" type="text" placeholder="z. B. Paolo / CR / Team XY" />
-
-      <label for="titleInput">Überschrift</label>
-      <input id="titleInput" type="text" maxlength="80" placeholder="Kurzer Titel des Use Cases" />
-
-      <label for="textInput">Beschreibung</label>
-      <textarea id="textInput" maxlength="600" placeholder="Was ist die Idee? Welches Problem wird gelöst?"></textarea>
-
-      <label for="colorSelect">Note-Farbe</label>
-      <select id="colorSelect">
-        <option value="yellow">Gelb</option>
-        <option value="blue">Blau</option>
-        <option value="green">Grün</option>
-        <option value="pink">Pink</option>
-      </select>
-
-      <div class="modal-actions">
-        <button class="btn secondary" id="cancelBtn">Abbrechen</button>
-        <button class="btn primary" id="saveBtn">Use Case speichern</button>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    // ------------------------------------------------------------------
-    // 1) FIREBASE SDK IMPORTS
-    //    Version ggf. anpassen oder die URLs aus deiner Firebase Console nehmen
-    // ------------------------------------------------------------------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      doc,
-      updateDoc,
-      increment,
-      onSnapshot,
-      query,
-      where,
-      orderBy,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // ------------------------------------------------------------------
-    // 2) FIREBASE CONFIG EINTRAGEN
-    // ------------------------------------------------------------------
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
   authDomain: "bi-forum-2026.firebaseapp.com",
   projectId: "bi-forum-2026",
   storageBucket: "bi-forum-2026.firebasestorage.app",
   messagingSenderId: "305326324192",
-  appId: "1:305326324192:web:1152fdc525122bda0dd385",
-  measurementId: "G-968ET9DW94"
-    };
+  appId: "1:305326324192:web:1152fdc525122bda0dd385"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const BOARD_ID = "bi-forum-2026";
 
-    // ------------------------------------------------------------------
-    // 3) KONFIGURATION
-    // ------------------------------------------------------------------
-    const BOARD_ID = "bi-forum-2026";
+let currentTab='agents';
 
-    const topicContent = {
-      agents: {
-        title: "Strategy One Agents",
-        intro:
-          "Vorstellung von Strategy One Agents, Roadmap, Beispiele und Sammlung weiterer Ideen aus dem Fachbereich.",
-        roadmap: [
-          "Vorstellung der Agent-Idee und Abgrenzung",
-          "Roadmap-Überblick",
-          "Beispiel-Usecases sammeln",
-          "Teilnehmer ergänzen eigene Ideen"
-        ]
-      },
-      mosaic: {
-        title: "Mosaic",
-        intro:
-          "Einführung in Mosaic, Mehrwert für Power User, Roadmap sowie gemeinsame Sammlung und Priorisierung neuer Usecases.",
-        roadmap: [
-          "Governance / Grundlagen",
-          "MDM / Data Model Perspektive",
-          "Power User Enablement",
-          "Enterprise Report Data Model"
-        ]
-      }
-    };
+function switchTab(tab){
+ currentTab=tab;
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+ document.querySelectorAll('.tab')[tab==='agents'?0:1].classList.add('active');
+ render();
+ subscribe();
+}
 
-    // ------------------------------------------------------------------
-    // 4) STATE
-    // ------------------------------------------------------------------
-    let currentTopic = "agents";
-    let unsubscribeNotes = null;
+function render(notes=[]){
+ document.getElementById('content').innerHTML=`
+ <div class="card">
+ <h3>${currentTab}</h3>
+ <input id="title" placeholder="Titel"/><br/>
+ <input id="text" placeholder="Beschreibung"/>
+ <button onclick="addNote()">Add</button>
+ </div>
+ <div>${notes.map(n=>`
+ <div class="note">
+ <b>${n.title}</b><br>${n.text}<br>
+ Votes: ${n.votes||0}
+ <button onclick="vote('${n.id}')">Vote</button>
+ </div>`).join('')}</div>
+ `;
+}
 
-    const votedStorageKey = "biForumVotedNotes";
-    const votedNotes = new Set(JSON.parse(localStorage.getItem(votedStorageKey) || "[]"));
+async function addNote(){
+ const title=document.getElementById('title').value;
+ const text=document.getElementById('text').value;
+ if(!title)return;
+ await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
+ title,text,topic:currentTab,votes:0
+ });
+}
 
-    // ------------------------------------------------------------------
-    // 5) ELEMENTS
-    // ------------------------------------------------------------------
-    const topicInfoEl = document.getElementById("topicInfo");
-    const notesGridEl = document.getElementById("notesGrid");
-    const noteCountEl = document.getElementById("noteCount");
+async function vote(id){
+ const ref=doc(db,'boards',BOARD_ID,'notes',id);
+ await updateDoc(ref,{votes:increment(1)});
+}
 
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const openModalBtn = document.getElementById("openModalBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const saveBtn = document.getElementById("saveBtn");
+function subscribe(){
+ const q=query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
+ onSnapshot(q,(snapshot)=>{
+ const notes=snapshot.docs.map(d=>({...d.data(),id:d.id}));
+ render(notes);
+ });
+}
 
-    const topicSelect = document.getElementById("topicSelect");
-    const authorInput = document.getElementById("authorInput");
-    const titleInput = document.getElementById("titleInput");
-    const textInput = document.getElementById("textInput");
-    const colorSelect = document.getElementById("colorSelect");
-
-    const tabButtons = document.querySelectorAll(".tab-btn");
-
-    // ------------------------------------------------------------------
-    // 6) RENDER INFOS
-    // ------------------------------------------------------------------
-    function renderTopicInfo() {
-      const topic = topicContent[currentTopic];
-
-      topicInfoEl.innerHTML = `
-        <h2>${topic.title}</h2>
-        <p>${topic.intro}</p>
-        <div class="chip-list">
-          ${topic.roadmap.map(item => `<div class="chip">${item}</div>`).join("")}
-        </div>
-      `;
-    }
-
-    // ------------------------------------------------------------------
-    // 7) NOTES LADEN (LIVE)
-    // ------------------------------------------------------------------
-    function subscribeToNotes() {
-      if (unsubscribeNotes) unsubscribeNotes();
-
-      const notesRef = collection(db, "boards", BOARD_ID, "notes");
-      const q = query(
-        notesRef,
-        where("topic", "==", currentTopic),
-        orderBy("votes", "desc"),
-        orderBy("createdAt", "desc")
-      );
-
-      unsubscribeNotes = onSnapshot(q,
+subscribe();
+</script>
+</body>
+</html>
