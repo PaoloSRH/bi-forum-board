@@ -117,21 +117,6 @@ header {
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  touch-action:pan-y;
-  cursor:default;
-  transition:transform 0.3s ease-out, box-shadow 0.3s ease-out;
-}
-
-.note.swiping {
-  transition:none;
-}
-
-.note.delete-swipe {
-  background:rgba(220,38,38,0.08);
-}
-
-.note.edit-swipe {
-  background:rgba(59,130,246,0.08);
 }
 
 .note::before {
@@ -154,16 +139,40 @@ header {
   font-size:0.9rem;
 }
 
-.stat {
+.card-actions {
+  position:absolute;
+  bottom:14px;
+  right:14px;
   display:flex;
-  align-items:center;
-  gap:4px;
-  color:#64748b;
+  gap:8px;
 }
 
-.stat .count {
-  font-weight:600;
-  color:#1f2937;
+.card-actions button {
+  padding:6px 8px;
+  font-size:1.1rem;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  border-radius:6px;
+}
+
+.card-actions button.delete {
+  color:#dc2626;
+}
+
+.card-actions button.delete:hover {
+  background:rgba(220,38,38,0.1);
+  transform:scale(1.15);
+}
+
+.card-actions button.edit {
+  color:#0b5cab;
+}
+
+.card-actions button.edit:hover {
+  background:rgba(11,92,171,0.1);
+  transform:scale(1.15);
 }
 
 .note h4 {
@@ -909,86 +918,6 @@ window.deleteNote = async function(id){
   showToast('Usecase gelöscht');
 }
 
-// SWIPE HANDLERS
-let swipeStart = 0;
-let swiping = false;
-let currentSwipeId = null;
-
-window.startSwipe = function(e, noteId, isAuthor){
-  if(!isAuthor) return;
-  if(e.touches) {
-    swipeStart = e.touches[0].clientX;
-  } else {
-    swipeStart = e.clientX;
-  }
-  swiping = true;
-  currentSwipeId = noteId;
-  const el = document.getElementById(`note-${noteId}`);
-  el.classList.add('swiping');
-}
-
-window.moveSwipe = function(e, noteId){
-  if(!swiping || currentSwipeId !== noteId) return;
-  let current;
-  if(e.touches) {
-    current = e.touches[0].clientX;
-  } else {
-    current = e.clientX;
-  }
-  const diff = current - swipeStart;
-  const el = document.getElementById(`note-${noteId}`);
-  
-  el.style.transform = `translateX(${diff}px)`;
-  
-  if(diff < -50) {
-    el.classList.remove('edit-swipe');
-    el.classList.add('delete-swipe');
-  } else if(diff > 50) {
-    el.classList.remove('delete-swipe');
-    el.classList.add('edit-swipe');
-  } else {
-    el.classList.remove('delete-swipe', 'edit-swipe');
-  }
-}
-
-window.endSwipe = function(e, noteId, isAuthor){
-  if(!swiping || !isAuthor || currentSwipeId !== noteId) return;
-  swiping = false;
-  currentSwipeId = null;
-  const el = document.getElementById(`note-${noteId}`);
-  let current;
-  if(e.changedTouches) {
-    current = e.changedTouches[0].clientX;
-  } else {
-    current = e.clientX;
-  }
-  const diff = current - swipeStart;
-  
-  el.classList.remove('swiping');
-  
-  // Swipe left = delete (diff < -100)
-  if(diff < -100) {
-    if(confirm('Usecase wirklich löschen?')) {
-      deleteNote(noteId);
-    } else {
-      el.style.transform = 'translateX(0)';
-      el.classList.remove('delete-swipe');
-    }
-  }
-  // Swipe right = edit (diff > 100)
-  else if(diff > 100) {
-    const title = el.querySelector('h4').textContent;
-    const text = el.querySelector('p').textContent;
-    openEditModal(noteId, title, text);
-    el.style.transform = 'translateX(0)';
-    el.classList.remove('edit-swipe');
-  }
-  else {
-    el.style.transform = 'translateX(0)';
-    el.classList.remove('delete-swipe', 'edit-swipe');
-  }
-}
-
 /* LOAD */
 function subscribe(){
   const q = query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
@@ -1014,7 +943,7 @@ function subscribe(){
           const hasVoted = (n.votedBy || []).includes(currentUser);
           const isAuthor = n.author === currentUser;
           return `
-        <div class="note" id="note-${n.id}" ondblclick="vote('${n.id}')" data-note-id="${n.id}">
+        <div class="note" id="note-${n.id}" ondblclick="vote('${n.id}')">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
             <h4 style="margin:0; flex:1;">${n.title}</h4>
@@ -1029,6 +958,10 @@ function subscribe(){
             <span class="stat" title="Doppelklick zum Abstimmen">▲ <span class="count">${n.votes || 0}</span></span>
             <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
           </div>
+          ${isAuthor ? `<div class="card-actions">
+            <button class="edit" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')" title="Bearbeiten">✎</button>
+            <button class="delete" onclick="deleteNote('${n.id}')" title="Löschen">🗑</button>
+          </div>` : ''}
         </div>
         `;
         }).join("");
@@ -1039,25 +972,6 @@ function subscribe(){
       });
       
       updateOnlineCount(notes.map(n => n.author));
-      
-      // Setup touch handlers for swipe
-      notes.forEach(n => {
-        const el = document.getElementById(`note-${n.id}`);
-        if(el) {
-          const isAuthor = n.author === currentUser;
-          // Touch events
-          el.addEventListener('touchstart', (e) => startSwipe(e, n.id, isAuthor), false);
-          el.addEventListener('touchmove', (e) => moveSwipe(e, n.id), false);
-          el.addEventListener('touchend', (e) => endSwipe(e, n.id, isAuthor), false);
-          // Mouse events (for desktop testing)
-          el.addEventListener('mousedown', (e) => startSwipe(e, n.id, isAuthor), false);
-          el.addEventListener('mousemove', (e) => moveSwipe(e, n.id), false);
-          el.addEventListener('mouseup', (e) => endSwipe(e, n.id, isAuthor), false);
-          el.addEventListener('mouseleave', (e) => {
-            if(swiping) endSwipe(e, n.id, isAuthor);
-          }, false);
-        }
-      });
     }
   });
 }
