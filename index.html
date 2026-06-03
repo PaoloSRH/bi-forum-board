@@ -1,28 +1,144 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>BI Forum Board</title>
+
 <style>
-body{font-family:Arial;margin:0;background:#f4f8fc}
-header{background:#0B5CAB;color:white;padding:14px;text-align:center}
-.tabs{display:flex}
-.tab{flex:1;padding:10px;text-align:center;background:#ddd;cursor:pointer}
-.tab.active{background:white;font-weight:bold}
-.content{padding:15px}
-.card{background:white;padding:12px;margin-bottom:10px;border-radius:10px}
-.note{padding:10px;margin:8px 0;border-radius:10px;background:#fff5c2}
-button{background:#0B5CAB;color:white;border:none;padding:8px;border-radius:5px;width:100%}
+body {
+  margin:0;
+  font-family:Segoe UI;
+  background:#eef3f8;
+}
+
+/* HEADER */
+header {
+  background:#0B5CAB;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
+
+/* TABS */
+.tabs {
+  display:flex;
+  background:#fff;
+}
+.tab {
+  flex:1;
+  text-align:center;
+  padding:12px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.tab.active {
+  background:#0B5CAB;
+  color:white;
+}
+
+/* BOARD */
+#board {
+  padding:15px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+/* STICKY NOTES */
+.note {
+  background:#fff7b2;
+  padding:15px;
+  width:220px;
+  min-height:180px;
+  border-radius:12px;
+  box-shadow:0 8px 16px rgba(0,0,0,0.1);
+  transform:rotate(-1deg);
+}
+
+.note:nth-child(2n){transform:rotate(1deg)}
+.note:nth-child(3n){transform:rotate(-2deg)}
+
+.note h4 {
+  margin:0 0 6px 0;
+}
+
+.vote {
+  margin-top:10px;
+}
+
+button {
+  background:#0B5CAB;
+  color:white;
+  border:none;
+  padding:6px;
+  border-radius:6px;
+  cursor:pointer;
+  width:100%;
+}
+
+/* FLOAT BUTTON */
+.fab {
+  position:fixed;
+  bottom:15px;
+  right:15px;
+  background:#FFD200;
+  color:black;
+  padding:15px;
+  border-radius:50%;
+  font-size:20px;
+}
+
+/* MODAL */
+.modal {
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.4);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+}
+
+input {
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+}
 </style>
 </head>
+
 <body>
-<header><h2>BI Forum Board</h2></header>
+
+<header>
+<h2>BI Forum Interactive Board</h2>
+</header>
+
 <div class="tabs">
-<div class="tab active" onclick="switchTab('agents')">Agents</div>
-<div class="tab" onclick="switchTab('mosaic')">Mosaic</div>
+  <div class="tab active" onclick="switchTab('agents')">Agents</div>
+  <div class="tab" onclick="switchTab('mosaic')">Mosaic</div>
 </div>
-<div class="content" id="content"></div>
+
+<div id="board"></div>
+
+<div class="fab" onclick="openModal()">+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3>Neuer Usecase</h3>
+<input id="title" placeholder="Titel"/>
+<input id="text" placeholder="Beschreibung"/>
+<button onclick="addNote()">Speichern</button>
+</div>
+</div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -41,56 +157,69 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const BOARD_ID = "bi-forum-2026";
 
-let currentTab='agents';
+let currentTab = "agents";
 
-function switchTab(tab){
- currentTab=tab;
- document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
- document.querySelectorAll('.tab')[tab==='agents'?0:1].classList.add('active');
- render();
- subscribe();
+/* SWITCH */
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab')[tab==='agents'?0:1].classList.add('active');
+  subscribe();
 }
 
-function render(notes=[]){
- document.getElementById('content').innerHTML=`
- <div class="card">
- <h3>${currentTab}</h3>
- <input id="title" placeholder="Titel"/><br/>
- <input id="text" placeholder="Beschreibung"/>
- <button onclick="addNote()">Add</button>
- </div>
- <div>${notes.map(n=>`
- <div class="note">
- <b>${n.title}</b><br>${n.text}<br>
- Votes: ${n.votes||0}
- <button onclick="vote('${n.id}')">Vote</button>
- </div>`).join('')}</div>
- `;
+/* MODAL */
+window.openModal = () => document.getElementById("modal").style.display="flex";
+
+/* ADD */
+window.addNote = async function() {
+  const title = document.getElementById("title").value;
+  const text = document.getElementById("text").value;
+
+  if(!title) return;
+
+  await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
+    title,
+    text,
+    topic:currentTab,
+    votes:0
+  });
+
+  document.getElementById("modal").style.display="none";
 }
 
-async function addNote(){
- const title=document.getElementById('title').value;
- const text=document.getElementById('text').value;
- if(!title)return;
- await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
- title,text,topic:currentTab,votes:0
- });
+/* VOTE */
+window.vote = async function(id){
+  await updateDoc(doc(db,'boards',BOARD_ID,'notes',id),{
+    votes:increment(1)
+  });
 }
 
-async function vote(id){
- const ref=doc(db,'boards',BOARD_ID,'notes',id);
- await updateDoc(ref,{votes:increment(1)});
-}
-
+/* LOAD */
 function subscribe(){
- const q=query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
- onSnapshot(q,(snapshot)=>{
- const notes=snapshot.docs.map(d=>({...d.data(),id:d.id}));
- render(notes);
- });
+  const q = query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
+
+  onSnapshot(q,(snap)=>{
+    let notes = snap.docs.map(d=>({...d.data(),id:d.id}));
+
+    notes.sort((a,b)=>b.votes-a.votes);
+
+    document.getElementById("board").innerHTML =
+      notes.map(n=>`
+      <div class="note">
+        <h4>${n.title}</h4>
+        <p>${n.text}</p>
+        <div class="vote">
+          Votes: ${n.votes || 0}
+          <button onclick="vote('${n.id}')">👍 Vote</button>
+        </div>
+      </div>
+      `).join("");
+  });
 }
 
 subscribe();
+
 </script>
+
 </body>
 </html>
