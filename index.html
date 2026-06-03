@@ -150,9 +150,9 @@ textarea:focus-visible,
   position: sticky;
   top: 0;
   z-index: 40;
-  padding: 18px 20px 14px;
+  padding: 8px 16px;
   backdrop-filter: blur(20px);
-  background: color-mix(in srgb, var(--bg) 76%, transparent);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
   border-bottom: 1px solid var(--border);
 }
 
@@ -160,97 +160,71 @@ textarea:focus-visible,
   max-width: var(--content);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 18px;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
   align-items: center;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.brand-mark {
-  width: 50px;
-  height: 50px;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: white;
-  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
-}
-
-.brand-copy {
   min-width: 0;
 }
 
 .brand-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.94rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.brand-subtitle {
-  margin-top: 4px;
-  color: var(--text-muted);
-  font-size: 0.92rem;
-}
-
 .header-center {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .nav-shell {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border-radius: 18px;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
 }
 
 .nav-item {
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 14px;
-  padding: 10px 14px;
-  min-height: 44px;
+  border-radius: 10px;
+  padding: 6px 10px;
+  min-height: 34px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.94rem;
+  gap: 5px;
+  font-size: 0.82rem;
   font-weight: 600;
-  transition: all 0.18s ease;
+  transition: all 0.16s ease;
 }
 
 .nav-item:hover {
   color: var(--text);
-  background: rgba(148, 163, 184, 0.10);
+  background: rgba(148, 163, 184, 0.12);
 }
 
 .nav-item.active {
   color: var(--text);
   background: var(--surface-strong);
   border-color: var(--border);
-  box-shadow: var(--shadow-sm);
 }
 
 .nav-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--primary);
   background: var(--primary-soft);
@@ -260,32 +234,31 @@ textarea:focus-visible,
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 6px;
 }
 
 .theme-toggle,
 .user-chip {
-  min-height: 44px;
-  border-radius: 14px;
+  min-height: 32px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
 }
 
 .theme-toggle {
-  width: 44px;
+  width: 34px;
   display: inline-grid;
   place-items: center;
   color: var(--text);
 }
 
 .user-chip {
-  min-width: 44px;
-  padding: 0 12px;
+  min-width: 34px;
+  padding: 0 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
   color: var(--text);
 }
 
@@ -293,10 +266,11 @@ textarea:focus-visible,
   display: inline-grid;
   place-items: center;
   color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 .user-chip-count {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text);
 }
@@ -304,7 +278,7 @@ textarea:focus-visible,
 .page-shell {
   max-width: var(--content);
   margin: 0 auto;
-  padding: 24px 20px 110px;
+  padding: 16px 16px 100px;
 }
 
 .topbar {
@@ -412,22 +386,6 @@ textarea:focus-visible,
   border-color: rgba(37, 99, 235, 0.24);
   background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 78%, var(--primary-soft)) 0%, var(--surface) 100%);
   box-shadow: 0 18px 44px rgba(37, 99, 235, 0.14);
-}
-
-.note.featured::after {
-  content: "Top-Usecase";
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  min-height: 28px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary-soft) 88%, white 12%);
-  border: 1px solid rgba(37, 99, 235, 0.14);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -764,6 +722,7 @@ textarea:focus-visible,
     100% {
       transform: translateY(0) scale(1);
     }
+    
   }
 }
 
@@ -1135,7 +1094,22 @@ textarea:focus {
 
 
   .kpi-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .kpi-card {
+    border-radius: 12px;
+    padding: 10px 8px;
+    min-height: 36px;
+  }
+
+  .kpi-card h3 {
+    font-size: 0.88rem;
+  }
+
+  .kpi-card p {
+    font-size: 0.78rem;
   }
 
   .board-grid {
@@ -1174,15 +1148,8 @@ textarea:focus {
 <header class="site-header">
   <div class="header-inner">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="5" width="7" height="14" rx="2" fill="currentColor" opacity="0.95"/>
-          <rect x="14" y="3" width="7" height="18" rx="2" fill="currentColor" opacity="0.7"/>
-        </svg>
-      </div>
-      <div class="brand-copy">
+            <div class="brand-copy">
         <p class="brand-title">BI Forum 2026</p>
-        <p class="brand-subtitle">Usecases sammeln, diskutieren und priorisieren</p>
       </div>
     </div>
 
@@ -1716,7 +1683,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
 
       <div class="note-footer">
         <div class="primary-row">
-          <button class="btn secondary" type="button" onclick="toggleComments('${n.id}')" data-comments-toggle data-note-id="${n.id}" aria-expanded="false" aria-controls="comments-${n.id}">💬 Kommentare öffnen</button>
+          <button class="card-stat" type="button" onclick="toggleComments('${n.id}')" data-comments-toggle data-note-id="${n.id}" aria-expanded="false" aria-controls="comments-${n.id}" title="Kommentare öffnen">💬 <span id="comment-count-${n.id}">${n.comments?.length || 0}</span></button>
         </div>
         <div class="secondary-row">
           <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')" title="Upvoten" aria-pressed="${hasVoted ? 'true' : 'false'}" ${hasVoted ? 'disabled' : ''}>
@@ -1780,3 +1747,5 @@ checkUsername();
 </script>
 </body>
 </html>
+
+
