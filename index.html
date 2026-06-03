@@ -226,6 +226,39 @@ button:disabled {
   background:rgba(15,23,42,0.04);
   padding:14px;
   border-radius:20px;
+  animation:slideDown 0.3s ease-out;
+  max-height:500px;
+  overflow-y:auto;
+}
+
+@keyframes slideDown {
+  from {
+    opacity:0;
+    transform:translateY(-12px);
+    max-height:0;
+  }
+  to {
+    opacity:1;
+    transform:translateY(0);
+    max-height:500px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity:1;
+    transform:translateY(0);
+    max-height:500px;
+  }
+  to {
+    opacity:0;
+    transform:translateY(-12px);
+    max-height:0;
+  }
+}
+
+.comments.closing {
+  animation:slideUp 0.3s ease-out forwards;
 }
 
 .comments .comment {
@@ -235,6 +268,18 @@ button:disabled {
   border:1px solid rgba(15,23,42,0.08);
   margin-bottom:10px;
   box-shadow:0 10px 24px rgba(15,23,42,0.04);
+  animation:fadeInComment 0.3s ease-out;
+}
+
+@keyframes fadeInComment {
+  from {
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 
 .comments .comment:last-child {
@@ -540,7 +585,15 @@ async function loadComments(noteId){
 window.toggleComments = function(noteId){
   const container = document.getElementById(`comments-${noteId}`);
   if(!container) return loadComments(noteId);
-  if(container.style.display==='block') container.style.display='none'; else loadComments(noteId);
+  if(container.style.display==='block') {
+    container.classList.add('closing');
+    setTimeout(() => {
+      container.style.display='none';
+      container.classList.remove('closing');
+    }, 300);
+  } else {
+    loadComments(noteId);
+  }
 }
 
 window.addComment = async function(noteId){
