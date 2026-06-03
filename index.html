@@ -1,992 +1,374 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>BI Forum Board</title>
-
-<style>
-body {
-  margin:0;
-  min-height:100vh;
-  font-family:Inter, system-ui, sans-serif;
-  background: linear-gradient(180deg, #eaedf7 0%, #f5f7fb 40%, #eef3f8 100%);
-  color:#1f2937;
-}
-
-header {
-  padding:24px 20px 16px;
-  backdrop-filter: blur(16px);
-}
-
-.header-inner {
-  max-width:1120px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-}
-
-.brand {
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.logo {
-  width:52px;
-  height:52px;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:800;
-  background:linear-gradient(135deg, #2563eb, #0b5cab);
-  color:white;
-  box-shadow:0 18px 40px rgba(15,23,42,0.16);
-}
-
-.brand-title {
-  font-size:1.15rem;
-  font-weight:700;
-}
-
-.brand-subtitle {
-  color:#64748b;
-  font-size:0.95rem;
-}
-
-.nav {
-  display:flex;
-  gap:12px;
-}
-
-.nav-item {
-  border:1px solid rgba(15,23,42,0.1);
-  background:rgba(255,255,255,0.8);
-  color:#1f2937;
-  border-radius:12px;
-  padding:12px 18px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transition:all 0.2s ease;
-  box-shadow:0 4px 12px rgba(15,23,42,0.06);
-  font-weight:500;
-}
-
-.nav-item:hover {
-  transform:none;
-  background:rgba(255,255,255,0.95);
-  box-shadow:0 6px 16px rgba(15,23,42,0.1);
-}
-
-.nav-item.active {
-  background:#0b5cab;
-  color:white;
-  border-color:#0b5cab;
-}
-
-.nav-icon {
-  font-size:1.1rem;
-}
-
-/* BOARD */
-#board {
-  padding:20px;
-  max-width:1120px;
-  margin:0 auto 90px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:18px;
-}
-
-.note {
-  background:rgba(255,255,255,0.9);
-  padding:20px;
-  padding-bottom:50px;
-  min-height:240px;
-  border-radius:24px;
-  box-shadow:0 24px 60px rgba(15,23,42,0.08);
-  border:1px solid rgba(15,23,42,0.06);
-  position:relative;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-
-.note::before {
-  content:"";
-  position:absolute;
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  right:-30px;
-  top:-30px;
-  background:rgba(59,130,246,0.12);
-}
-
-.card-stats {
-  position:absolute;
-  bottom:14px;
-  left:14px;
-  display:flex;
-  gap:14px;
-  font-size:0.9rem;
-}
-
-.card-actions {
-  position:absolute;
-  bottom:14px;
-  right:14px;
-  display:flex;
-  gap:8px;
-}
-
-.card-actions button {
-  padding:6px 8px;
-  font-size:1.1rem;
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  transition:all 0.2s ease;
-  border-radius:6px;
-}
-
-.card-actions button.delete {
-  color:#dc2626;
-}
-
-.card-actions button.delete:hover {
-  background:rgba(220,38,38,0.1);
-  transform:scale(1.15);
-}
-
-.card-actions button.edit {
-  color:#0b5cab;
-}
-
-.card-actions button.edit:hover {
-  background:rgba(11,92,171,0.1);
-  transform:scale(1.15);
-}
-
-.note h4 {
-  margin:0 0 8px;
-  font-size:1.05rem;
-}
-
-.note small {
-  display:block;
-  margin-bottom:12px;
-  color:#475569;
-}
-
-.vote {
-  margin-top:10px;
-}
-
-button {
-  background:#0b5cab;
-  color:white;
-  border:none;
-  padding:6px 10px;
-  border-radius:8px;
-  cursor:pointer;
-  width:auto;
-  font-weight:500;
-  font-size:0.85rem;
-  transition:all 0.2s ease;
-  box-shadow:none;
-  border:1px solid rgba(11,92,171,0.2);
-}
-
-button:hover {
-  transform:none;
-  background:#0a4a8f;
-  box-shadow:0 4px 12px rgba(11,92,171,0.15);
-}
-
-button:active {
-  transform:scale(0.98);
-}
-
-button:disabled {
-  opacity:0.6;
-  cursor:not-allowed;
-  box-shadow:none;
-  background:#0b5cab;
-}
-
-.secondary {
-  background:#64748b;
-  border-color:rgba(100,116,139,0.2);
-}
-
-.secondary:hover {
-  background:#475569;
-  box-shadow:0 4px 12px rgba(100,116,139,0.15);
-}
-
-.danger {
-  background:#dc2626;
-  border-color:rgba(220,38,38,0.2);
-}
-
-.danger:hover {
-  background:#b91c1c;
-  box-shadow:0 4px 12px rgba(220,38,38,0.15);
-}
-
-.card-actions {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:10px;
-  margin-top:14px;
-}
-
-.card-actions button {
-  padding:6px 10px;
-  font-size:0.83rem;
-  border-radius:8px;
-  transition:all 0.2s ease;
-}
-
-.card-actions button:hover {
-  transform:translateY(-2px);
-  box-shadow:0 6px 16px rgba(15,23,42,0.12);
-}
-
-.note button,
-.comment-actions button,
-.modal-content button {
-  width:100%;
-}
-
-.empty-state {
-  text-align:center;
-  padding:60px 20px;
-  color:#64748b;
-}
-
-.empty-state h3 {
-  color:#475569;
-  margin-bottom:12px;
-}
-
-.toast {
-  position:fixed;
-  bottom:90px;
-  right:22px;
-  background:#0b5cab;
-  color:white;
-  padding:14px 20px;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(11,92,171,0.25);
-  animation:slideInToast 0.3s ease-out;
-  max-width:300px;
-  font-weight:500;
-  z-index:1000;
-}
-
-@keyframes slideInToast {
-  from {
-    transform:translateX(400px);
-    opacity:0;
-  }
-  to {
-    transform:translateX(0);
-    opacity:1;
-  }
-}
-
-.icon-grid {
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:12px;
-  margin:20px 0;
-}
-
-.icon-option {
-  aspect-ratio:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  border:2px solid #e2e8f0;
-  border-radius:12px;
-  cursor:pointer;
-  transition:all 0.2s ease;
-  background:white;
-}
-
-.icon-option:hover {
-  border-color:#0b5cab;
-  background:#f0f9ff;
-  transform:scale(1.08);
-}
-
-.icon-option.selected {
-  border-color:#0b5cab;
-  background:#0b5cab;
-  color:white;
-}
-
-.active-users-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:12px;
-  margin:16px 0;
-}
-
-.user-item {
-  padding:14px;
-  border:1px solid #e2e8f0;
-  border-radius:12px;
-  background:#f8fafc;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:0.95rem;
-}
-
-.user-icon {
-  font-size:1.5rem;
-}
-
-.note > div:last-of-type button {
-  padding:6px 10px;
-  font-size:0.83rem;
-  border-radius:8px;
-}
-
-/* FLOAT BUTTON */
-.fab {
-  position:fixed;
-  bottom:22px;
-  right:22px;
-  background:#2563eb;
-  color:white;
-  width:56px;
-  height:56px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  font-size:26px;
-  box-shadow:0 24px 50px rgba(15,23,42,0.18);
-}
-
-.modal-content {
-  background:white;
-  padding:28px;
-  border-radius:24px;
-  width:min(520px,90%);
-}
-
-/* MODAL */
-.modal {
-  display:none;
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  background:rgba(0,0,0,0.35);
-  justify-content:center;
-  align-items:center;
-}
-
-.comments {
-  margin-top:18px;
-  background:rgba(15,23,42,0.04);
-  padding:14px;
-  border-radius:20px;
-  animation:slideDown 0.3s ease-out;
-  max-height:500px;
-  overflow-y:auto;
-}
-
-@keyframes slideDown {
-  from {
-    opacity:0;
-    transform:translateY(-12px);
-    max-height:0;
-  }
-  to {
-    opacity:1;
-    transform:translateY(0);
-    max-height:500px;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity:1;
-    transform:translateY(0);
-    max-height:500px;
-  }
-  to {
-    opacity:0;
-    transform:translateY(-12px);
-    max-height:0;
-  }
-}
-
-.comments.closing {
-  animation:slideUp 0.3s ease-out forwards;
-}
-
-.comments .comment {
-  padding:12px 14px;
-  background:rgba(255,255,255,0.96);
-  border-radius:16px;
-  border:1px solid rgba(15,23,42,0.08);
-  margin-bottom:10px;
-  box-shadow:0 10px 24px rgba(15,23,42,0.04);
-  animation:fadeInComment 0.3s ease-out;
-}
-
-@keyframes fadeInComment {
-  from {
-    opacity:0;
-    transform:translateY(8px);
-  }
-  to {
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-.comments .comment:last-child {
-  margin-bottom:0;
-}
-
-.comments .comment strong {
-  display:block;
-  font-size:0.95rem;
-  margin-bottom:4px;
-}
-
-.comment-input-row {
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:10px;
-}
-
-.comment-input-row input {
-  flex:1 1 200px;
-  margin:0;
-}
-
-.comment-input-row button {
-  flex:0 1 140px;
-}
-
-input,
-textarea {
-  width:100%;
-  padding:14px 16px;
-  margin:10px 0;
-  border-radius:18px;
-  border:1px solid rgba(15,23,42,0.14);
-  background:rgba(255,255,255,0.96);
-  resize:vertical;
-  font-family:Inter, system-ui, sans-serif;
-  font-size:16px;
-}
-
-textarea {
-  min-height:110px;
-}
-
-.modal-form label {
-  margin-top:16px;
-  font-weight:600;
-  color:#334155;
-}
-
-.modal-actions {
-  display:grid;
-  gap:12px;
-  margin-top:18px;
-}
-
-input:focus,
-textarea:focus {
-  outline:none;
-  border-color:#0b5cab;
-  box-shadow:0 0 0 4px rgba(59,130,246,0.12);
-}
-
-@media (max-width: 860px) {
-  .header-inner {
-    justify-content:center;
-    text-align:center;
-  }
-
-  .nav {
-    width:100%;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-
-  .nav-item {
-    flex:1 1 140px;
-    justify-content:center;
-  }
-
-  #board {
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  }
-}
-
-@media (max-width: 560px) {
-  header {
-    padding:18px 16px 12px;
-  }
-
-  .brand {
-    flex-direction:column;
-    align-items:center;
-  }
-
-  .logo {
-    width:48px;
-    height:48px;
-  }
-
-  .nav-item {
-    width:100%;
-  }
-
-  .fab {
-    width:50px;
-    height:50px;
-    font-size:24px;
-  }
-
-  .modal-content {
-    width:calc(100% - 32px);
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="logo">BI</div>
-      <div>
-        <div class="brand-title">BI Forum 2026</div>
-        <div class="brand-subtitle">Usecases teilen, voten und kommentieren</div>
-      </div>
-    </div>
-    <nav class="nav">
-      <button class="nav-item active" onclick="switchTab('agents')">
-        <span class="nav-icon">A</span>
-        <span>Agents</span>
-      </button>
-      <button class="nav-item" onclick="switchTab('mosaic')">
-        <span class="nav-icon">M</span>
-        <span>Mosaic</span>
-      </button>
-    </nav>
-    <div style="font-size:0.95rem; color:#475569;">
-      <span id="userDisplay" style="font-weight:600;"></span>
-    </div>
-  </div>
-</header>
-
-<div id="board"></div>
-
-<div class="fab" onclick="openModal()">+</div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-<div class="modal-content">
-  <div class="modal-header">
-    <h3 id="modalTitle">Neuer Usecase</h3>
-  </div>
-  <div class="modal-form">
-    <label for="title">Titel</label>
-    <input id="title" placeholder="Titel" />
-    <label for="text">Beschreibung</label>
-    <textarea id="text" placeholder="Beschreibung" rows="4"></textarea>
-  </div>
-  <div class="modal-actions">
-    <button id="saveButton" onclick="addNote()">Speichern</button>
-    <button onclick="closeModal()" class="secondary">Abbrechen</button>
-  </div>
-</div>
-</div>
-
-<!-- NAME MODAL -->
-<div class="modal" id="nameModal">
-  <div class="modal-content">
-    <h3>Willkommen — bitte Namen eingeben</h3>
-    <input id="username" placeholder="Dein Name" />
-    <label style="margin-top:16px; font-weight:600; color:#334155; display:block;">Wähle ein Icon</label>
-    <div class="icon-grid" id="iconGrid"></div>
-    <button id="saveUsernameBtn" onclick="saveUsername()" style="margin-top:12px;">Speichern</button>
-  </div>
-</div>
-
-<!-- ACTIVE USERS MODAL -->
-<div class="modal" id="activeUsersModal">
-  <div class="modal-content">
-    <h3>Aktive Nutzer</h3>
-    <div class="active-users-grid" id="activeUsersList"></div>
-    <button onclick="document.getElementById('activeUsersModal').style.display='none'">Schließen</button>
-  </div>
-</div>
-
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
-  authDomain: "bi-forum-2026.firebaseapp.com",
-  projectId: "bi-forum-2026",
-  storageBucket: "bi-forum-2026.firebasestorage.app",
-  messagingSenderId: "305326324192",
-  appId: "1:305326324192:web:1152fdc525122bda0dd385"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const BOARD_ID = "bi-forum-2026";
-
-let currentTab = "agents";
-let editingNoteId = null;
-let selectedIcon = "●";
-
-const ICONS = ["●", "○", "◆", "◇", "■", "□", "△", "▲", "★", "☆", "◐", "◑", "◈", "⬢", "◎", "◉", "✦", "✧", "◐", "◑", "◔", "▼", "◄", "►", "⬡", "◕", "✓", "✕", "⚡", "🔥"];
-
-function getCurrentUser(){
-  return window.username || localStorage.getItem('username') || 'Anonymous';
-}
-
-function getUserIcon(username){
-  const icon = localStorage.getItem(`icon_${username}`);
-  return icon || "●";
-}
-
-function setUserIcon(username, icon){
-  localStorage.setItem(`icon_${username}`, icon);
-}
-
-function escapeHtml(text){
-  if(!text) return '';
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;').replace(/\n/g,'\\n');
-}
-
-/* SWITCH */
-window.switchTab = function(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
-  const index = tab === 'agents' ? 0 : 1;
-  document.querySelectorAll('.nav-item')[index].classList.add('active');
-  updateUserDisplay();
-  subscribe();
-}
-
-/* MODAL */
-window.openModal = () => {
-  editingNoteId = null;
-  document.getElementById("modalTitle").textContent = "Neuer Usecase";
-  document.getElementById("saveButton").textContent = "Speichern";
-  document.getElementById("title").value = "";
-  document.getElementById("text").value = "";
-  document.getElementById("modal").style.display = "flex";
-};
-
-window.openEditModal = (id,title,text) => {
-  editingNoteId = id;
-  document.getElementById("modalTitle").textContent = "Usecase bearbeiten";
-  document.getElementById("saveButton").textContent = "Aktualisieren";
-  document.getElementById("title").value = title;
-  document.getElementById("text").value = text;
-  document.getElementById("modal").style.display = "flex";
-};
-
-window.closeModal = () => {
-  editingNoteId = null;
-  document.getElementById("modalTitle").textContent = "Neuer Usecase";
-  document.getElementById("saveButton").textContent = "Speichern";
-  document.getElementById("title").value = "";
-  document.getElementById("text").value = "";
-  document.getElementById("modal").style.display = "none";
-};
-
-/* ADD */
-window.addNote = async function() {
-  const title = document.getElementById("title").value.trim();
-  const text = document.getElementById("text").value.trim();
-  if(!title) return;
-
-  const noteData = {
-    title,
-    text,
-    topic:currentTab,
-    author: getCurrentUser(),
-  };
-
-  if(editingNoteId){
-    await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), noteData);
-    showToast('Usecase aktualisiert');
-  } else {
-    await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
-      ...noteData,
-      votes:0,
-      votedBy: [],
-      ts: serverTimestamp(),
-    });
-    showToast('Usecase hinzugefügt');
-  }
-
-  closeModal();
-}
-
-window.checkUsername = function(){
-  const name = localStorage.getItem('username');
-  if(!name){
-    initializeIconGrid();
-    document.getElementById('nameModal').style.display = 'flex';
-  } else {
-    window.username = name;
-    selectedIcon = getUserIcon(name);
-    subscribe();
-  }
-}
-
-function initializeIconGrid(){
-  const grid = document.getElementById('iconGrid');
-  grid.innerHTML = ICONS.map((icon, idx) => 
-    `<div class="icon-option" data-icon="${icon}" onclick="selectIcon('${icon}')">${icon}</div>`
-  ).join('');
-}
-
-window.selectIcon = function(icon){
-  selectedIcon = icon;
-  document.querySelectorAll('.icon-option').forEach(el => {
-    el.classList.remove('selected');
-    if(el.dataset.icon === icon) el.classList.add('selected');
-  });
-}
-
-window.saveUsername = function(){
-  const v = document.getElementById('username').value.trim();
-  if(!v) return;
-  localStorage.setItem('username', v);
-  setUserIcon(v, selectedIcon);
-  window.username = v;
-  document.getElementById('nameModal').style.display = 'none';
-  updateUserDisplay();
-  subscribe();
-}
-
-function updateUserDisplay(){
-  const user = window.username || localStorage.getItem('username') || 'Anonymous';
-  const icon = getUserIcon(user);
-  document.getElementById('userDisplay').innerHTML = `<span style="font-size:1.1rem; margin-right:6px;">${icon}</span>${user}`;
-}
-
-function updateOnlineCount(users){
-  const uniqueUsers = [...new Set(users)];
-  const count = uniqueUsers.length;
-  const displayEl = document.getElementById('userDisplay');
-  const user = window.username || localStorage.getItem('username') || 'Anonymous';
-  const icon = getUserIcon(user);
-  displayEl.innerHTML = `<span style="font-size:1.1rem; margin-right:6px; cursor:pointer;" onclick="showActiveUsers(${JSON.stringify(uniqueUsers).replace(/"/g, '&quot;')})">${icon}</span><span style="cursor:pointer;" onclick="showActiveUsers(${JSON.stringify(uniqueUsers).replace(/"/g, '&quot;')})">${user} <span style="color:#94a3b8; font-weight:400; font-size:0.9rem;">(${count} aktiv)</span></span>`;
-}
-
-function showToast(message){
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(()=>{
-    toast.style.animation = 'slideInToast 0.3s ease-out reverse';
-    setTimeout(()=>toast.remove(), 300);
-  }, 2500);
-}
-
-window.showActiveUsers = function(users){
-  const listEl = document.getElementById('activeUsersList');
-  const uniqueUsers = [...new Set(users)];
-  listEl.innerHTML = uniqueUsers.map(user => {
-    const icon = getUserIcon(user);
-    return `<div class="user-item"><span class="user-icon">${icon}</span>${user}</div>`;
-  }).join('');
-  document.getElementById('activeUsersModal').style.display = 'flex';
-}
-
-function formatTimestamp(ts){
-  if(!ts) return '';
-  const date = new Date(ts.seconds * 1000);
-  const now = new Date();
-  const diff = now - date;
-  const mins = Math.floor(diff/60000);
-  const hours = Math.floor(diff/3600000);
-  const days = Math.floor(diff/86400000);
-  
-  if(mins < 1) return 'gerade eben';
-  if(mins < 60) return `vor ${mins}m`;
-  if(hours < 24) return `vor ${hours}h`;
-  if(days < 7) return `vor ${days}d`;
-  
-  return date.toLocaleDateString('de-DE');
-}
-
-// COMMENTS
-async function loadComments(noteId){
-  const container = document.getElementById(`comments-${noteId}`);
-  if(!container) return;
-  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'), orderBy('ts','asc'));
-  const snap = await getDocs(q);
-  const comments = snap.docs.map(d=>d.data());
-  container.innerHTML = `
-    ${comments.map(c=>{
-      const icon = getUserIcon(c.author);
-      return `<div class="comment"><strong><span style="font-size:1rem; margin-right:4px;">${icon}</span>${c.author}</strong> <small style="color:#94a3b8;">${formatTimestamp(c.ts)}</small><br>${c.text}</div>`;
-    }).join('')}
-    <div class="comment-input-row">
-      <input id="comment-input-${noteId}" placeholder="Kommentar..." />
-      <button onclick="addComment('${noteId}')">Kommentieren</button>
-    </div>
-  `;
-  container.style.display='block';
-}
-
-window.toggleComments = function(noteId){
-  const container = document.getElementById(`comments-${noteId}`);
-  if(!container) return loadComments(noteId);
-  if(container.style.display==='block') {
-    container.classList.add('closing');
-    setTimeout(() => {
-      container.style.display='none';
-      container.classList.remove('closing');
-    }, 300);
-  } else {
-    loadComments(noteId);
-  }
-}
-
-window.addComment = async function(noteId){
-  const input = document.getElementById(`comment-input-${noteId}`);
-  if(!input) return;
-  const text = input.value.trim();
-  if(!text) return;
-  const author = window.username || localStorage.getItem('username') || 'Anonymous';
-  await addDoc(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'),{
-    author,
-    text,
-    ts: serverTimestamp()
-  });
-  input.value='';
-  loadComments(noteId);
-  loadCommentCount(noteId);
-  showToast('Kommentar hinzugefügt');
-}
-
-/* VOTE */
-window.vote = async function(id){
-  const username = getCurrentUser();
-  const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
-  const noteSnap = await getDoc(noteRef);
-  if(!noteSnap.exists()) return;
-  const note = noteSnap.data();
-  const votedBy = note.votedBy || [];
-  if(votedBy.includes(username)){
-    alert('Du kannst jeden Usecase nur einmal upvoten.');
-    return;
-  }
-  await updateDoc(noteRef,{
-    votes:increment(1),
-    votedBy: arrayUnion(username)
-  });
-}
-window.deleteNote = async function(id){
-  if(!confirm('Usecase wirklich löschen?')) return;
-  await deleteDoc(doc(db,'boards',BOARD_ID,'notes',id));
-  showToast('Usecase gelöscht');
-}
-
-/* LOAD */
-function subscribe(){
-  const q = query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
-
-  onSnapshot(q,(snap)=>{
-    let notes = snap.docs.map(d=>({...d.data(),id:d.id}));
-    const currentUser = window.username || localStorage.getItem('username') || 'Anonymous';
-
-    notes.sort((a,b)=>b.votes-a.votes);
-
-    if(notes.length === 0){
-      document.getElementById("board").innerHTML = `
-        <div class="empty-state" style="grid-column:1/-1;">
-          <h3>Noch keine Usecases</h3>
-          <p>Klicke auf "+" um einen neuen Usecase zu erstellen</p>
-        </div>
-      `;
-      updateOnlineCount([]);
-    } else {
-      const topicLabel = currentTab === 'agents' ? 'A' : 'M';
-      document.getElementById("board").innerHTML =
-        notes.map(n=>{
-          const hasVoted = (n.votedBy || []).includes(currentUser);
-          const isAuthor = n.author === currentUser;
-          return `
-        <div class="note" id="note-${n.id}">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-            <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
-            <h4 style="margin:0; flex:1; ${isAuthor ? 'cursor:pointer;' : ''}" onclick="${isAuthor ? `openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')` : ''}">${n.title}</h4>
-          </div>
-          <small>Von: <span style="font-size:1rem; margin-right:4px;">${getUserIcon(n.author || 'Unbekannt')}</span>${n.author || 'Unbekannt'} <span style="color:#94a3b8;">• ${formatTimestamp(n.ts)}</span></small>
-          <p style="${isAuthor ? 'cursor:pointer;' : ''}" onclick="${isAuthor ? `openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')` : ''}">${n.text}</p>
-          <div style="margin-top:auto; margin-bottom:8px;">
-            <button onclick="toggleComments('${n.id}')" style="width:100%;">💬 Kommentare</button>
-          </div>
-          <div id="comments-${n.id}" class="comments" style="display:none"></div>
-          <div class="card-stats">
-            <span class="stat" onclick="vote('${n.id}')" style="cursor:pointer;" title="Upvoten">▲ <span class="count">${n.votes || 0}</span></span>
-            <span class="stat" onclick="toggleComments('${n.id}')" style="cursor:pointer;">💬 <span id="comment-count-${n.id}" class="count">0</span></span>
-          </div>
-          ${isAuthor ? `<div class="card-actions">
-            <button class="edit" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')" title="Bearbeiten">✎</button>
-            <button class="delete" onclick="deleteNote('${n.id}')" title="Löschen">🗑</button>
-          </div>` : ''}
-        </div>
-        `;
-        }).join("");
-
-      // Load comment counts async
-      notes.forEach(n=>{
-        loadCommentCount(n.id);
-      });
-      
-      updateOnlineCount(notes.map(n => n.author));
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meine App</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #f3f5f8;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
     }
-  });
-}
 
-async function loadCommentCount(noteId){
-  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'));
-  const snap = await getDocs(q);
-  const countEl = document.getElementById(`comment-count-${noteId}`);
-  if(countEl) countEl.textContent = snap.size;
-}
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-checkUsername();
-updateUserDisplay();
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
 
-</script>
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
 
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .panel, .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .card {
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card.featured {
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.14);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      background: var(--surface-soft);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .vote {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .vote[aria-pressed="true"] {
+      background: var(--primary);
+      color: white;
+      border-color: transparent;
+    }
+
+    .count {
+      display: inline-block;
+      min-width: 1.5ch;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .count.bump {
+        animation: bump 220ms ease;
+      }
+      @keyframes bump {
+        0% { transform: translateY(0) scale(1); }
+        35% { transform: translateY(-3px) scale(1.12); }
+        100% { transform: translateY(0) scale(1); }
+      }
+    }
+
+    .menu-wrap {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .menu-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      font-size: 1.2rem;
+    }
+
+    .menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 170px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: none;
+    }
+
+    .menu.open { display: grid; gap: 6px; }
+
+    .menu-item {
+      min-height: 40px;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: transparent;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .menu-item:hover { background: var(--surface-soft); }
+    .menu-item.delete { color: var(--danger); }
+    .menu-item.delete:hover { background: var(--danger-soft); }
+
+    .comments {
+      margin-top: 14px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 260ms ease, opacity 220ms ease, margin-top 220ms ease;
+    }
+
+    .comments.open {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 14px;
+    }
+
+    .comment {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      animation: highlight 1400ms ease;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes highlight {
+        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.24), var(--shadow); }
+        45% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0.08), var(--shadow); }
+        100% { box-shadow: var(--shadow); }
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .app { padding: 18px 12px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Meine App</h1>
+        <p>Saubere Karten, Votes, Kommentare und schnelles Feedback.</p>
+      </div>
+    </header>
+
+    <main class="content" id="board"></main>
+  </div>
+
+  <script>
+    const data = [
+      {
+        id: "1",
+        title: "Usecase A",
+        text: "Das ist ein Beispiel-Usecase mit Beschreibung.",
+        votes: 12,
+        featured: true,
+        voted: false,
+        comments: ["Sieht gut aus!", "Wäre interessant für später."]
+      },
+      {
+        id: "2",
+        title: "Usecase B",
+        text: "Noch ein Beispiel, damit du die Struktur sehen kannst.",
+        votes: 5,
+        featured: false,
+        voted: false,
+        comments: ["Guter Vorschlag."]
+      }
+    ];
+
+    let openCommentsId = null;
+
+    function createCard(item) {
+      return `
+        <article class="card ${item.featured ? 'featured' : ''}" id="card-${item.id}">
+          ${item.featured ? '<div class="badge">Top-Usecase</div>' : ''}
+          <div class="menu-wrap">
+            <button class="menu-btn" type="button" onclick="toggleMenu('${item.id}')" aria-label="Weitere Aktionen">⋯</button>
+            <div class="menu" id="menu-${item.id}">
+              <button class="menu-item" type="button" onclick="alert('Bearbeiten')">Bearbeiten</button>
+              <button class="menu-item delete" type="button" onclick="alert('Löschen')">Löschen</button>
+            </div>
+          </div>
+
+          <h2 style="margin: 0 0 10px;">${item.title}</h2>
+          <p style="margin: 0; color: var(--muted); line-height: 1.6;">${item.text}</p>
+
+          <div class="toolbar">
+            <button class="vote" type="button" aria-pressed="${item.voted ? 'true' : 'false'}" onclick="vote('${item.id}')">
+              ▲ <span>Upvote</span> <span class="count" id="vote-count-${item.id}">${item.votes}</span>
+            </button>
+            <button class="btn secondary" type="button" aria-expanded="false" data-comments-toggle="${item.id}" onclick="toggleComments('${item.id}')">
+              💬 Kommentare
+            </button>
+          </div>
+
+          <div class="comments" id="comments-${item.id}">
+            ${item.comments.map(c => `<div class="comment">${c}</div>`).join('')}
+          </div>
+        </article>
+      `;
+    }
+
+    function render() {
+      document.getElementById('board').innerHTML = data.map(createCard).join('');
+    }
+
+    function toggleMenu(id) {
+      document.querySelectorAll('.menu').forEach(m => {
+        if (m.id !== `menu-${id}`) m.classList.remove('open');
+      });
+      document.getElementById(`menu-${id}`).classList.toggle('open');
+    }
+
+    function toggleComments(id) {
+      const current = document.getElementById(`comments-${id}`);
+      const open = current.classList.contains('open');
+
+      document.querySelectorAll('.comments.open').forEach(box => {
+        if (box.id !== `comments-${id}`) box.classList.remove('open');
+      });
+
+      document.querySelectorAll('[data-comments-toggle]').forEach(btn => {
+        btn.setAttribute('aria-expanded', btn.getAttribute('data-comments-toggle') === id && !open ? 'true' : 'false');
+      });
+
+      current.classList.toggle('open', !open);
+      openCommentsId = !open ? id : null;
+    }
+
+    function animateCount(el) {
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
+
+    function vote(id) {
+      const item = data.find(x => x.id === id);
+      if (!item || item.voted) return;
+
+      item.votes += 1;
+      item.voted = true;
+
+      const countEl = document.getElementById(`vote-count-${id}`);
+      const btn = countEl.closest('.vote');
+      btn.setAttribute('aria-pressed', 'true');
+      countEl.textContent = item.votes;
+      animateCount(countEl);
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.menu-wrap')) {
+        document.querySelectorAll('.menu').forEach(m => m.classList.remove('open'));
+      }
+    });
+
+    render();
+  </script>
 </body>
 </html>
