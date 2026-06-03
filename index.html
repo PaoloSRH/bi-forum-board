@@ -117,6 +117,21 @@ header {
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  touch-action:pan-y;
+  cursor:default;
+  transition:transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.note.swiping {
+  transition:none;
+}
+
+.note.delete-swipe {
+  background:rgba(220,38,38,0.08);
+}
+
+.note.edit-swipe {
+  background:rgba(59,130,246,0.08);
 }
 
 .note::before {
@@ -721,6 +736,7 @@ window.addNote = async function() {
       ...noteData,
       votes:0,
       votedBy: [],
+      ts: serverTimestamp(),
     });
     showToast('Usecase hinzugefügt');
   }
@@ -893,6 +909,69 @@ window.deleteNote = async function(id){
   showToast('Usecase gelöscht');
 }
 
+// SWIPE HANDLERS
+let swipeStart = 0;
+let swiping = false;
+
+window.startSwipe = function(e, noteId, isAuthor){
+  if(!isAuthor) return;
+  swipeStart = e.touches[0].clientX;
+  swiping = true;
+  const el = document.getElementById(`note-${noteId}`);
+  el.classList.add('swiping');
+}
+
+window.moveSwipe = function(e, noteId){
+  if(!swiping) return;
+  const current = e.touches[0].clientX;
+  const diff = current - swipeStart;
+  const el = document.getElementById(`note-${noteId}`);
+  
+  el.style.transform = `translateX(${diff}px)`;
+  
+  if(diff < -50) {
+    el.classList.remove('edit-swipe');
+    el.classList.add('delete-swipe');
+  } else if(diff > 50) {
+    el.classList.remove('delete-swipe');
+    el.classList.add('edit-swipe');
+  } else {
+    el.classList.remove('delete-swipe', 'edit-swipe');
+  }
+}
+
+window.endSwipe = function(e, noteId, isAuthor){
+  if(!swiping || !isAuthor) return;
+  swiping = false;
+  const el = document.getElementById(`note-${noteId}`);
+  const current = e.changedTouches[0].clientX;
+  const diff = current - swipeStart;
+  
+  el.classList.remove('swiping');
+  
+  // Swipe left = delete (diff < -100)
+  if(diff < -100) {
+    if(confirm('Usecase wirklich löschen?')) {
+      deleteNote(noteId);
+    } else {
+      el.style.transform = 'translateX(0)';
+      el.classList.remove('delete-swipe');
+    }
+  }
+  // Swipe right = edit (diff > 100)
+  else if(diff > 100) {
+    const title = el.querySelector('h4').textContent;
+    const text = el.querySelector('p').textContent;
+    openEditModal(noteId, title, text);
+    el.style.transform = 'translateX(0)';
+    el.classList.remove('edit-swipe');
+  }
+  else {
+    el.style.transform = 'translateX(0)';
+    el.classList.remove('delete-swipe', 'edit-swipe');
+  }
+}
+
 /* LOAD */
 function subscribe(){
   const q = query(collection(db,'boards',BOARD_ID,'notes'),where('topic','==',currentTab));
@@ -918,24 +997,19 @@ function subscribe(){
           const hasVoted = (n.votedBy || []).includes(currentUser);
           const isAuthor = n.author === currentUser;
           return `
-        <div class="note">
+        <div class="note" id="note-${n.id}" ondblclick="vote('${n.id}')" data-note-id="${n.id}">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <span style="display:inline-block; width:24px; height:24px; background:#e0e7ff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#0b5cab;">${topicLabel}</span>
             <h4 style="margin:0; flex:1;">${n.title}</h4>
           </div>
-          <small>Von: <span style="font-size:1rem; margin-right:4px;">${getUserIcon(n.author || 'Unbekannt')}</span>${n.author || 'Unbekannt'}</small>
+          <small>Von: <span style="font-size:1rem; margin-right:4px;">${getUserIcon(n.author || 'Unbekannt')}</span>${n.author || 'Unbekannt'} <span style="color:#94a3b8;">• ${formatTimestamp(n.ts)}</span></small>
           <p>${n.text}</p>
-          <div class="card-actions">
-            <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">▲ Vote</button>
-            ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✎ Bearbeiten</button>` : ''}
-            ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">✕ Löschen</button>` : ''}
-          </div>
-          <div style="margin-top:8px">
-            <button onclick="toggleComments('${n.id}')">◉ Kommentare</button>
+          <div style="margin-top:auto; margin-bottom:8px;">
+            <button onclick="toggleComments('${n.id}')" style="width:100%;">◉ Kommentare</button>
           </div>
           <div id="comments-${n.id}" class="comments" style="display:none"></div>
           <div class="card-stats">
-            <span class="stat">▲ <span class="count">${n.votes || 0}</span></span>
+            <span class="stat" title="Doppelklick zum Abstimmen">▲ <span class="count">${n.votes || 0}</span></span>
             <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
           </div>
         </div>
@@ -948,6 +1022,17 @@ function subscribe(){
       });
       
       updateOnlineCount(notes.map(n => n.author));
+      
+      // Setup touch handlers for swipe
+      notes.forEach(n => {
+        const el = document.getElementById(`note-${n.id}`);
+        if(el) {
+          const isAuthor = n.author === currentUser;
+          el.addEventListener('touchstart', (e) => startSwipe(e, n.id, isAuthor));
+          el.addEventListener('touchmove', (e) => moveSwipe(e, n.id));
+          el.addEventListener('touchend', (e) => endSwipe(e, n.id, isAuthor));
+        }
+      });
     }
   });
 }
