@@ -170,12 +170,12 @@ button {
   background:#0b5cab;
   color:white;
   border:none;
-  padding:10px 14px;
-  border-radius:10px;
+  padding:6px 10px;
+  border-radius:8px;
   cursor:pointer;
   width:auto;
   font-weight:500;
-  font-size:0.95rem;
+  font-size:0.85rem;
   transition:all 0.2s ease;
   box-shadow:none;
   border:1px solid rgba(11,92,171,0.2);
@@ -226,8 +226,8 @@ button:disabled {
 }
 
 .card-actions button {
-  padding:9px 12px;
-  font-size:0.93rem;
+  padding:6px 10px;
+  font-size:0.83rem;
   border-radius:8px;
   transition:all 0.2s ease;
 }
@@ -281,8 +281,8 @@ button:disabled {
 }
 
 .note > div:last-of-type button {
-  padding:8px 12px;
-  font-size:0.93rem;
+  padding:6px 10px;
+  font-size:0.83rem;
   border-radius:8px;
 }
 
@@ -673,8 +673,14 @@ window.saveUsername = function(){
 
 function updateUserDisplay(){
   const user = window.username || localStorage.getItem('username') || 'Anonymous';
-  const topicLabel = currentTab === 'agents' ? 'Agents' : 'Mosaic';
-  document.getElementById('userDisplay').textContent = `${user} • ${topicLabel}`;
+  document.getElementById('userDisplay').textContent = `${user}`;
+}
+
+function updateOnlineCount(users){
+  const count = new Set(users).size;
+  const displayEl = document.getElementById('userDisplay');
+  const user = window.username || localStorage.getItem('username') || 'Anonymous';
+  displayEl.innerHTML = `${user} <span style="color:#94a3b8; font-weight:400; font-size:0.9rem;">(${count} aktiv)</span>`;
 }
 
 function showToast(message){
@@ -793,6 +799,7 @@ function subscribe(){
           <p>Klicke auf "+" um einen neuen Usecase zu erstellen</p>
         </div>
       `;
+      updateOnlineCount([]);
     } else {
       const topicLabel = currentTab === 'agents' ? 'A' : 'M';
       document.getElementById("board").innerHTML =
@@ -828,6 +835,8 @@ function subscribe(){
       notes.forEach(n=>{
         loadCommentCount(n.id);
       });
+      
+      updateOnlineCount(notes.map(n => n.author));
     }
   });
 }
