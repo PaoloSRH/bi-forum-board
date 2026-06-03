@@ -467,11 +467,11 @@ textarea:focus {
     </div>
     <nav class="nav">
       <button class="nav-item active" onclick="switchTab('agents')">
-        <span class="nav-icon">🤖</span>
+        <span class="nav-icon">A</span>
         <span>Agents</span>
       </button>
       <button class="nav-item" onclick="switchTab('mosaic')">
-        <span class="nav-icon">🧩</span>
+        <span class="nav-icon">M</span>
         <span>Mosaic</span>
       </button>
     </nav>
@@ -710,17 +710,17 @@ function subscribe(){
         <small>Von: ${n.author || 'Unbekannt'}</small>
         <p>${n.text}</p>
         <div class="card-actions">
-          <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">👍 Vote</button>
-          ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✏️ Bearbeiten</button>` : ''}
-          ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">🗑️ Löschen</button>` : ''}
+          <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">▲ Vote</button>
+          ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✎ Bearbeiten</button>` : ''}
+          ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">✕ Löschen</button>` : ''}
         </div>
         <div style="margin-top:8px">
-          <button onclick="toggleComments('${n.id}')">💬 Kommentare</button>
+          <button onclick="toggleComments('${n.id}')">◉ Kommentare</button>
         </div>
         <div id="comments-${n.id}" class="comments" style="display:none"></div>
         <div class="card-stats">
-          <span class="stat">👍 <span class="count">${n.votes || 0}</span></span>
-          <span class="stat">💬 <span id="comment-count-${n.id}" class="count">0</span></span>
+          <span class="stat">▲ <span class="count">${n.votes || 0}</span></span>
+          <span class="stat">◉ <span id="comment-count-${n.id}" class="count">0</span></span>
         </div>
       </div>
       `;
