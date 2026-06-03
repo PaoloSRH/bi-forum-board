@@ -162,6 +162,25 @@ button:disabled {
   box-shadow:none;
 }
 
+.secondary {
+  background:#475569;
+}
+
+.danger {
+  background:#ef4444;
+}
+
+.danger:hover {
+  background:#dc2626;
+}
+
+.card-actions {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
 .note button,
 .comment-actions button,
 .modal-content button {
@@ -244,16 +263,36 @@ button:disabled {
   flex:0 1 140px;
 }
 
-input {
+input,
+textarea {
   width:100%;
-  padding:12px 14px;
+  padding:14px 16px;
   margin:10px 0;
-  border-radius:14px;
-  border:1px solid rgba(15,23,42,0.12);
-  background:rgba(255,255,255,0.95);
+  border-radius:18px;
+  border:1px solid rgba(15,23,42,0.14);
+  background:rgba(255,255,255,0.96);
+  resize:vertical;
+  font-family:Inter, system-ui, sans-serif;
 }
 
-input:focus {
+textarea {
+  min-height:110px;
+}
+
+.modal-form label {
+  margin-top:16px;
+  font-weight:600;
+  color:#334155;
+}
+
+.modal-actions {
+  display:grid;
+  gap:12px;
+  margin-top:18px;
+}
+
+input:focus,
+textarea:focus {
   outline:none;
   border-color:#0b5cab;
   box-shadow:0 0 0 4px rgba(59,130,246,0.12);
@@ -344,11 +383,19 @@ input:focus {
 <!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-content">
-<h3>Neuer Usecase</h3>
-<input id="title" placeholder="Titel"/>
-<input id="text" placeholder="Beschreibung"/>
-<button onclick="addNote()">Speichern</button>
-<button onclick="closeModal()" style="background:#999; margin-top:8px;">Abbrechen</button>
+  <div class="modal-header">
+    <h3 id="modalTitle">Neuer Usecase</h3>
+  </div>
+  <div class="modal-form">
+    <label for="title">Titel</label>
+    <input id="title" placeholder="Titel" />
+    <label for="text">Beschreibung</label>
+    <textarea id="text" placeholder="Beschreibung" rows="4"></textarea>
+  </div>
+  <div class="modal-actions">
+    <button id="saveButton" onclick="addNote()">Speichern</button>
+    <button onclick="closeModal()" class="secondary">Abbrechen</button>
+  </div>
 </div>
 </div>
 
@@ -363,7 +410,7 @@ input:focus {
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, updateDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
@@ -379,6 +426,16 @@ const db = getFirestore(app);
 const BOARD_ID = "bi-forum-2026";
 
 let currentTab = "agents";
+let editingNoteId = null;
+
+function getCurrentUser(){
+  return window.username || localStorage.getItem('username') || 'Anonymous';
+}
+
+function escapeHtml(text){
+  if(!text) return '';
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;').replace(/\n/g,'\\n');
+}
 
 /* SWITCH */
 window.switchTab = function(tab) {
@@ -391,12 +448,27 @@ window.switchTab = function(tab) {
 
 /* MODAL */
 window.openModal = () => {
+  editingNoteId = null;
+  document.getElementById("modalTitle").textContent = "Neuer Usecase";
+  document.getElementById("saveButton").textContent = "Speichern";
   document.getElementById("title").value = "";
   document.getElementById("text").value = "";
   document.getElementById("modal").style.display = "flex";
 };
 
+window.openEditModal = (id,title,text) => {
+  editingNoteId = id;
+  document.getElementById("modalTitle").textContent = "Usecase bearbeiten";
+  document.getElementById("saveButton").textContent = "Aktualisieren";
+  document.getElementById("title").value = title;
+  document.getElementById("text").value = text;
+  document.getElementById("modal").style.display = "flex";
+};
+
 window.closeModal = () => {
+  editingNoteId = null;
+  document.getElementById("modalTitle").textContent = "Neuer Usecase";
+  document.getElementById("saveButton").textContent = "Speichern";
   document.getElementById("title").value = "";
   document.getElementById("text").value = "";
   document.getElementById("modal").style.display = "none";
@@ -404,21 +476,28 @@ window.closeModal = () => {
 
 /* ADD */
 window.addNote = async function() {
-  const title = document.getElementById("title").value;
-  const text = document.getElementById("text").value;
-
+  const title = document.getElementById("title").value.trim();
+  const text = document.getElementById("text").value.trim();
   if(!title) return;
 
-  await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
+  const noteData = {
     title,
     text,
     topic:currentTab,
-    votes:0,
-    votedBy: [],
-    author: window.username || localStorage.getItem('username') || 'Anonymous'
-  });
+    author: getCurrentUser(),
+  };
 
-  document.getElementById("modal").style.display="none";
+  if(editingNoteId){
+    await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), noteData);
+  } else {
+    await addDoc(collection(db,'boards',BOARD_ID,'notes'),{
+      ...noteData,
+      votes:0,
+      votedBy: [],
+    });
+  }
+
+  closeModal();
 }
 
 window.checkUsername = function(){
@@ -480,7 +559,7 @@ window.addComment = async function(noteId){
 
 /* VOTE */
 window.vote = async function(id){
-  const username = window.username || localStorage.getItem('username') || 'Anonymous';
+  const username = getCurrentUser();
   const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
   const noteSnap = await getDoc(noteRef);
   if(!noteSnap.exists()) return;
@@ -494,6 +573,10 @@ window.vote = async function(id){
     votes:increment(1),
     votedBy: arrayUnion(username)
   });
+}
+window.deleteNote = async function(id){
+  if(!confirm('Usecase wirklich löschen?')) return;
+  await deleteDoc(doc(db,'boards',BOARD_ID,'notes',id));
 }
 
 /* LOAD */
@@ -509,14 +592,16 @@ function subscribe(){
     document.getElementById("board").innerHTML =
       notes.map(n=>{
         const hasVoted = (n.votedBy || []).includes(currentUser);
+        const isAuthor = n.author === currentUser;
         return `
       <div class="note">
         <h4>${n.title}</h4>
         <small>Von: ${n.author || 'Unbekannt'}</small>
         <p>${n.text}</p>
-        <div class="vote">
-          Votes: ${n.votes || 0}
+        <div class="card-actions">
           <button ${hasVoted ? 'disabled' : ''} onclick="vote('${n.id}')">👍 ${hasVoted ? 'Bereits gevotet' : 'Vote'}</button>
+          ${isAuthor ? `<button class="secondary" onclick="openEditModal('${n.id}','${escapeHtml(n.title)}','${escapeHtml(n.text)}')">✏️ Bearbeiten</button>` : ''}
+          ${isAuthor ? `<button class="danger" onclick="deleteNote('${n.id}')">🗑️ Löschen</button>` : ''}
         </div>
         <div style="margin-top:8px">
           <button onclick="toggleComments('${n.id}')">💬 Kommentare</button>
