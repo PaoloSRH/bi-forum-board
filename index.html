@@ -389,6 +389,38 @@ textarea:focus-visible,
   box-shadow: 0 18px 44px rgba(37, 99, 235, 0.14);
 }
 
+.note--agents {
+  border-left: 3px solid rgba(37, 99, 235, 0.5);
+}
+
+.note--agents .topic-badge {
+  background: rgba(37, 99, 235, 0.10);
+  color: #2563eb;
+}
+
+.note--mosaic {
+  border-left: 3px solid rgba(124, 58, 237, 0.5);
+}
+
+.note--mosaic .topic-badge {
+  background: rgba(124, 58, 237, 0.10);
+  color: #7c3aed;
+}
+
+[data-theme="dark"] .note--agents .topic-badge {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.13);
+}
+
+[data-theme="dark"] .note--mosaic {
+  border-left-color: rgba(167, 139, 250, 0.45);
+}
+
+[data-theme="dark"] .note--mosaic .topic-badge {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.13);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .note.just-added {
     animation: noteHighlight 1400ms ease;
@@ -1761,9 +1793,10 @@ function createNoteCard(n, currentUser, isFeatured = false) {
   const safeText = escapeHtml(n.text || '');
   const safeAuthor = escapeHtml(n.author || 'Unbekannt');
   const editHandler = `openEditModal('${n.id}')`;
+  const categoryClass = (n.topic || selectedCategory) === 'mosaic' ? 'note--mosaic' : 'note--agents';
 
   return `
-    <article class="note ${isFeatured ? 'featured' : ''}" id="note-${n.id}">
+    <article class="note ${isFeatured ? 'featured' : ''} ${categoryClass}" id="note-${n.id}">
       <div class="note-header ${isAuthor ? 'has-menu' : ''}">
         <div class="note-title-wrap">
           <span class="topic-badge">${meta.label}</span>
