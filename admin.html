@@ -873,6 +873,7 @@ window.loadDachserUsecases = async function() {
         title: u.title.trim(),
         text: u.text?.trim() || '',
         topic: u.topic === 'mosaic' ? 'mosaic' : 'agents',
+        demo: u.demo === true,
         author: 'Admin',
         votes: 0,
         votedBy: [],
