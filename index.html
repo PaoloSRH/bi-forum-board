@@ -1565,8 +1565,9 @@ function getCurrentUser(){
 }
 
 function getUserIcon(username){
+  if (username === 'Admin') return '👑';
   const icon = localStorage.getItem(`icon_${username}`);
-  return icon || '●';
+  return icon || ICONS[0];
 }
 
 function setUserIcon(username, icon){
