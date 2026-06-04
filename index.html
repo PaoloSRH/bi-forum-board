@@ -178,7 +178,7 @@ textarea:focus-visible,
 
 .header-center {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .nav-shell {
@@ -272,11 +272,13 @@ textarea:focus-visible,
 
 .topbar {
   margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .board-toolbar {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 14px;
 }
 
@@ -1167,7 +1169,7 @@ textarea:focus {
 
 .board-toolbar {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 14px;
 }
 
@@ -1919,7 +1921,7 @@ function renderEmptyState() {
 const SORT_OPTIONS = [
   { key: 'votes',       label: 'Meiste Votes' },
   { key: 'newest',      label: 'Neueste zuerst' },
-  { key: 'lastComment', label: 'Neueste Komm.' },
+  { key: 'lastComment', label: 'Neueste Kommentare' },
 ];
 
 function sortNotes(notes) {
