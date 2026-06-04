@@ -321,32 +321,38 @@ textarea:focus-visible,
   flex-wrap: wrap;
 }
 
-.kpi-strip {
-  border-radius: var(--radius-xl);
-  padding: 12px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.kpi-bar {
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
-}
-
-.kpi {
-  padding: 14px;
-  border-radius: 18px;
-  background: var(--surface-strong);
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--surface);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-.kpi-label {
-  display: block;
+.kpi-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.kpi-chip-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.kpi-chip-label {
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
-.kpi-value {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+.kpi-bar-sep {
+  color: var(--border-strong);
+  font-size: 0.9rem;
 }
 
 .board-grid {
@@ -1194,23 +1200,6 @@ textarea:focus {
     justify-content: center;
   }
 
-  .hero-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-
-  .kpi-strip {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .kpi-card {
-    border-radius: 12px;
-    padding: 10px 8px;
-    min-height: 36px;
-  }
-
   .kpi-card h3 {
     font-size: 0.88rem;
   }
@@ -1281,19 +1270,16 @@ textarea:focus {
 
 <main class="page-shell">
   <div class="topbar">
-    <div class="kpi-strip" aria-label="Kennzahlen">
-      <div class="kpi">
-        <span class="kpi-label">Usecases</span>
-        <span class="kpi-value" id="kpiNotes">0</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-label">Kommentare</span>
-        <span class="kpi-value" id="kpiComments">0</span>
-      </div>
-      <div class="kpi">
-        <span class="kpi-label">Aktive Nutzer</span>
-        <span class="kpi-value" id="kpiUsers">0</span>
-      </div>
+    <div class="kpi-bar" aria-label="Kennzahlen">
+      <span class="kpi-chip">
+        <span class="kpi-chip-value" id="kpiNotes">0</span>
+        <span class="kpi-chip-label">Usecases</span>
+      </span>
+      <span class="kpi-bar-sep">·</span>
+      <span class="kpi-chip">
+        <span class="kpi-chip-value" id="kpiComments">0</span>
+        <span class="kpi-chip-label">Kommentare</span>
+      </span>
     </div>
   </div>
 
@@ -1598,7 +1584,6 @@ function updateOnlineCount(users){
   const uniqueUsers = [...new Set(users)];
   window.lastActiveUsers = uniqueUsers;
   updateUserDisplay(uniqueUsers.length);
-  document.getElementById('kpiUsers').textContent = uniqueUsers.length;
 }
 
 function updateKpis(notes, totalComments){
