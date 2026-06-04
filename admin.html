@@ -333,9 +333,110 @@ input { cursor: text; }
 .stat-value { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
 .stat-label { font-size: 0.75rem; color: var(--text-muted); }
 
+.notes-section {
+  margin-top: 28px;
+}
+.notes-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.notes-section-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.notes-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.note-list { display: grid; gap: 6px; }
+.note-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.16s ease;
+}
+.note-row:hover { border-color: var(--border-strong); }
+.note-row-badge {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.note-row-badge.agents { background: rgba(37,99,235,0.10); color: #2563eb; }
+.note-row-badge.mosaic { background: rgba(124,58,237,0.10); color: #7c3aed; }
+[data-theme="dark"] .note-row-badge.agents { color: #60a5fa; background: rgba(96,165,250,0.13); }
+[data-theme="dark"] .note-row-badge.mosaic { color: #a78bfa; background: rgba(167,139,250,0.13); }
+.note-row-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.note-row-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.note-row-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.note-row-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.note-row-delete {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.16s ease;
+}
+.note-row-delete:hover { color: var(--danger); background: var(--danger-soft); }
+.notes-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 14px;
+}
+
 @media (max-width: 640px) {
   .page-shell { padding: 20px 14px 60px; }
   .login-card { padding: 24px; }
+  .note-row-author { display: none; }
 }
 </style>
 </head>
@@ -466,11 +567,23 @@ input { cursor: text; }
     </div>
 
   </div>
+
+  <!-- All usecases list -->
+  <div class="notes-section">
+    <div class="notes-section-header">
+      <h2>Alle Usecases</h2>
+      <span class="notes-count" id="listCount">wird geladen…</span>
+    </div>
+    <div class="note-list" id="noteList">
+      <div class="notes-empty">Wird geladen…</div>
+    </div>
+  </div>
+
 </main>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, orderBy, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
@@ -540,10 +653,69 @@ window.checkPassword = function() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     loadStats();
+    subscribeNotesList();
   } else {
     document.getElementById('loginError').style.display = 'block';
     document.getElementById('passwordInput').value = '';
     document.getElementById('passwordInput').focus();
+  }
+}
+
+function escapeHtml(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function subscribeNotesList() {
+  const listEl  = document.getElementById('noteList');
+  const countEl = document.getElementById('listCount');
+  onSnapshot(collection(db, 'boards', BOARD_ID, 'notes'), (snap) => {
+    const notes = snap.docs
+      .map(d => ({ ...d.data(), id: d.id }))
+      .sort((a, b) => (b.votes || 0) - (a.votes || 0));
+
+    countEl.textContent = `${notes.length} Usecase${notes.length !== 1 ? 's' : ''}`;
+
+    if (notes.length === 0) {
+      listEl.innerHTML = '<div class="notes-empty">Noch keine Usecases vorhanden.</div>';
+      return;
+    }
+
+    listEl.innerHTML = notes.map(n => `
+      <div class="note-row" id="row-${n.id}">
+        <span class="note-row-badge ${n.topic === 'mosaic' ? 'mosaic' : 'agents'}">
+          ${n.topic === 'mosaic' ? 'Mosaic' : 'Agents'}
+        </span>
+        <span class="note-row-title" title="${escapeHtml(n.title || '')}">${escapeHtml(n.title || 'Ohne Titel')}</span>
+        <span class="note-row-author">${escapeHtml(n.author || 'Unbekannt')}</span>
+        <span class="note-row-stats">
+          <span class="note-row-stat">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 9 6 5l4 4"/></svg>
+            ${n.votes || 0}
+          </span>
+          <span class="note-row-stat">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 6a4.5 4.5 0 0 1-4.5 4.5A4.54 4.54 0 0 1 4.13 10L1.5 11l.78-2.63A4.48 4.48 0 0 1 1.5 6 4.5 4.5 0 1 1 10.5 6Z"/></svg>
+            ${n.commentsCount || 0}
+          </span>
+        </span>
+        <button class="note-row-delete" type="button" onclick="adminDeleteNote('${n.id}', ${JSON.stringify(escapeHtml(n.title || 'Ohne Titel'))})" aria-label="Löschen">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V2.5h4V4"/><path d="M11.5 4 11 12H3L2.5 4"/><path d="M5.5 7v3M8.5 7v3"/></svg>
+        </button>
+      </div>
+    `).join('');
+  });
+}
+
+window.adminDeleteNote = async function(id, title) {
+  if (!confirm(`"${title}" wirklich löschen?`)) return;
+  try {
+    const commentsSnap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes', id, 'comments'));
+    for (const c of commentsSnap.docs) {
+      await deleteDoc(doc(db, 'boards', BOARD_ID, 'notes', id, 'comments', c.id));
+    }
+    await deleteDoc(doc(db, 'boards', BOARD_ID, 'notes', id));
+    await loadStats();
+  } catch(err) {
+    alert('Fehler: ' + err.message);
   }
 }
 
@@ -552,6 +724,7 @@ if (sessionStorage.getItem('adminAuth') === 'true') {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminPanel').style.display = 'block';
   loadStats();
+  subscribeNotesList();
 }
 
 async function loadStats() {
