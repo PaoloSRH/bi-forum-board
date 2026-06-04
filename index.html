@@ -967,19 +967,22 @@ textarea:focus {
 
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  margin: 16px 0 8px;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin: 10px 0 6px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .icon-option {
-  aspect-ratio: 1;
   border: 1px solid var(--border);
   background: var(--surface-soft);
-  border-radius: 16px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+  padding: 7px 4px;
   transition: all 0.18s ease;
 }
 
@@ -1318,7 +1321,7 @@ textarea:focus {
   }
 
   .icon-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(7, 1fr);
   }
 
   .fab {
@@ -1523,7 +1526,13 @@ const commentSubscriptions = new Map();
 window.lastActiveUsers = [];
 window.notesData = {};
 
-const ICONS = ["●", "○", "◆", "◇", "■", "□", "△", "▲", "★", "☆", "◐", "◑", "◈", "⬢", "◎", "◉", "✦", "✧", "◔", "▼", "◄", "►", "⬡", "◕", "✓", "✕", "⚡", "🔥"];
+const ICONS = [
+  "🦊","🐻","🐼","🦁","🐯","🦝","🐺","🦋",
+  "🚀","💎","🎯","🔮","⭐","🌊","🌈","🌸",
+  "🤖","👾","👻","🦄","🐉","🎨","🏆","💡",
+  "⚡","🔥","❄️","🌿","🎸","🎲","🍕","☕",
+  "🧩","🎭","🦸","🌙","🎪","🏄","🧠","🎵"
+];
 
 function applyTheme(mode) {
   themeMode = mode;
