@@ -359,7 +359,14 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 .stat-label { font-size: 0.75rem; color: var(--text-muted); }
 
 .notes-section {
-  margin-top: 28px;
+  margin-top: 16px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
 }
 .notes-section-header {
   display: flex;
@@ -370,7 +377,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 }
 .notes-section-header h2 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -469,10 +476,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 
 <header class="site-header">
   <div class="header-inner">
-    <p class="header-title">
-      BI Forum 2026: Agents &amp; Mosaic
-      <span class="admin-badge">ADMIN</span>
-    </p>
+    <p class="header-title">BI Forum 2026: Agents &amp; Mosaic</p>
     <div class="header-actions">
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>
@@ -538,6 +542,9 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 <!-- Admin Panel -->
 <main class="page-shell" id="adminPanel" style="display:none">
   <div class="admin-header">
+    <div style="text-align:center; margin-bottom:10px;">
+      <span class="admin-badge" style="font-size:0.75rem; padding:4px 14px;">ADMIN</span>
+    </div>
     <h1>Admin-Bereich</h1>
     <p>Verwalte Usecases, lege Beispieldaten an oder exportiere alle Inhalte.</p>
   </div>
