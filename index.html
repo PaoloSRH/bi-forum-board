@@ -237,42 +237,31 @@ textarea:focus-visible,
   gap: 6px;
 }
 
-.theme-toggle,
-.user-chip {
+.theme-toggle {
   min-height: 32px;
+  width: 34px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
-}
-
-.theme-toggle {
-  width: 34px;
   display: inline-grid;
   place-items: center;
   color: var(--text);
 }
 
-.user-chip {
-  min-width: 34px;
-  padding: 0 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: var(--text);
+.kpi-users-chip {
+  cursor: pointer;
+  transition: all 0.16s ease;
 }
-
-.user-chip-icon {
-  display: inline-grid;
-  place-items: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+.kpi-users-chip:hover {
+  color: var(--primary);
 }
-
-.user-chip-count {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text);
+.kpi-users-chip .kpi-chip-value,
+.kpi-users-chip .kpi-chip-label {
+  transition: color 0.16s ease;
+}
+.kpi-users-chip:hover .kpi-chip-value,
+.kpi-users-chip:hover .kpi-chip-label {
+  color: var(--primary);
 }
 
 .page-shell {
@@ -282,11 +271,13 @@ textarea:focus-visible,
 }
 
 .topbar {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.board-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 14px;
 }
 
 .hero-card,
@@ -1265,11 +1256,6 @@ textarea:focus {
     text-align: center;
   }
 
-  .user-chip {
-    width: 100%;
-    justify-content: center;
-  }
-
   .kpi-card h3 {
     font-size: 0.88rem;
   }
@@ -1323,10 +1309,6 @@ textarea:focus {
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>
       </button>
-      <button class="user-chip" type="button" id="userDisplay" onclick="showActiveUsers(window.lastActiveUsers || [])" aria-label="Aktive Nutzer anzeigen">
-        <span class="user-chip-icon" aria-hidden="true">👥</span>
-        <span class="user-chip-count">0</span>
-      </button>
       <button class="hamburger" type="button" onclick="openNav()" aria-label="Navigation öffnen" aria-haspopup="true">
         <svg width="16" height="13" viewBox="0 0 16 13" fill="none" aria-hidden="true">
           <rect width="16" height="2" rx="1" fill="currentColor"/>
@@ -1350,7 +1332,14 @@ textarea:focus {
         <span class="kpi-chip-value" id="kpiComments">0</span>
         <span class="kpi-chip-label">Kommentare</span>
       </span>
+      <span class="kpi-bar-sep">·</span>
+      <span class="kpi-chip kpi-users-chip" role="button" tabindex="0" onclick="showActiveUsers(window.lastActiveUsers || [])" aria-label="Aktive Nutzer anzeigen">
+        <span class="kpi-chip-value" id="kpiUsers">0</span>
+        <span class="kpi-chip-label">Nutzer</span>
+      </span>
     </div>
+  </div>
+  <div class="board-toolbar">
     <button class="sort-btn" type="button" id="sortToggle" onclick="toggleSort()">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v10M2 9l2 3 2-3M10 12V2M8 5l2-3 2 3"/></svg>
       <span id="sortLabel">Meiste Votes</span>
@@ -1724,11 +1713,8 @@ window.openProfileModal = function() {
 }
 
 function updateUserDisplay(activeCount = null){
-  const count = activeCount === null ? 0 : activeCount;
-  document.getElementById('userDisplay').innerHTML = `
-    <span class="user-chip-icon" aria-hidden="true">👥</span>
-    <span class="user-chip-count">${count}</span>
-  `;
+  const el = document.getElementById('kpiUsers');
+  if (el) el.textContent = activeCount === null ? 0 : activeCount;
 }
 
 function updateOnlineCount(users){
