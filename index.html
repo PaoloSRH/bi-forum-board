@@ -254,21 +254,39 @@ textarea:focus-visible,
   color: var(--text);
 }
 
-.kpi-users-chip {
+.kpi-users-chip,
+.kpi-votes-chip {
   cursor: pointer;
   transition: all 0.16s ease;
 }
-.kpi-users-chip:hover {
-  color: var(--primary);
-}
-.kpi-users-chip .kpi-chip-value,
-.kpi-users-chip .kpi-chip-label {
+.kpi-users-chip .kpi-chip-value, .kpi-users-chip .kpi-chip-label,
+.kpi-votes-chip .kpi-chip-value, .kpi-votes-chip .kpi-chip-label {
   transition: color 0.16s ease;
 }
-.kpi-users-chip:hover .kpi-chip-value,
-.kpi-users-chip:hover .kpi-chip-label {
+.kpi-users-chip:hover .kpi-chip-value, .kpi-users-chip:hover .kpi-chip-label,
+.kpi-votes-chip:hover .kpi-chip-value, .kpi-votes-chip:hover .kpi-chip-label {
   color: var(--primary);
 }
+
+.vote-overview-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.vote-overview-row:last-child { border-bottom: none; }
+.vote-overview-icon { font-size: 1.1rem; flex-shrink: 0; width: 22px; text-align: center; }
+.vote-overview-name { font-size: 0.88rem; font-weight: 600; min-width: 90px; flex-shrink: 0; }
+.vote-overview-bar-wrap {
+  flex: 1; height: 6px; border-radius: 3px;
+  background: var(--surface-soft); border: 1px solid var(--border); overflow: hidden;
+}
+.vote-overview-bar {
+  height: 100%; border-radius: 3px;
+  background: var(--primary); transition: width 0.4s ease;
+}
+.vote-overview-count {
+  font-size: 0.8rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
+}
+.vote-overview-remaining { font-size: 0.76rem; color: var(--text-soft); white-space: nowrap; flex-shrink: 0; }
 
 .page-shell {
   max-width: var(--content);
@@ -1413,12 +1431,17 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
       <span class="kpi-bar-sep">·</span>
       <span class="kpi-chip">
         <span class="kpi-chip-value" id="kpiComments">0</span>
-        <span class="kpi-chip-label">Kommentare</span>
+        <span class="kpi-chip-label">Comments</span>
       </span>
       <span class="kpi-bar-sep">·</span>
-      <span class="kpi-chip kpi-users-chip" role="button" tabindex="0" onclick="showActiveUsers(window.lastActiveUsers || [])" aria-label="Aktive Nutzer anzeigen">
+      <span class="kpi-chip kpi-votes-chip" role="button" tabindex="0" onclick="showVoteOverview()" aria-label="Votes Übersicht">
+        <span class="kpi-chip-value" id="kpiVotes">0</span>
+        <span class="kpi-chip-label">Votes</span>
+      </span>
+      <span class="kpi-bar-sep">·</span>
+      <span class="kpi-chip kpi-users-chip" role="button" tabindex="0" onclick="showActiveUsers(window.lastActiveUsers || [])" aria-label="Aktive User anzeigen">
         <span class="kpi-chip-value" id="kpiUsers">0</span>
-        <span class="kpi-chip-label">Nutzer</span>
+        <span class="kpi-chip-label">User</span>
       </span>
     </div>
   </div>
@@ -1502,6 +1525,22 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
     <div class="active-users-grid" id="activeUsersList"></div>
     <div class="modal-actions">
       <button class="btn secondary" type="button" onclick="closeActiveUsersModal()">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="voteModal" role="dialog" aria-modal="true" aria-labelledby="voteModalTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <h2 id="voteModalTitle">Votes Übersicht</h2>
+        <p class="modal-subtitle" id="voteModalSubtitle"></p>
+      </div>
+      <button class="icon-action" type="button" onclick="closeVoteModal()" aria-label="Schließen"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg></button>
+    </div>
+    <div id="voteOverviewList" style="margin: 4px 0 16px;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" onclick="closeVoteModal()">Schließen</button>
     </div>
   </div>
 </div>
@@ -1709,6 +1748,44 @@ window.closeModal = () => {
 
 window.closeActiveUsersModal = () => closeDialog('activeUsersModal');
 window.closeNameModal = () => closeDialog('nameModal');
+window.closeVoteModal = () => closeDialog('voteModal');
+
+window.showVoteOverview = function() {
+  const budget = lastNotes.length;
+  const userMap = {};
+  lastNotes.forEach(n => {
+    const vbu = n.votesByUser || {};
+    Object.entries(vbu).forEach(([user, count]) => {
+      if (count > 0) userMap[user] = (userMap[user] || 0) + count;
+    });
+  });
+  window.lastActiveUsers.forEach(u => { if (!(u in userMap)) userMap[u] = 0; });
+
+  const entries = Object.entries(userMap).sort((a, b) => b[1] - a[1]);
+  document.getElementById('voteModalSubtitle').textContent =
+    `Budget: ${budget} Vote${budget !== 1 ? 's' : ''} pro Person (= Anzahl Usecases)`;
+
+  const listEl = document.getElementById('voteOverviewList');
+  listEl.innerHTML = entries.length === 0
+    ? '<p style="text-align:center;color:var(--text-muted);padding:20px 0;">Noch keine Votes vergeben.</p>'
+    : entries.map(([user, used]) => {
+        const icon = getUserIcon(user);
+        const pct = budget > 0 ? Math.min(100, Math.round((used / budget) * 100)) : 0;
+        const remaining = Math.max(0, budget - used);
+        return `
+          <div class="vote-overview-row">
+            <span class="vote-overview-icon">${icon}</span>
+            <span class="vote-overview-name">${escapeHtml(user)}</span>
+            <div class="vote-overview-bar-wrap">
+              <div class="vote-overview-bar" style="width:${pct}%"></div>
+            </div>
+            <span class="vote-overview-count">${used}/${budget}</span>
+            <span class="vote-overview-remaining">${remaining > 0 ? `+${remaining}` : '✓'}</span>
+          </div>`;
+      }).join('');
+
+  openDialog('voteModal');
+}
 
 window.addNote = async function() {
   const title = document.getElementById('title').value.trim();
@@ -1817,6 +1894,8 @@ function updateOnlineCount(users){
 function updateKpis(notes, totalComments){
   document.getElementById('kpiNotes').textContent = notes.length;
   document.getElementById('kpiComments').textContent = totalComments;
+  const totalVotes = notes.reduce((sum, n) => sum + (n.votes || 0), 0);
+  document.getElementById('kpiVotes').textContent = totalVotes;
 }
 
 function showToast(message){
@@ -1949,6 +2028,16 @@ window.deleteComment = async function(noteId, commentId) {
 window.vote = async function(id){
   const username = getCurrentUser();
   const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
+
+  // Budget check (budget = number of notes)
+  const totalBudget = lastNotes.length;
+  const usedVotes = lastNotes.reduce((sum, n) => sum + ((n.votesByUser || {})[username] || 0), 0);
+  const currentNoteVotes = (lastNotes.find(n => n.id === id)?.votesByUser || {})[username] || 0;
+  if (currentNoteVotes < 3 && usedVotes >= totalBudget) {
+    showToast(`Budget aufgebraucht — alle ${totalBudget} Votes vergeben`);
+    return;
+  }
+
   try {
     let newCount = null;
     await runTransaction(db, async (transaction) => {
@@ -2183,7 +2272,7 @@ function subscribe(){
 }
 
 window.addEventListener('click', (event) => {
-  ['modal', 'nameModal', 'activeUsersModal', 'deleteModal'].forEach(id => {
+  ['modal', 'nameModal', 'activeUsersModal', 'deleteModal', 'voteModal'].forEach(id => {
     const modal = document.getElementById(id);
     if (event.target === modal) modal.classList.remove('open');
   });
@@ -2200,6 +2289,7 @@ window.addEventListener('keydown', (event) => {
     closeActiveUsersModal();
     closeNav();
     closeDeleteModal();
+    closeVoteModal();
   }
 });
 
