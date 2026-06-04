@@ -370,9 +370,9 @@ textarea:focus-visible,
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 300px;
-  padding: 18px;
-  border-radius: var(--radius-lg);
+  min-height: 260px;
+  padding: 22px;
+  border-radius: var(--radius-xl);
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
@@ -393,37 +393,24 @@ textarea:focus-visible,
   box-shadow: 0 18px 44px rgba(37, 99, 235, 0.14);
 }
 
-.note--agents {
-  border-left: 3px solid rgba(37, 99, 235, 0.5);
-}
+.note--agents { border-left: 4px solid rgba(37, 99, 235, 0.55); }
+.note--mosaic { border-left: 4px solid rgba(124, 58, 237, 0.55); }
+[data-theme="dark"] .note--mosaic { border-left-color: rgba(167, 139, 250, 0.5); }
 
-.note--agents .topic-badge {
-  background: rgba(37, 99, 235, 0.10);
-  color: #2563eb;
+.note-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
-
-.note--mosaic {
-  border-left: 3px solid rgba(124, 58, 237, 0.5);
-}
-
-.note--mosaic .topic-badge {
-  background: rgba(124, 58, 237, 0.10);
-  color: #7c3aed;
-}
-
-[data-theme="dark"] .note--agents .topic-badge {
-  color: #60a5fa;
-  background: rgba(96, 165, 250, 0.13);
-}
-
-[data-theme="dark"] .note--mosaic {
-  border-left-color: rgba(167, 139, 250, 0.45);
-}
-
-[data-theme="dark"] .note--mosaic .topic-badge {
-  color: #a78bfa;
-  background: rgba(167, 139, 250, 0.13);
-}
+.note--agents .note-eyebrow { color: #2563eb; }
+.note--mosaic .note-eyebrow { color: #7c3aed; }
+[data-theme="dark"] .note--agents .note-eyebrow { color: #60a5fa; }
+[data-theme="dark"] .note--mosaic .note-eyebrow { color: #a78bfa; }
 
 @media (prefers-reduced-motion: no-preference) {
   .note.just-added {
@@ -474,24 +461,9 @@ textarea:focus-visible,
   flex: 1;
 }
 
-.topic-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  margin-bottom: 10px;
-}
-
 .note-title {
   margin: 0;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   line-height: 1.35;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -1590,9 +1562,14 @@ function escapeHtml(text){
 }
 
 function topicMeta(tab) {
-  return tab === 'agents'
-    ? { label: 'Agents', short: 'A' }
-    : { label: 'Mosaic', short: 'M' };
+  if (tab === 'agents') return {
+    label: 'Agents', short: 'A',
+    icon: `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5.5a4 4 0 0 1-4 4 4.05 4.05 0 0 1-1.87-.46L1.5 10l.7-2.63A4 4 0 1 1 10 5.5Z"/></svg>`
+  };
+  return {
+    label: 'Mosaic', short: 'M',
+    icon: `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="1" width="4" height="4" rx="0.8"/><rect x="7" y="1" width="4" height="4" rx="0.8"/><rect x="1" y="7" width="4" height="4" rx="0.8"/><rect x="7" y="7" width="4" height="4" rx="0.8"/></svg>`
+  };
 }
 
 window.openNav = function() {
@@ -2033,7 +2010,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
     <article class="note ${isFeatured ? 'featured' : ''} ${categoryClass}" id="note-${n.id}">
       <div class="note-header ${isAuthor ? 'has-menu' : ''}">
         <div class="note-title-wrap">
-          <span class="topic-badge">${meta.label}</span>
+          <span class="note-eyebrow">${meta.icon}${meta.label}</span>
           <h2 class="note-title ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeTitle}</h2>
         </div>
       </div>
