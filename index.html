@@ -1488,12 +1488,13 @@ window.openModal = () => {
   openDialog('modal');
 };
 
-window.openEditModal = (id,title,text) => {
+window.openEditModal = (id, title, text, topic) => {
   editingNoteId = id;
   document.getElementById('modalTitle').textContent = 'Usecase bearbeiten';
   document.getElementById('saveButton').textContent = 'Aktualisieren';
   document.getElementById('title').value = title;
   document.getElementById('text').value = text;
+  selectCategory(topic || 'agents');
   openDialog('modal');
 };
 
@@ -1520,23 +1521,28 @@ window.addNote = async function() {
     author: getCurrentUser(),
   };
 
-  if(editingNoteId){
-    await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), {
-      ...noteData,
-      updatedAt: serverTimestamp()
-    });
-    showToast('Usecase aktualisiert');
-  } else {
-    await addDoc(collection(db,'boards',BOARD_ID,'notes'), {
-      ...noteData,
-      votes: 0,
-      votedBy: [],
-      ts: serverTimestamp(),
-    });
-    showToast('Usecase hinzugefügt');
+  try {
+    if(editingNoteId){
+      await updateDoc(doc(db,'boards',BOARD_ID,'notes',editingNoteId), {
+        title,
+        text,
+        topic: selectedCategory,
+        updatedAt: serverTimestamp()
+      });
+      showToast('Usecase aktualisiert');
+    } else {
+      await addDoc(collection(db,'boards',BOARD_ID,'notes'), {
+        ...noteData,
+        votes: 0,
+        votedBy: [],
+        ts: serverTimestamp(),
+      });
+      showToast('Usecase hinzugefügt');
+    }
+    closeModal();
+  } catch(err) {
+    showToast('Fehler beim Speichern: ' + err.message);
   }
-
-  closeModal();
 }
 
 window.checkUsername = function(){
@@ -1767,7 +1773,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
   const safeAuthor = escapeHtml(n.author || 'Unbekannt');
   const safeTitleArg = JSON.stringify(n.title || '');
   const safeTextArg = JSON.stringify(n.text || '');
-  const editHandler = `openEditModal('${n.id}', ${safeTitleArg}, ${safeTextArg})`;
+  const editHandler = `openEditModal('${n.id}', ${safeTitleArg}, ${safeTextArg}, '${n.topic || 'agents'}')`;
 
   return `
     <article class="note ${isFeatured ? 'featured' : ''}" id="note-${n.id}">
