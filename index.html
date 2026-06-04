@@ -1688,6 +1688,7 @@ window.addNote = async function() {
 window.checkUsername = function(){
   const name = localStorage.getItem('username');
   if(!name){
+    selectedIcon = ICONS[0];
     initializeIconGrid();
     openDialog('nameModal');
   } else {
@@ -1876,7 +1877,7 @@ window.addComment = async function(noteId) {
     text,
     ts: serverTimestamp()
   });
-  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(1) });
+  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(1), lastCommentAt: serverTimestamp() });
   showToast('Kommentar hinzugefügt');
 }
 
@@ -1949,12 +1950,20 @@ function renderEmptyState() {
   `;
 }
 
+const SORT_OPTIONS = [
+  { key: 'votes',       label: 'Meiste Votes' },
+  { key: 'newest',      label: 'Neueste zuerst' },
+  { key: 'lastComment', label: 'Neueste Kommentare' },
+];
+
 function sortNotes(notes) {
-  return [...notes].sort((a, b) =>
-    sortBy === 'newest'
-      ? (b.ts?.seconds || 0) - (a.ts?.seconds || 0)
-      : (b.votes || 0) - (a.votes || 0)
-  );
+  return [...notes].sort((a, b) => {
+    if (sortBy === 'newest')
+      return (b.ts?.seconds || 0) - (a.ts?.seconds || 0);
+    if (sortBy === 'lastComment')
+      return (b.lastCommentAt?.seconds || b.ts?.seconds || 0) - (a.lastCommentAt?.seconds || a.ts?.seconds || 0);
+    return (b.votes || 0) - (a.votes || 0);
+  });
 }
 
 function renderNotes(notes) {
@@ -1972,8 +1981,10 @@ function renderNotes(notes) {
 }
 
 window.toggleSort = function() {
-  sortBy = sortBy === 'votes' ? 'newest' : 'votes';
-  document.getElementById('sortLabel').textContent = sortBy === 'votes' ? 'Meiste Votes' : 'Neueste zuerst';
+  const idx = SORT_OPTIONS.findIndex(o => o.key === sortBy);
+  const next = SORT_OPTIONS[(idx + 1) % SORT_OPTIONS.length];
+  sortBy = next.key;
+  document.getElementById('sortLabel').textContent = next.label;
   if (lastNotes.length) renderNotes(lastNotes);
 }
 
