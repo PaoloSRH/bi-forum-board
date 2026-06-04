@@ -470,10 +470,10 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 @media (max-width: 640px) {
   .page-shell { padding: 20px 14px 60px; }
   .login-card { padding: 24px; }
-  .note-row { flex-direction: column; align-items: stretch; gap: 4px; }
-  .note-row-top    { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+  .note-row        { display: grid; grid-template-rows: auto auto; gap: 4px; }
+  .note-row-top    { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
   .note-row-bottom { display: flex; align-items: center; gap: 8px; }
-  .note-row-title  { flex: 1; min-width: 0; }
+  .note-row-title  { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .note-row-delete { margin-left: auto; }
 }
 </style>
