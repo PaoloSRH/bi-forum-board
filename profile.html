@@ -152,28 +152,16 @@ label {
 }
 .icon-option:hover { transform: translateY(-1px); border-color: rgba(37,99,235,0.2); background: var(--primary-soft); }
 .icon-option.selected { background: var(--primary); border-color: transparent; box-shadow: 0 6px 16px rgba(37,99,235,0.2); }
-.form-actions { display: grid; gap: 10px; }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px 18px; border-radius: 14px; border: 1px solid transparent;
-  font-size: 0.92rem; font-weight: 600; transition: all 0.18s ease;
+a.nav-drawer-link,
+a.nav-drawer-link:visited { text-decoration: none; }
+
+.autosave-hint {
+  font-size: 0.78rem; font-weight: 600;
+  text-align: center; min-height: 18px; margin-top: 8px;
+  opacity: 0; color: #15803d; transition: opacity 0.3s ease;
 }
-.btn-primary {
-  background: var(--primary); color: white;
-  box-shadow: 0 10px 24px rgba(37,99,235,0.18);
-}
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-secondary {
-  background: var(--surface-strong); color: var(--text);
-  border-color: var(--border);
-}
-.btn-secondary:hover { background: var(--surface-soft); }
-.save-toast {
-  display: none; margin-top: 12px; padding: 10px 14px;
-  border-radius: 12px; background: rgba(21,128,61,0.12);
-  color: #15803d; font-size: 0.88rem; font-weight: 600; text-align: center;
-}
-[data-theme="dark"] .save-toast { color: #4ade80; background: rgba(74,222,128,0.10); }
+.autosave-hint.visible { opacity: 1; }
+[data-theme="dark"] .autosave-hint.visible { color: #4ade80; }
 
 @media (max-width: 640px) {
   .profile-card { padding: 22px; }
@@ -243,11 +231,7 @@ label {
     <label>Profilbild</label>
     <div class="icon-grid" id="iconGrid"></div>
 
-    <div class="form-actions">
-      <button class="btn btn-primary" type="button" onclick="saveProfile()">Speichern</button>
-      <button class="btn btn-secondary" type="button" onclick="goBack()">Abbrechen</button>
-    </div>
-    <div class="save-toast" id="saveToast">Profil gespeichert ✓</div>
+    <p class="autosave-hint" id="autosaveHint">✓ Gespeichert</p>
   </div>
 </main>
 
@@ -297,33 +281,29 @@ const grid = document.getElementById('iconGrid');
 grid.innerHTML = ICONS.map(icon =>
   `<button type="button" class="icon-option${icon === selectedIcon ? ' selected' : ''}" data-icon="${icon}" aria-label="Icon ${icon}">${icon}</button>`
 ).join('');
+let autosaveTimer;
+function autoSave() {
+  const name = document.getElementById('username').value.trim();
+  if (!name) return;
+  localStorage.setItem('username', name);
+  localStorage.setItem(`icon_${name}`, selectedIcon);
+  const hint = document.getElementById('autosaveHint');
+  hint.classList.add('visible');
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => hint.classList.remove('visible'), 1600);
+}
+
 grid.addEventListener('click', e => {
   const btn = e.target.closest('.icon-option');
   if (!btn) return;
   selectedIcon = btn.dataset.icon;
   grid.querySelectorAll('.icon-option').forEach(el => el.classList.toggle('selected', el.dataset.icon === selectedIcon));
+  autoSave();
 });
 
-function saveProfile() {
-  const name = document.getElementById('username').value.trim();
-  if (!name) { document.getElementById('username').focus(); return; }
-  localStorage.setItem('username', name);
-  localStorage.setItem(`icon_${name}`, selectedIcon);
-  const toast = document.getElementById('saveToast');
-  toast.style.display = 'block';
-  setTimeout(() => {
-    toast.style.display = 'none';
-    goBack();
-  }, 900);
-}
-
-function goBack() {
-  if (document.referrer && !document.referrer.includes('profile.html')) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
+const nameInput = document.getElementById('username');
+nameInput.addEventListener('blur', autoSave);
+nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { nameInput.blur(); } });
 </script>
 </body>
 </html>
