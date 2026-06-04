@@ -1964,7 +1964,7 @@ function sortNotes(notes) {
     if (sortBy === 'newest')
       return (b.ts?.seconds || 0) - (a.ts?.seconds || 0);
     if (sortBy === 'lastComment')
-      return (b.lastCommentAt?.seconds || b.ts?.seconds || 0) - (a.lastCommentAt?.seconds || a.ts?.seconds || 0);
+      return (b.lastCommentAt?.seconds ?? -Infinity) - (a.lastCommentAt?.seconds ?? -Infinity);
     return (b.votes || 0) - (a.votes || 0);
   });
 }
