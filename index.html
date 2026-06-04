@@ -489,14 +489,18 @@ textarea:focus-visible,
   color: var(--text);
 }
 
-.note-title.editable,
-.note-body.editable {
-  cursor: pointer;
+.note-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleAnim 0.55s ease-out forwards;
+  pointer-events: none;
 }
+.note--agents .note-ripple { background: rgba(37,99,235,0.12); }
+.note--mosaic .note-ripple { background: rgba(124,58,237,0.12); }
 
-.note-title.editable:hover,
-.note-body.editable:hover {
-  color: var(--primary);
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
 }
 
 .note-menu-wrap {
@@ -2090,7 +2094,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
             <span class="note-ts" data-ts="${n.ts?.seconds || 0}">${formatTimestamp(n.ts)}</span>
             ${isFeatured ? `<span class="featured-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M5 .5 6.2 3.6l3.3.3-2.4 2.1.7 3.2L5 7.6l-2.8 1.6.7-3.2L.5 3.9l3.3-.3z"/></svg> #1</span>` : ''}
           </div>
-          <h2 class="note-title ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeTitle}</h2>
+          <h2 class="note-title">${safeTitle}</h2>
         </div>
       </div>
 
@@ -2104,7 +2108,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
         </div>
       ` : ''}
 
-      <div class="note-body ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeText}</div>
+      <div class="note-body">${safeText}</div>
 
       <div class="note-footer">
         <div class="secondary-row">
@@ -2173,6 +2177,19 @@ function refreshTimestamps() {
 }
 
 setInterval(refreshTimestamps, 60_000);
+
+document.getElementById('board').addEventListener('click', e => {
+  if (e.target.closest('button, a, input, textarea, .comments')) return;
+  const note = e.target.closest('.note');
+  if (!note) return;
+  const rect = note.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const ripple = document.createElement('span');
+  ripple.className = 'note-ripple';
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px;`;
+  note.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 560);
+});
 
 function navigateTo(url) {
   document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
