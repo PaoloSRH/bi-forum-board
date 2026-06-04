@@ -1251,6 +1251,25 @@ textarea:focus {
   font-size: 0.88rem;
 }
 
+.comment-delete {
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.16s ease;
+}
+
+.comment-delete:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
 @media (max-width: 980px) {
   .header-inner {
     grid-template-columns: 1fr;
@@ -1412,8 +1431,9 @@ textarea:focus {
     <div class="modal-header">
       <div>
         <h2 id="nameModalTitle">Willkommen</h2>
-        <p class="modal-subtitle">Wähle einen Namen und ein Icon für deine Beiträge.</p>
+        <p class="modal-subtitle" id="nameModalSubtitle">Wähle einen Namen und ein Icon für deine Beiträge.</p>
       </div>
+      <button class="icon-action" id="nameModalCloseBtn" type="button" onclick="closeDialog('nameModal')" aria-label="Dialog schließen" style="display:none"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg></button>
     </div>
     <label for="username">Dein Name</label>
     <input id="username" placeholder="Dein Name" />
@@ -1464,6 +1484,11 @@ textarea:focus {
   </div>
   <nav>
     <button class="nav-drawer-link active" type="button">Board</button>
+    <div class="nav-drawer-divider"></div>
+    <button class="nav-drawer-link" type="button" onclick="openProfileModal()">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+      Profil bearbeiten
+    </button>
     <div class="nav-drawer-divider"></div>
     <button class="nav-drawer-link" type="button" style="opacity:0.45; cursor:default;" disabled>Weitere Seiten folgen …</button>
   </nav>
@@ -1636,6 +1661,7 @@ window.addNote = async function() {
         ...noteData,
         votes: 0,
         votedBy: [],
+        commentsCount: 0,
         ts: serverTimestamp(),
       });
       showToast('Usecase hinzugefügt');
@@ -1676,12 +1702,29 @@ window.selectIcon = function(icon){
 window.saveUsername = function(){
   const v = document.getElementById('username').value.trim();
   if(!v) return;
+  const isUpdate = !!localStorage.getItem('username');
   localStorage.setItem('username', v);
   setUserIcon(v, selectedIcon);
   window.username = v;
+  const closeBtn = document.getElementById('nameModalCloseBtn');
+  if (closeBtn) closeBtn.style.display = 'none';
   closeDialog('nameModal');
   updateUserDisplay();
   subscribe();
+  if (isUpdate) showToast('Profil aktualisiert');
+}
+
+window.openProfileModal = function() {
+  closeNav();
+  const name = window.username || localStorage.getItem('username') || '';
+  selectedIcon = getUserIcon(name);
+  document.getElementById('username').value = name;
+  document.getElementById('nameModalTitle').textContent = 'Profil bearbeiten';
+  document.getElementById('nameModalSubtitle').textContent = 'Ändere deinen Namen oder dein Icon.';
+  const closeBtn = document.getElementById('nameModalCloseBtn');
+  if (closeBtn) closeBtn.style.display = '';
+  initializeIconGrid();
+  openDialog('nameModal');
 }
 
 function updateUserDisplay(activeCount = null){
@@ -1747,18 +1790,21 @@ function formatTimestamp(ts){
 function renderComments(noteId, comments) {
   const container = document.getElementById(`comments-${noteId}`);
   if (!container) return;
+  const currentUser = getCurrentUser();
   const inputVal = document.getElementById(`comment-input-${noteId}`)?.value || '';
   container.innerHTML = `
     ${comments.length === 0
       ? `<p class="comments-empty">Noch kein Kommentar — sei der Erste!</p>`
       : comments.map(c => {
           const icon = getUserIcon(c.author);
+          const isOwn = c.author === currentUser;
           return `
             <div class="comment">
               <div class="comment-head">
                 <span aria-hidden="true">${icon}</span>
                 <span class="comment-author">${escapeHtml(c.author || 'Unbekannt')}</span>
-                <span class="comment-time">${formatTimestamp(c.ts)}</span>
+                <span class="comment-time" data-ts="${c.ts?.seconds || 0}">${formatTimestamp(c.ts)}</span>
+                ${isOwn && c._id ? `<button class="comment-delete" type="button" onclick="deleteComment('${noteId}','${c._id}')" aria-label="Kommentar löschen"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 3h9"/><path d="M4 3V2h4v1"/><path d="M10 3 9.4 10H2.6L2 3"/><path d="M4.5 5.5v3M7.5 5.5v3"/></svg></button>` : ''}
               </div>
               <div class="comment-text">${escapeHtml(c.text || '')}</div>
             </div>`;
@@ -1778,7 +1824,7 @@ function subscribeComments(noteId) {
   if (!container) return;
   const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'), orderBy('ts','asc'));
   const unsub = onSnapshot(q, (snap) => {
-    const comments = snap.docs.map(d => d.data());
+    const comments = snap.docs.map(d => ({...d.data(), _id: d.id}));
     renderComments(noteId, comments);
     const countEl = document.getElementById(`comment-count-${noteId}`);
     if (countEl) countEl.textContent = snap.size;
@@ -1817,7 +1863,14 @@ window.addComment = async function(noteId) {
     text,
     ts: serverTimestamp()
   });
+  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(1) });
   showToast('Kommentar hinzugefügt');
+}
+
+window.deleteComment = async function(noteId, commentId) {
+  await deleteDoc(doc(db,'boards',BOARD_ID,'notes',noteId,'comments',commentId));
+  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(-1) });
+  showToast('Kommentar gelöscht');
 }
 
 window.vote = async function(id){
@@ -1870,14 +1923,6 @@ window.closeDeleteModal = function() {
   closeDialog('deleteModal');
 }
 
-async function loadCommentCount(noteId){
-  const q = query(collection(db,'boards',BOARD_ID,'notes',noteId,'comments'));
-  const snap = await getDocs(q);
-  const countEl = document.getElementById(`comment-count-${noteId}`);
-  if(countEl) countEl.textContent = snap.size;
-  return snap.size;
-}
-
 function renderEmptyState() {
   document.getElementById('board').innerHTML = `
     <div class=”empty-state”>
@@ -1885,11 +1930,6 @@ function renderEmptyState() {
       <p>Klicke auf „Neuer Usecase”, um den ersten Beitrag im aktuellen Board zu erstellen.</p>
     </div>
   `;
-}
-
-async function updateAllCommentCounts(notes) {
-  const counts = await Promise.all(notes.map(n => loadCommentCount(n.id)));
-  return counts.reduce((sum, count) => sum + count, 0);
 }
 
 function sortNotes(notes) {
@@ -1901,6 +1941,7 @@ function sortNotes(notes) {
 }
 
 function renderNotes(notes) {
+  const openCommentIds = [...commentSubscriptions.keys()];
   commentSubscriptions.forEach(unsub => unsub());
   commentSubscriptions.clear();
   const currentUser = getCurrentUser();
@@ -1908,6 +1949,9 @@ function renderNotes(notes) {
   document.getElementById('board').innerHTML = sorted
     .map((n, i) => createNoteCard(n, currentUser, i === 0 && (n.votes || 0) > 0 && sortBy === 'votes'))
     .join('');
+  openCommentIds.forEach(noteId => {
+    if (document.getElementById(`comments-${noteId}`)) subscribeComments(noteId);
+  });
 }
 
 window.toggleSort = function() {
@@ -1967,7 +2011,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
 
       <div class="note-meta">
         <span class="author-pill"><span aria-hidden="true">${getUserIcon(n.author || 'Unbekannt')}</span><span>${safeAuthor}</span></span>
-        <span>• ${formatTimestamp(n.ts)}</span>
+        <span class="note-ts" data-ts="${n.ts?.seconds || 0}">• ${formatTimestamp(n.ts)}</span>
       </div>
 
       <div class="note-body ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeText}</div>
@@ -1979,7 +2023,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
             <span>${hasVoted ? 'Gevotet' : 'Upvote'}</span>
             <span class="vote-count" id="vote-count-${n.id}">${n.votes || 0}</span>
           </button>
-          <button class="card-stat" type="button" onclick="toggleComments('${n.id}')" aria-expanded="false" aria-controls="comments-${n.id}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8c0 3.314-2.686 6-6 6a6.06 6.06 0 0 1-2.5-.535L2 14.5l1.035-3.5A5.96 5.96 0 0 1 2 8c0-3.314 2.686-6 6-6s6 2.686 6 6Z"/></svg> <span id="comment-count-${n.id}">0</span></button>
+          <button class="card-stat" type="button" onclick="toggleComments('${n.id}')" aria-expanded="false" aria-controls="comments-${n.id}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8c0 3.314-2.686 6-6 6a6.06 6.06 0 0 1-2.5-.535L2 14.5l1.035-3.5A5.96 5.96 0 0 1 2 8c0-3.314 2.686-6 6-6s6 2.686 6 6Z"/></svg> <span id="comment-count-${n.id}">${n.commentsCount || 0}</span></button>
         </div>
         <div id="comments-${n.id}" class="comments" role="region" aria-label="Kommentare zu ${safeTitle}" style="display:none"></div>
       </div>
@@ -2003,7 +2047,7 @@ function subscribe(){
 
     renderNotes(lastNotes);
     updateOnlineCount(lastNotes.map(n => n.author));
-    const totalComments = await updateAllCommentCounts(lastNotes);
+    const totalComments = lastNotes.reduce((sum, n) => sum + (n.commentsCount || 0), 0);
     updateKpis(lastNotes, totalComments);
   });
 }
@@ -2028,6 +2072,17 @@ window.addEventListener('keydown', (event) => {
     closeDeleteModal();
   }
 });
+
+function refreshTimestamps() {
+  document.querySelectorAll('[data-ts]').forEach(el => {
+    const seconds = parseInt(el.dataset.ts, 10);
+    if (!seconds) return;
+    const formatted = formatTimestamp({ seconds });
+    el.textContent = el.classList.contains('note-ts') ? `• ${formatted}` : formatted;
+  });
+}
+
+setInterval(refreshTimestamps, 60_000);
 
 updateUserDisplay();
 checkUsername();
