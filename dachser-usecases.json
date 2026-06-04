@@ -24,12 +24,6 @@
     "demo": true
   },
   {
-    "title": "DB2 Table Live Mosaic Modell",
-    "text": "Einzelne",
-    "topic": "mosaic",
-    "demo": false
-  },
-  {
     "title": "Legacy MDM Replacement Modelle",
     "text": "Statt MDMs in der Semantik anzulegen werden soe in Mosaic umgesetzt. Das SQL ist dadurch transparenter (sobald in GIT) und Anpassungen sind schneller und flexibler. Druch die Ordnerstruktur kann der Power User viel einfacher damit arbeiten. ",
     "topic": "mosaic",
