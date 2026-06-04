@@ -707,9 +707,10 @@ const SAMPLES = [
 ];
 
 // Theme
-let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+let themeMode = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 function applyTheme(mode) {
   themeMode = mode;
+  localStorage.setItem('theme', mode);
   document.documentElement.setAttribute('data-theme', mode);
   const btn = document.querySelector('[data-theme-toggle]');
   if (btn) btn.innerHTML = mode === 'dark'

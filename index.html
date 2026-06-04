@@ -1545,7 +1545,7 @@ let selectedCategory = "agents";
 let editingNoteId = null;
 let selectedIcon = "●";
 let unsubscribeNotes = null;
-let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+let themeMode = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 let sortBy = 'votes';
 let filterBy = 'all';
 let lastNotes = [];
@@ -1567,6 +1567,7 @@ const ICONS = [
 
 function applyTheme(mode) {
   themeMode = mode;
+  localStorage.setItem('theme', mode);
   document.documentElement.setAttribute('data-theme', mode);
   const btn = document.querySelector('[data-theme-toggle]');
   if (btn) {
