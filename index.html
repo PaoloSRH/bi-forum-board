@@ -1243,6 +1243,13 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
   background: var(--surface-soft);
 }
 
+.sort-btn--active {
+  color: var(--primary);
+  border-color: var(--primary-soft);
+  background: var(--primary-soft);
+}
+.sort-btn--active:hover { background: var(--primary-soft); }
+
 .char-count {
   display: block;
   text-align: right;
@@ -1391,11 +1398,10 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
     </div>
   </div>
   <div class="board-toolbar">
-    <div class="filter-pills" role="group" aria-label="Kategorie filtern">
-      <button class="filter-pill active" type="button" data-filter="all"    onclick="setFilter('all')">Alle</button>
-      <button class="filter-pill"        type="button" data-filter="agents" onclick="setFilter('agents')">Agents</button>
-      <button class="filter-pill"        type="button" data-filter="mosaic" onclick="setFilter('mosaic')">Mosaic</button>
-    </div>
+    <button class="sort-btn" type="button" id="filterToggle" onclick="cycleFilter()">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 3h12M3 7h8M5 11h4"/></svg>
+      <span id="filterLabel">Alle</span>
+    </button>
     <button class="sort-btn" type="button" id="sortToggle" onclick="toggleSort()">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v10M2 9l2 3 2-3M10 12V2M8 5l2-3 2 3"/></svg>
       <span id="sortLabel">Meiste Votes</span>
@@ -2024,11 +2030,20 @@ window.toggleSort = function() {
   if (lastNotes.length) renderNotes(lastNotes);
 }
 
-window.setFilter = function(filter) {
-  filterBy = filter;
-  document.querySelectorAll('.filter-pill').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === filter);
-  });
+const FILTER_OPTIONS = [
+  { key: 'all',    label: 'Alle' },
+  { key: 'agents', label: 'Agents' },
+  { key: 'mosaic', label: 'Mosaic' },
+];
+
+window.cycleFilter = function() {
+  const idx = FILTER_OPTIONS.findIndex(o => o.key === filterBy);
+  const next = FILTER_OPTIONS[(idx + 1) % FILTER_OPTIONS.length];
+  filterBy = next.key;
+  const btn = document.getElementById('filterToggle');
+  const label = document.getElementById('filterLabel');
+  if (label) label.textContent = next.label;
+  if (btn) btn.classList.toggle('sort-btn--active', filterBy !== 'all');
   if (lastNotes.length) renderNotes(lastNotes);
 }
 
