@@ -77,22 +77,55 @@ a { color: inherit; }
 }
 .header-inner {
   max-width: var(--content); margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 10px; align-items: center;
 }
-.back-link {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--surface);
-  color: var(--text-muted); font-size: 0.84rem; font-weight: 600;
-  text-decoration: none; transition: all 0.16s ease;
-}
-.back-link:hover { color: var(--text); background: var(--surface-soft); }
-.header-title { font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
-.theme-toggle {
-  width: 34px; min-height: 32px; border-radius: 10px;
+.brand-title { margin: 0; font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; }
+.header-actions { display: flex; align-items: center; gap: 6px; }
+.theme-toggle, .hamburger {
+  min-height: 32px; border-radius: 10px;
   border: 1px solid var(--border); background: var(--surface); color: var(--text);
-  display: inline-grid; place-items: center;
+  display: inline-grid; place-items: center; transition: all 0.16s ease;
 }
+.theme-toggle { width: 34px; }
+.hamburger { width: 34px; }
+.hamburger:hover { background: var(--surface-soft); }
+
+/* Nav drawer */
+.nav-drawer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 50;
+  background: rgba(15,23,42,0.38); backdrop-filter: blur(4px);
+}
+.nav-drawer-overlay.open { display: block; }
+.nav-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 60;
+  width: min(300px, 88vw);
+  background: var(--surface-strong); border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg); padding: 20px;
+  transform: translateX(100%); transition: transform 0.26s ease;
+  display: flex; flex-direction: column;
+}
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+}
+.nav-drawer-title { font-size: 1rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.nav-drawer-close {
+  width: 34px; height: 34px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  display: inline-grid; place-items: center; transition: all 0.16s ease;
+}
+.nav-drawer-close:hover { background: var(--surface-soft); }
+.nav-drawer-link {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 11px 14px; border-radius: 12px;
+  border: 1px solid transparent; background: transparent;
+  color: var(--text); font-size: 0.9rem; font-weight: 600;
+  text-align: left; text-decoration: none; transition: all 0.16s ease;
+}
+.nav-drawer-link:hover { background: var(--surface-soft); border-color: var(--border); }
+.nav-drawer-link.active { background: var(--primary-soft); color: var(--primary); }
+.nav-drawer-divider { height: 1px; background: var(--border); margin: 10px 0; }
 
 /* Page */
 .page-shell { max-width: var(--content); margin: 0 auto; padding: 32px 16px 80px; }
@@ -198,16 +231,48 @@ a { color: inherit; }
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="index.html" class="back-link">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg>
-      Zurück
-    </a>
-    <p class="header-title">Roadmap Mosaic</p>
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
-      <span aria-hidden="true">◐</span>
-    </button>
+    <div class="brand">
+      <p class="brand-title">BI Forum 2026: Agents &amp; Mosaic</p>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
+        <span aria-hidden="true">◐</span>
+      </button>
+      <button class="hamburger" type="button" id="navOpen" aria-label="Navigation öffnen">
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none" aria-hidden="true">
+          <rect width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="5.5" width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="11" width="16" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </header>
+
+<div class="nav-drawer-overlay" id="navOverlay"></div>
+<aside class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="nav-drawer-header">
+    <p class="nav-drawer-title">Navigation</p>
+    <button class="nav-drawer-close" type="button" id="navClose" aria-label="Navigation schließen">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg>
+    </button>
+  </div>
+  <nav>
+    <a class="nav-drawer-link" href="index.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h6M5 10h4"/></svg>
+      Usecases
+    </a>
+    <a class="nav-drawer-link active" href="roadmap.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12 5 4l4 5 3-3 2 6"/><circle cx="5" cy="4" r="1" fill="currentColor" stroke="none"/></svg>
+      Roadmap Mosaic
+    </a>
+    <div class="nav-drawer-divider"></div>
+    <a class="nav-drawer-link" href="admin.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      Admin
+    </a>
+  </nav>
+</aside>
 
 <main class="page-shell">
 
@@ -381,6 +446,15 @@ function applyTheme(mode) {
 }
 document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => applyTheme(themeMode === 'dark' ? 'light' : 'dark'));
 applyTheme(themeMode);
+
+const navOverlay = document.getElementById('navOverlay');
+const navDrawer  = document.getElementById('navDrawer');
+function openNav()  { navOverlay.classList.add('open'); navDrawer.classList.add('open'); }
+function closeNav() { navOverlay.classList.remove('open'); navDrawer.classList.remove('open'); }
+document.getElementById('navOpen').addEventListener('click', openNav);
+document.getElementById('navClose').addEventListener('click', closeNav);
+navOverlay.addEventListener('click', closeNav);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 </script>
 </body>
 </html>
