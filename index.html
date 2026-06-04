@@ -1401,6 +1401,7 @@ let selectedIcon = "●";
 let unsubscribeNotes = null;
 let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 window.lastActiveUsers = [];
+window.notesData = {};
 
 const ICONS = ["●", "○", "◆", "◇", "■", "□", "△", "▲", "★", "☆", "◐", "◑", "◈", "⬢", "◎", "◉", "✦", "✧", "◔", "▼", "◄", "►", "⬡", "◕", "✓", "✕", "⚡", "🔥"];
 
@@ -1488,13 +1489,15 @@ window.openModal = () => {
   openDialog('modal');
 };
 
-window.openEditModal = (id, title, text, topic) => {
+window.openEditModal = (id) => {
+  const n = window.notesData[id];
+  if (!n) return;
   editingNoteId = id;
   document.getElementById('modalTitle').textContent = 'Usecase bearbeiten';
   document.getElementById('saveButton').textContent = 'Aktualisieren';
-  document.getElementById('title').value = title;
-  document.getElementById('text').value = text;
-  selectCategory(topic || 'agents');
+  document.getElementById('title').value = n.title || '';
+  document.getElementById('text').value = n.text || '';
+  selectCategory(n.topic || 'agents');
   openDialog('modal');
 };
 
@@ -1765,15 +1768,14 @@ async function updateAllCommentCounts(notes) {
 }
 
 function createNoteCard(n, currentUser, isFeatured = false) {
+  window.notesData[n.id] = n;
   const hasVoted = (n.votedBy || []).includes(currentUser);
   const isAuthor = n.author === currentUser;
   const meta = topicMeta(n.topic || selectedCategory);
   const safeTitle = escapeHtml(n.title || 'Ohne Titel');
   const safeText = escapeHtml(n.text || '');
   const safeAuthor = escapeHtml(n.author || 'Unbekannt');
-  const safeTitleArg = JSON.stringify(n.title || '');
-  const safeTextArg = JSON.stringify(n.text || '');
-  const editHandler = `openEditModal('${n.id}', ${safeTitleArg}, ${safeTextArg}, '${n.topic || 'agents'}')`;
+  const editHandler = `openEditModal('${n.id}')`;
 
   return `
     <article class="note ${isFeatured ? 'featured' : ''}" id="note-${n.id}">
