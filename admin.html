@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — BI Forum Agents and Mosaic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-elevated: #eef3f8;
+  --surface: rgba(255,255,255,0.82);
+  --surface-strong: #ffffff;
+  --surface-soft: #f8fafc;
+  --border: rgba(15,23,42,0.08);
+  --border-strong: rgba(15,23,42,0.14);
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-soft: #94a3b8;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: rgba(37,99,235,0.12);
+  --danger: #dc2626;
+  --danger-soft: rgba(220,38,38,0.10);
+  --success: #15803d;
+  --success-soft: rgba(21,128,61,0.10);
+  --warning: #d97706;
+  --warning-soft: rgba(217,119,6,0.10);
+  --shadow-sm: 0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md: 0 12px 30px rgba(15,23,42,0.08);
+  --shadow-lg: 0 18px 50px rgba(15,23,42,0.12);
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --content: 720px;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --bg-elevated: #111827;
+  --surface: rgba(17,24,39,0.82);
+  --surface-strong: #111827;
+  --surface-soft: #172033;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #e5edf8;
+  --text-muted: #94a3b8;
+  --text-soft: #64748b;
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --primary-soft: rgba(96,165,250,0.16);
+  --danger: #f87171;
+  --danger-soft: rgba(248,113,113,0.12);
+  --success: #4ade80;
+  --success-soft: rgba(74,222,128,0.10);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251,191,36,0.10);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+  --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0b1220; --bg-elevated: #111827; --surface: rgba(17,24,39,0.82);
+    --surface-strong: #111827; --surface-soft: #172033;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+    --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
+    --primary: #60a5fa; --primary-hover: #3b82f6; --primary-soft: rgba(96,165,250,0.16);
+    --danger: #f87171; --danger-soft: rgba(248,113,113,0.12);
+    --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
+    --warning: #fbbf24; --warning-soft: rgba(251,191,36,0.10);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+    --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,0.10), transparent 22%),
+    radial-gradient(circle at top right, rgba(14,165,233,0.08), transparent 18%),
+    linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 42%, var(--bg) 100%);
+}
+button, input, textarea { font: inherit; cursor: pointer; }
+input { cursor: text; }
+
+.site-header {
+  position: sticky; top: 0; z-index: 40;
+  padding: 8px 16px;
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: var(--content);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.16s ease;
+}
+.back-link:hover { color: var(--text); background: var(--surface-soft); }
+.header-title {
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  letter-spacing: 0.04em;
+}
+.theme-toggle {
+  width: 34px; min-height: 32px;
+  border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
+  display: inline-grid; place-items: center;
+}
+
+.page-shell {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+}
+
+/* Login */
+.login-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 60px);
+  padding: 24px;
+}
+.login-card {
+  width: min(400px, 100%);
+  padding: 32px;
+  border-radius: var(--radius-xl);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+.login-icon {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.login-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.login-card p {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.login-error {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: none;
+}
+
+/* Admin panel */
+.admin-header {
+  margin-bottom: 28px;
+}
+.admin-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+.admin-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.action-grid {
+  display: grid;
+  gap: 16px;
+}
+.action-card {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+.action-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.action-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.action-icon.blue  { background: var(--primary-soft); color: var(--primary); }
+.action-icon.red   { background: var(--danger-soft);  color: var(--danger);  }
+.action-icon.green { background: var(--success-soft); color: var(--success); }
+
+.action-card h3 { margin: 0; font-size: 1rem; letter-spacing: -0.01em; }
+.action-card p  { margin: 0 0 18px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; }
+
+.action-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.status-msg {
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: none;
+}
+.status-msg.success { color: var(--success); display: inline; }
+.status-msg.error   { color: var(--danger);  display: inline; }
+.status-msg.loading { color: var(--text-muted); display: inline; }
+
+/* Confirm input for delete */
+.confirm-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.confirm-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.confirm-row input:focus {
+  outline: none;
+  border-color: rgba(220,38,38,0.4);
+  box-shadow: 0 0 0 4px rgba(220,38,38,0.08);
+}
+.confirm-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px; border: 1px solid transparent;
+  font-size: 0.9rem; font-weight: 600;
+  transition: all 0.18s ease;
+}
+.btn-primary {
+  background: var(--primary); color: white;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.18);
+}
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-danger {
+  background: var(--danger); color: white;
+  box-shadow: 0 8px 20px rgba(220,38,38,0.18);
+}
+.btn-danger:hover { filter: brightness(1.1); }
+.btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-success {
+  background: var(--success); color: white;
+  box-shadow: 0 8px 20px rgba(21,128,61,0.18);
+}
+.btn-success:hover { filter: brightness(1.1); }
+.btn-secondary {
+  background: var(--surface-strong); color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--surface-soft); }
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  gap: 20px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-value { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+@media (max-width: 640px) {
+  .page-shell { padding: 20px 14px 60px; }
+  .login-card { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg>
+      Zurück zum Board
+    </a>
+    <p class="header-title">
+      BI Forum
+      <span class="admin-badge">ADMIN</span>
+    </p>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
+      <span aria-hidden="true">◐</span>
+    </button>
+  </div>
+</header>
+
+<!-- Login Screen -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-icon">🔒</div>
+    <h2>Admin-Zugang</h2>
+    <p>Gib das Admin-Passwort ein, um fortzufahren.</p>
+    <input id="passwordInput" type="password" placeholder="Passwort" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') checkPassword()" />
+    <div class="login-error" id="loginError">Falsches Passwort. Bitte erneut versuchen.</div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" type="button" onclick="checkPassword()">
+        Anmelden
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<main class="page-shell" id="adminPanel" style="display:none">
+  <div class="admin-header">
+    <h1>Admin-Bereich</h1>
+    <p>Verwalte Usecases, lege Beispieldaten an oder exportiere alle Inhalte.</p>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-item">
+      <span class="stat-value" id="statNotes">—</span>
+      <span class="stat-label">Usecases gesamt</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value" id="statAgents">—</span>
+      <span class="stat-label">Agents</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value" id="statMosaic">—</span>
+      <span class="stat-label">Mosaic</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value" id="statVotes">—</span>
+      <span class="stat-label">Votes gesamt</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value" id="statComments">—</span>
+      <span class="stat-label">Kommentare gesamt</span>
+    </div>
+  </div>
+
+  <div class="action-grid">
+
+    <!-- Sample data -->
+    <div class="action-card">
+      <div class="action-card-header">
+        <div class="action-icon blue">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v12M3 9h12"/></svg>
+        </div>
+        <h3>5 Beispiel-Usecases anlegen</h3>
+      </div>
+      <p>Legt 3 Agents- und 2 Mosaic-Usecases mit realistischen Beispielen an. Nützlich für Demos und Tests.</p>
+      <div class="action-footer">
+        <button class="btn btn-primary" type="button" id="samplesBtn" onclick="createSamples()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1v12M1 7h12"/></svg>
+          Samples anlegen
+        </button>
+        <span class="status-msg" id="samplesStatus"></span>
+      </div>
+    </div>
+
+    <!-- Delete all -->
+    <div class="action-card">
+      <div class="action-card-header">
+        <div class="action-icon red">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h12"/><path d="M6 5V3.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V5"/><path d="M14.5 5 13.8 15H4.2L3.5 5"/><path d="M7 8v4M11 8v4"/></svg>
+        </div>
+        <h3>Alle Usecases löschen</h3>
+      </div>
+      <p>Löscht unwiderruflich alle Usecases und deren Kommentare aus der Datenbank. Diese Aktion kann nicht rückgängig gemacht werden.</p>
+      <p class="confirm-hint">Tippe <strong>löschen</strong> zur Bestätigung:</p>
+      <div class="confirm-row">
+        <input type="text" id="deleteConfirmInput" placeholder="löschen"
+          oninput="document.getElementById('deleteBtn').disabled = this.value !== 'löschen'" />
+      </div>
+      <div class="action-footer">
+        <button class="btn btn-danger" type="button" id="deleteBtn" disabled onclick="deleteAll()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V2.5h4V4"/><path d="M11.5 4 11 12H3L2.5 4"/><path d="M5.5 7v3M8.5 7v3"/></svg>
+          Alles löschen
+        </button>
+        <span class="status-msg" id="deleteStatus"></span>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="action-card">
+      <div class="action-card-header">
+        <div class="action-icon green">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v9"/><path d="M5 8l4 4 4-4"/><path d="M3 14h12"/></svg>
+        </div>
+        <h3>Daten exportieren</h3>
+      </div>
+      <p>Exportiert alle Usecases mit Titel, Kategorie, Beschreibung, Upvotes und Kommentaren als CSV-Datei (Excel-kompatibel).</p>
+      <div class="action-footer">
+        <button class="btn btn-success" type="button" id="exportBtn" onclick="exportCSV()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1v8"/><path d="M4 6l3 3 3-3"/><path d="M2 11h10"/></svg>
+          Als CSV exportieren
+        </button>
+        <span class="status-msg" id="exportStatus"></span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
+  authDomain: "bi-forum-2026.firebaseapp.com",
+  projectId: "bi-forum-2026",
+  storageBucket: "bi-forum-2026.firebasestorage.app",
+  messagingSenderId: "305326324192",
+  appId: "1:305326324192:web:1152fdc525122bda0dd385"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const BOARD_ID = "bi-forum-2026";
+const ADMIN_PASSWORD = "haus26";
+
+const SAMPLES = [
+  {
+    title: "Automatisierter IT-Helpdesk Agent",
+    text: "Ein KI-Agent beantwortet häufige Mitarbeiteranfragen rund um IT-Probleme automatisch — von Passwort-Resets bis hin zu Software-Installationen. Komplexe Fälle werden nahtlos an einen menschlichen Agenten eskaliert. Ziel: 60 % der Tickets ohne manuelle Eingriffe lösen.",
+    topic: "agents"
+  },
+  {
+    title: "Meeting-Protokoll & Action-Item-Agent",
+    text: "Nach jedem Meeting analysiert ein Agent das Transkript automatisch, erstellt eine strukturierte Zusammenfassung und extrahiert Action Items mit Verantwortlichkeiten und Deadlines. Die Ergebnisse werden direkt in Teams und Jira gepostet — kein manuelles Nachbereiten mehr.",
+    topic: "agents"
+  },
+  {
+    title: "Onboarding-Assistent für neue Mitarbeiter",
+    text: "Ein intelligenter Chatbot begleitet neue Kolleginnen und Kollegen durch die ersten 90 Tage. Er beantwortet Fragen zu Prozessen, Systemen und Ansprechpartnern, weist Aufgaben automatisch zu und gibt proaktive Tipps — personalisiert je nach Rolle und Abteilung.",
+    topic: "agents"
+  },
+  {
+    title: "Sales Analytics Datenmodell",
+    text: "Ein flexibles Mosaic-Modell, das Verkaufsdaten aus CRM, ERP und externen Quellen konsolidiert. Ermöglicht Ad-hoc-Analysen zu Pipeline, Conversion Rates und regionaler Performance — direkt abrufbar aus Excel, Power BI und dem internen Reporting-Portal ohne redundante Datenpflege.",
+    topic: "mosaic"
+  },
+  {
+    title: "HR-KPI Reporting Modell",
+    text: "Ein standardisiertes Datenmodell für alle HR-relevanten Kennzahlen: Fluktuation, Abwesenheitsquoten, Time-to-Hire und Performance-Scores. Das Modell lässt sich durch verschiedene Teams und Tools nutzen und reduziert Datensilos erheblich — eine Single Source of Truth für HR.",
+    topic: "mosaic"
+  }
+];
+
+// Theme
+let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function applyTheme(mode) {
+  themeMode = mode;
+  document.documentElement.setAttribute('data-theme', mode);
+  const btn = document.querySelector('[data-theme-toggle]');
+  if (btn) btn.innerHTML = mode === 'dark' ? '<span aria-hidden="true">☀</span>' : '<span aria-hidden="true">☾</span>';
+}
+document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => applyTheme(themeMode === 'dark' ? 'light' : 'dark'));
+applyTheme(themeMode);
+
+// Auth
+function setStatus(id, text, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = `status-msg ${type}`;
+}
+
+window.checkPassword = function() {
+  const val = document.getElementById('passwordInput').value;
+  if (val === ADMIN_PASSWORD) {
+    sessionStorage.setItem('adminAuth', 'true');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadStats();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordInput').focus();
+  }
+}
+
+// Check if already authenticated
+if (sessionStorage.getItem('adminAuth') === 'true') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  loadStats();
+}
+
+async function loadStats() {
+  const snap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes'));
+  const notes = snap.docs.map(d => d.data());
+  document.getElementById('statNotes').textContent    = notes.length;
+  document.getElementById('statAgents').textContent   = notes.filter(n => n.topic === 'agents').length;
+  document.getElementById('statMosaic').textContent   = notes.filter(n => n.topic === 'mosaic').length;
+  document.getElementById('statVotes').textContent    = notes.reduce((s, n) => s + (n.votes || 0), 0);
+  document.getElementById('statComments').textContent = notes.reduce((s, n) => s + (n.commentsCount || 0), 0);
+}
+
+window.createSamples = async function() {
+  const btn = document.getElementById('samplesBtn');
+  btn.disabled = true;
+  setStatus('samplesStatus', 'Wird erstellt…', 'loading');
+  try {
+    for (const s of SAMPLES) {
+      await addDoc(collection(db, 'boards', BOARD_ID, 'notes'), {
+        ...s,
+        author: 'Admin',
+        votes: 0,
+        votedBy: [],
+        commentsCount: 0,
+        ts: serverTimestamp()
+      });
+    }
+    setStatus('samplesStatus', '5 Usecases angelegt ✓', 'success');
+    await loadStats();
+  } catch(err) {
+    setStatus('samplesStatus', 'Fehler: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+window.deleteAll = async function() {
+  const btn = document.getElementById('deleteBtn');
+  btn.disabled = true;
+  setStatus('deleteStatus', 'Wird gelöscht…', 'loading');
+  try {
+    const notesSnap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes'));
+    for (const noteDoc of notesSnap.docs) {
+      const commentsSnap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes', noteDoc.id, 'comments'));
+      for (const commentDoc of commentsSnap.docs) {
+        await deleteDoc(doc(db, 'boards', BOARD_ID, 'notes', noteDoc.id, 'comments', commentDoc.id));
+      }
+      await deleteDoc(doc(db, 'boards', BOARD_ID, 'notes', noteDoc.id));
+    }
+    setStatus('deleteStatus', `${notesSnap.size} Usecases gelöscht ✓`, 'success');
+    document.getElementById('deleteConfirmInput').value = '';
+    btn.disabled = true;
+    await loadStats();
+  } catch(err) {
+    setStatus('deleteStatus', 'Fehler: ' + err.message, 'error');
+    btn.disabled = false;
+  }
+}
+
+window.exportCSV = async function() {
+  const btn = document.getElementById('exportBtn');
+  btn.disabled = true;
+  setStatus('exportStatus', 'Wird vorbereitet…', 'loading');
+  try {
+    const notesSnap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes'));
+    const rows = [['Titel', 'Kategorie', 'Beschreibung', 'Upvotes', 'Anzahl Kommentare', 'Kommentare']];
+
+    for (const noteDoc of notesSnap.docs) {
+      const n = noteDoc.data();
+      const commentsSnap = await getDocs(query(collection(db, 'boards', BOARD_ID, 'notes', noteDoc.id, 'comments'), orderBy('ts', 'asc')));
+      const commentTexts = commentsSnap.docs.map(c => {
+        const d = c.data();
+        return `${d.author || 'Unbekannt'}: ${d.text || ''}`;
+      }).join(' | ');
+      rows.push([
+        n.title || '',
+        n.topic === 'agents' ? 'Agents' : 'Mosaic',
+        n.text || '',
+        n.votes || 0,
+        commentsSnap.size,
+        commentTexts
+      ]);
+    }
+
+    const csv = '﻿' + rows.map(row =>
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bi-forum-export-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    setStatus('exportStatus', `${notesSnap.size} Usecases exportiert ✓`, 'success');
+  } catch(err) {
+    setStatus('exportStatus', 'Fehler: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
