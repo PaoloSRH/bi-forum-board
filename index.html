@@ -1499,7 +1499,7 @@ textarea:focus {
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion, arrayRemove, runTransaction } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
@@ -1885,24 +1885,28 @@ window.deleteComment = async function(noteId, commentId) {
 window.vote = async function(id){
   const username = getCurrentUser();
   const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
-  const noteSnap = await getDoc(noteRef);
-  if(!noteSnap.exists()) return;
-  const note = noteSnap.data();
-  const votedBy = note.votedBy || [];
-  if(votedBy.includes(username)){
-    showToast('Du hast diesen Usecase bereits gevotet.');
-    return;
-  }
-  await updateDoc(noteRef,{
-    votes: increment(1),
-    votedBy: arrayUnion(username)
-  });
-
-  const countEl = document.getElementById(`vote-count-${id}`);
-  if (countEl) {
-    countEl.classList.remove('bump');
-    void countEl.offsetWidth;
-    countEl.classList.add('bump');
+  try {
+    let action = null;
+    await runTransaction(db, async (transaction) => {
+      const snap = await transaction.get(noteRef);
+      if (!snap.exists()) throw new Error('not found');
+      const votedBy = snap.data().votedBy || [];
+      if (votedBy.includes(username)) {
+        transaction.update(noteRef, { votes: increment(-1), votedBy: arrayRemove(username) });
+        action = 'removed';
+      } else {
+        transaction.update(noteRef, { votes: increment(1), votedBy: arrayUnion(username) });
+        action = 'added';
+      }
+    });
+    if (action === 'removed') {
+      showToast('Vote zurückgenommen');
+    } else {
+      const countEl = document.getElementById(`vote-count-${id}`);
+      if (countEl) { countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump'); }
+    }
+  } catch(err) {
+    showToast('Fehler beim Voten');
   }
 }
 
@@ -2027,7 +2031,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
 
       <div class="note-footer">
         <div class="secondary-row">
-          <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')" title="Upvoten" aria-pressed="${hasVoted ? 'true' : 'false'}" ${hasVoted ? 'disabled' : ''}>
+          <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')" title="${hasVoted ? 'Vote zurücknehmen' : 'Upvoten'}" aria-pressed="${hasVoted ? 'true' : 'false'}">
             <span class="vote-icon">▲</span>
             <span>${hasVoted ? 'Gevotet' : 'Upvote'}</span>
             <span class="vote-count" id="vote-count-${n.id}">${n.votes || 0}</span>
