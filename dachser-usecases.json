@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Titel des ersten Usecases",
+    "text": "Beschreibung des Usecases. Was ist das Problem, das gelöst werden soll? Welchen Nutzen bringt der Usecase? Für wen ist er relevant?",
+    "topic": "agents"
+  },
+  {
+    "title": "Titel des zweiten Usecases",
+    "text": "Beschreibung des zweiten Usecases.",
+    "topic": "mosaic"
+  },
+  {
+    "title": "Titel des dritten Usecases",
+    "text": "Beschreibung des dritten Usecases.",
+    "topic": "agents"
+  }
+]
