@@ -690,6 +690,21 @@ textarea:focus-visible,
   transition: transform 0.16s ease;
 }
 
+.vote-dots {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.vote-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid currentColor;
+  transition: background 0.16s ease;
+  flex-shrink: 0;
+}
+.vote-dot.filled { background: currentColor; }
+
 .vote-count {
   display: inline-block;
   min-width: 1.5ch;
@@ -1935,21 +1950,23 @@ window.vote = async function(id){
   const username = getCurrentUser();
   const noteRef = doc(db,'boards',BOARD_ID,'notes',id);
   try {
-    let action = null;
+    let newCount = null;
     await runTransaction(db, async (transaction) => {
       const snap = await transaction.get(noteRef);
       if (!snap.exists()) throw new Error('not found');
-      const votedBy = snap.data().votedBy || [];
-      if (votedBy.includes(username)) {
-        transaction.update(noteRef, { votes: increment(-1), votedBy: arrayRemove(username) });
-        action = 'removed';
-      } else {
-        transaction.update(noteRef, { votes: increment(1), votedBy: arrayUnion(username) });
-        action = 'added';
-      }
+      const data = snap.data();
+      const votesByUser = data.votesByUser || {};
+      const current = votesByUser[username] || 0;
+      const next = current >= 3 ? 0 : current + 1;
+      const delta = next - current;
+      transaction.update(noteRef, {
+        votes: (data.votes || 0) + delta,
+        votesByUser: { ...votesByUser, [username]: next }
+      });
+      newCount = next;
     });
-    if (action === 'removed') {
-      showToast('Vote zurückgenommen');
+    if (newCount === 0) {
+      showToast('Votes zurückgesetzt');
     } else {
       const countEl = document.getElementById(`vote-count-${id}`);
       if (countEl) { countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump'); }
@@ -2079,7 +2096,8 @@ function resetCharCounts() {
 
 function createNoteCard(n, currentUser, isFeatured = false) {
   window.notesData[n.id] = n;
-  const hasVoted = (n.votedBy || []).includes(currentUser);
+  const userVoteCount = (n.votesByUser || {})[currentUser] || 0;
+  const hasVoted = userVoteCount > 0;
   const isAuthor = n.author === currentUser;
   const meta = topicMeta(n.topic || selectedCategory);
   const safeTitle = escapeHtml(n.title || 'Ohne Titel');
@@ -2119,9 +2137,15 @@ function createNoteCard(n, currentUser, isFeatured = false) {
 
       <div class="note-footer">
         <div class="secondary-row">
-          <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')" title="${hasVoted ? 'Vote zurücknehmen' : 'Upvoten'}" aria-pressed="${hasVoted ? 'true' : 'false'}">
+          <button class="card-stat vote-toggle" type="button" onclick="vote('${n.id}')"
+            title="${userVoteCount === 3 ? 'Votes zurücksetzen' : userVoteCount > 0 ? `${userVoteCount}/3 Votes vergeben` : 'Bis zu 3 Votes vergeben'}"
+            aria-pressed="${hasVoted ? 'true' : 'false'}">
             <span class="vote-icon">▲</span>
-            <span>${hasVoted ? 'Gevotet' : 'Upvote'}</span>
+            <span class="vote-dots">
+              <span class="vote-dot ${userVoteCount >= 1 ? 'filled' : ''}"></span>
+              <span class="vote-dot ${userVoteCount >= 2 ? 'filled' : ''}"></span>
+              <span class="vote-dot ${userVoteCount >= 3 ? 'filled' : ''}"></span>
+            </span>
             <span class="vote-count" id="vote-count-${n.id}">${n.votes || 0}</span>
           </button>
           <button class="card-stat" type="button" onclick="toggleComments('${n.id}')" aria-expanded="false" aria-controls="comments-${n.id}"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8c0 3.314-2.686 6-6 6a6.06 6.06 0 0 1-2.5-.535L2 14.5l1.035-3.5A5.96 5.96 0 0 1 2 8c0-3.314 2.686-6 6-6s6 2.686 6 6Z"/></svg> <span id="comment-count-${n.id}">${n.commentsCount || 0}</span></button>
