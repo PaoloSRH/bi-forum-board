@@ -1228,14 +1228,11 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
 }
 [data-theme="dark"] .featured-badge { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.22); }
 
-.demo-badge {
-  margin-left: 4px; flex-shrink: 0;
-  display: inline-flex; align-items: center;
-  padding: 2px 8px; border-radius: 999px;
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
-  color: #dc2626; background: rgba(220,38,38,0.10); border: 1px solid rgba(220,38,38,0.22);
+.demo-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #dc2626; flex-shrink: 0;
 }
-[data-theme="dark"] .demo-badge { color: #f87171; background: rgba(248,113,113,0.10); border-color: rgba(248,113,113,0.22); }
+[data-theme="dark"] .demo-label { color: #f87171; }
 
 .sort-btn {
   display: inline-flex;
@@ -2101,8 +2098,8 @@ function createNoteCard(n, currentUser, isFeatured = false) {
             <span class="eyebrow-author">${safeAuthor}</span>
             <span class="eyebrow-sep">·</span>
             <span class="note-ts" data-ts="${n.ts?.seconds || 0}">${formatTimestamp(n.ts)}</span>
+            ${n.demo ? `<span class="eyebrow-sep">·</span><span class="demo-label">Demo</span>` : ''}
             ${isFeatured ? `<span class="featured-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M5 .5 6.2 3.6l3.3.3-2.4 2.1.7 3.2L5 7.6l-2.8 1.6.7-3.2L.5 3.9l3.3-.3z"/></svg> #1</span>` : ''}
-            ${n.demo ? `<span class="demo-badge">Demo</span>` : ''}
           </div>
           <h2 class="note-title">${safeTitle}</h2>
         </div>
