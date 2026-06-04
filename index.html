@@ -1921,7 +1921,7 @@ window.addComment = async function(noteId) {
     text,
     ts: serverTimestamp()
   });
-  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(1), lastCommentAt: serverTimestamp() });
+  await updateDoc(doc(db,'boards',BOARD_ID,'notes',noteId), { commentsCount: increment(1), lastCommentAt: serverTimestamp(), commentedBy: arrayUnion(getCurrentUser()) });
   showToast('Kommentar hinzugefügt');
 }
 
@@ -2147,7 +2147,12 @@ function subscribe(){
     }
 
     renderNotes(lastNotes);
-    updateOnlineCount(lastNotes.map(n => n.author));
+    const allParticipants = [
+      ...lastNotes.map(n => n.author),
+      ...lastNotes.flatMap(n => n.votedBy || []),
+      ...lastNotes.flatMap(n => n.commentedBy || [])
+    ];
+    updateOnlineCount(allParticipants);
     const totalComments = lastNotes.reduce((sum, n) => sum + (n.commentsCount || 0), 0);
     updateKpis(lastNotes, totalComments);
   });
