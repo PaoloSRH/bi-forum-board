@@ -398,19 +398,35 @@ textarea:focus-visible,
 [data-theme="dark"] .note--mosaic { border-left-color: rgba(167, 139, 250, 0.5); }
 
 .note-eyebrow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.eyebrow-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-bottom: 10px;
 }
-.note--agents .note-eyebrow { color: #2563eb; }
-.note--mosaic .note-eyebrow { color: #7c3aed; }
-[data-theme="dark"] .note--agents .note-eyebrow { color: #60a5fa; }
-[data-theme="dark"] .note--mosaic .note-eyebrow { color: #a78bfa; }
+.eyebrow-sep {
+  font-size: 0.78rem;
+  color: var(--border-strong);
+}
+.eyebrow-author,
+.note-eyebrow .note-ts {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.note--agents .eyebrow-cat { color: #2563eb; }
+.note--mosaic .eyebrow-cat { color: #7c3aed; }
+[data-theme="dark"] .note--agents .eyebrow-cat { color: #60a5fa; }
+[data-theme="dark"] .note--mosaic .eyebrow-cat { color: #a78bfa; }
 
 @media (prefers-reduced-motion: no-preference) {
   .note.just-added {
@@ -553,28 +569,6 @@ textarea:focus-visible,
   background: var(--danger-soft);
 }
 
-.note-meta {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  color: var(--text-muted);
-  font-size: 0.84rem;
-  flex-wrap: wrap;
-}
-
-.author-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 30px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--surface-soft);
-  border: 1px solid var(--border);
-}
 
 .note-body {
   position: relative;
@@ -2010,7 +2004,13 @@ function createNoteCard(n, currentUser, isFeatured = false) {
     <article class="note ${isFeatured ? 'featured' : ''} ${categoryClass}" id="note-${n.id}">
       <div class="note-header ${isAuthor ? 'has-menu' : ''}">
         <div class="note-title-wrap">
-          <span class="note-eyebrow">${meta.icon}${meta.label}</span>
+          <div class="note-eyebrow">
+            <span class="eyebrow-cat">${meta.icon}${meta.label}</span>
+            <span class="eyebrow-sep">·</span>
+            <span class="eyebrow-author">${safeAuthor}</span>
+            <span class="eyebrow-sep">·</span>
+            <span class="note-ts" data-ts="${n.ts?.seconds || 0}">${formatTimestamp(n.ts)}</span>
+          </div>
           <h2 class="note-title ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeTitle}</h2>
         </div>
       </div>
@@ -2024,11 +2024,6 @@ function createNoteCard(n, currentUser, isFeatured = false) {
           </div>
         </div>
       ` : ''}
-
-      <div class="note-meta">
-        <span class="author-pill"><span aria-hidden="true">${getUserIcon(n.author || 'Unbekannt')}</span><span>${safeAuthor}</span></span>
-        <span class="note-ts" data-ts="${n.ts?.seconds || 0}">• ${formatTimestamp(n.ts)}</span>
-      </div>
 
       <div class="note-body ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeText}</div>
 
@@ -2094,7 +2089,7 @@ function refreshTimestamps() {
     const seconds = parseInt(el.dataset.ts, 10);
     if (!seconds) return;
     const formatted = formatTimestamp({ seconds });
-    el.textContent = el.classList.contains('note-ts') ? `• ${formatted}` : formatted;
+    el.textContent = formatted;
   });
 }
 
