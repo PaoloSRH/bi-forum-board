@@ -2125,6 +2125,9 @@ setInterval(refreshTimestamps, 60_000);
 
 updateUserDisplay();
 checkUsername();
+if (new URLSearchParams(location.search).get('profile') === '1') {
+  setTimeout(openProfileModal, 400);
+}
 </script>
 </body>
 </html>
