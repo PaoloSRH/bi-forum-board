@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Roadmap Mosaic — BI Forum 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-elevated: #eef3f8;
+  --surface: rgba(255,255,255,0.82);
+  --surface-strong: #ffffff;
+  --surface-soft: #f8fafc;
+  --border: rgba(15,23,42,0.08);
+  --border-strong: rgba(15,23,42,0.14);
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-soft: #94a3b8;
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-soft: rgba(124,58,237,0.10);
+  --success: #15803d;
+  --success-soft: rgba(21,128,61,0.10);
+  --warning: #d97706;
+  --warning-soft: rgba(217,119,6,0.10);
+  --shadow-sm: 0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md: 0 12px 30px rgba(15,23,42,0.08);
+  --shadow-lg: 0 18px 50px rgba(15,23,42,0.12);
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --content: 860px;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220; --bg-elevated: #111827;
+  --surface: rgba(17,24,39,0.82); --surface-strong: #111827; --surface-soft: #172033;
+  --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+  --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
+  --primary: #a78bfa; --primary-hover: #8b5cf6; --primary-soft: rgba(167,139,250,0.14);
+  --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
+  --warning: #fbbf24; --warning-soft: rgba(251,191,36,0.10);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+  --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0b1220; --bg-elevated: #111827;
+    --surface: rgba(17,24,39,0.82); --surface-strong: #111827; --surface-soft: #172033;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+    --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
+    --primary: #a78bfa; --primary-hover: #8b5cf6; --primary-soft: rgba(167,139,250,0.14);
+    --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
+    --warning: #fbbf24; --warning-soft: rgba(251,191,36,0.10);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+    --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(124,58,237,0.10), transparent 22%),
+    radial-gradient(circle at top right, rgba(139,92,246,0.07), transparent 18%),
+    linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 42%, var(--bg) 100%);
+}
+button { font: inherit; cursor: pointer; }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 40;
+  padding: 8px 16px;
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: var(--content); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-muted); font-size: 0.84rem; font-weight: 600;
+  text-decoration: none; transition: all 0.16s ease;
+}
+.back-link:hover { color: var(--text); background: var(--surface-soft); }
+.header-title { font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+.theme-toggle {
+  width: 34px; min-height: 32px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  display: inline-grid; place-items: center;
+}
+
+/* Page */
+.page-shell { max-width: var(--content); margin: 0 auto; padding: 32px 16px 80px; }
+
+/* Hero */
+.hero {
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  margin-bottom: 36px;
+  border-left: 4px solid var(--primary);
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--primary);
+  margin-bottom: 10px;
+}
+.hero h1 { margin: 0 0 8px; font-size: 1.5rem; letter-spacing: -0.03em; }
+.hero p  { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 60ch; }
+
+.legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-top: 18px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted); }
+.legend-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-done    { background: var(--success); }
+.dot-active  { background: var(--primary); }
+.dot-planned { background: var(--text-soft); }
+
+/* Timeline */
+.timeline-section { margin-bottom: 48px; }
+.timeline-section > h2 {
+  font-size: 1rem; font-weight: 700; letter-spacing: -0.01em;
+  margin: 0 0 20px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.timeline-section > h2::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before {
+  content: '';
+  position: absolute; left: 8px; top: 10px; bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 20%, transparent));
+  border-radius: 1px;
+}
+
+.timeline-quarter {
+  position: relative;
+  margin-bottom: 28px;
+}
+.timeline-quarter:last-child { margin-bottom: 0; }
+
+.quarter-dot {
+  position: absolute;
+  left: -27px; top: 4px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2.5px solid var(--bg);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.quarter-dot.done    { background: var(--success); box-shadow: 0 0 0 3px var(--success-soft); }
+.quarter-dot.active  { background: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.quarter-dot.planned { background: var(--text-soft); box-shadow: 0 0 0 3px rgba(148,163,184,0.15); }
+
+.quarter-header { margin-bottom: 12px; }
+.quarter-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--primary); display: block; margin-bottom: 2px;
+}
+.quarter-label.done   { color: var(--success); }
+.quarter-label.planned { color: var(--text-soft); }
+.quarter-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+
+.timeline-items { display: grid; gap: 8px; }
+
+.timeline-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.timeline-item:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+
+.item-status {
+  flex-shrink: 0; margin-top: 1px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+}
+.status-done    { background: var(--success-soft); color: var(--success); }
+.status-active  { background: var(--primary-soft); color: var(--primary); }
+.status-planned { background: var(--surface-soft); color: var(--text-soft); border: 1px solid var(--border); }
+
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 0.9rem; font-weight: 600; margin: 0 0 3px; }
+.item-desc  { font-size: 0.82rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+/* Sources */
+.sources-section {
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+.sources-header { margin-bottom: 18px; }
+.sources-header h2 { margin: 0 0 4px; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+.sources-header p  { margin: 0; font-size: 0.88rem; color: var(--text-muted); }
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.source-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  text-decoration: none; color: var(--text);
+  transition: all 0.16s ease;
+}
+.source-card:hover { border-color: var(--primary); background: var(--primary-soft); }
+.source-file-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+.icon-pdf  { background: rgba(220,38,38,0.12); color: #dc2626; }
+.icon-pptx { background: rgba(234,88,12,0.12); color: #ea580c; }
+.icon-xlsx { background: rgba(21,128,61,0.12); color: #15803d; }
+.source-info { flex: 1; min-width: 0; }
+.source-name { font-size: 0.88rem; font-weight: 600; margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.source-type { font-size: 0.76rem; color: var(--text-muted); margin: 0; }
+.source-open { flex-shrink: 0; color: var(--text-soft); }
+.source-card:hover .source-open { color: var(--primary); }
+
+@media (max-width: 640px) {
+  .page-shell { padding: 20px 14px 60px; }
+  .hero { padding: 20px; }
+  .timeline { padding-left: 26px; }
+  .quarter-dot { left: -22px; }
+  .sources-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg>
+      Zurück
+    </a>
+    <p class="header-title">Roadmap Mosaic</p>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
+      <span aria-hidden="true">◐</span>
+    </button>
+  </div>
+</header>
+
+<main class="page-shell">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="10" height="10" rx="2"/><path d="M5 7h4M7 5v4"/></svg>
+      Mosaic · BI Forum 2026
+    </div>
+    <h1>Roadmap Mosaic</h1>
+    <p>Übersicht der geplanten Phasen und Meilensteine für die Einführung des Mosaic Datenmodells — von der Konzeption bis zum unternehmensweiten Rollout.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot dot-done"></span>Abgeschlossen</span>
+      <span class="legend-item"><span class="legend-dot dot-active"></span>In Arbeit</span>
+      <span class="legend-item"><span class="legend-dot dot-planned"></span>Geplant</span>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-section">
+    <h2>2026</h2>
+    <div class="timeline">
+
+      <!-- Q1 -->
+      <div class="timeline-quarter">
+        <div class="quarter-dot done"></div>
+        <div class="quarter-header">
+          <span class="quarter-label done">Q1 2026</span>
+          <h3 class="quarter-title">Fundament & Anforderungen</h3>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <span class="item-status status-done">Abgeschlossen</span>
+            <div class="item-body">
+              <p class="item-title">Stakeholder-Workshops & Anforderungsanalyse</p>
+              <p class="item-desc">Erhebung fachlicher Anforderungen aus allen relevanten Bereichen, Definition der Use Cases und Priorisierung.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-done">Abgeschlossen</span>
+            <div class="item-body">
+              <p class="item-title">Datenmodell-Architektur definiert</p>
+              <p class="item-desc">Konzeption der logischen und physischen Datenstruktur, Abstimmung mit IT-Architektur und Data Governance.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-done">Abgeschlossen</span>
+            <div class="item-body">
+              <p class="item-title">Proof of Concept erfolgreich abgeschlossen</p>
+              <p class="item-desc">Validierung der technischen Machbarkeit anhand eines ausgewählten Datenbereichs. Ergebnisse präsentiert und freigegeben.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="timeline-quarter">
+        <div class="quarter-dot active"></div>
+        <div class="quarter-header">
+          <span class="quarter-label">Q2 2026</span>
+          <h3 class="quarter-title">Entwicklung & Integration</h3>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <span class="item-status status-active">In Arbeit</span>
+            <div class="item-body">
+              <p class="item-title">Implementierung Core Datenmodell</p>
+              <p class="item-desc">Aufbau des zentralen Mosaic-Datenmodells inklusive Datenpipelines, Transformationslogik und Qualitätsprüfungen.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-active">In Arbeit</span>
+            <div class="item-body">
+              <p class="item-title">Anbindung CRM- & ERP-Quellsysteme</p>
+              <p class="item-desc">Technische Integration der Hauptquellsysteme, Einrichtung automatisierter Datenflüsse und Monitoring.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Interne Qualitätssicherung & Testing</p>
+              <p class="item-desc">Datenqualitätsprüfungen, Abgleich mit Quellsystemen und User Acceptance Testing mit Key Usern.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="timeline-quarter">
+        <div class="quarter-dot planned"></div>
+        <div class="quarter-header">
+          <span class="quarter-label planned">Q3 2026</span>
+          <h3 class="quarter-title">Pilot & Anbindung</h3>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Pilotphase mit ausgewählten Fachbereichen</p>
+              <p class="item-desc">Gesteuerter Rollout in 2 Pilotbereichen, Sammlung von Feedback und iterative Verbesserung des Modells.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Power BI & Excel-Anbindung produktiv</p>
+              <p class="item-desc">Bereitstellung zertifizierter Datensätze für Power BI und Excel, Erstellung von Standard-Report-Vorlagen.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Schulungen & Self-Service-Dokumentation</p>
+              <p class="item-desc">Durchführung von Anwender-Schulungen, Erstellung von How-to-Guides und einer internen Wissensdatenbank.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="timeline-quarter">
+        <div class="quarter-dot planned"></div>
+        <div class="quarter-header">
+          <span class="quarter-label planned">Q4 2026</span>
+          <h3 class="quarter-title">Rollout & Skalierung</h3>
+        </div>
+        <div class="timeline-items">
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Unternehmensweiter Go-Live</p>
+              <p class="item-desc">Vollständige Freigabe des Mosaic-Modells für alle Fachbereiche. Ablösung bestehender Insellösungen.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Automatisiertes Monitoring & Alerting</p>
+              <p class="item-desc">Einrichtung von Datenqualitäts-Monitoring, automatischen Alerts bei Abweichungen und einem zentralen Operations-Dashboard.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <span class="item-status status-planned">Geplant</span>
+            <div class="item-body">
+              <p class="item-title">Erweiterung um Advanced Analytics</p>
+              <p class="item-desc">Aufbau von Prognosemodellen und KI-gestützten Analysen auf Basis des Mosaic-Datenmodells als nächster Ausbauschritt.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Source files -->
+  <div class="sources-section">
+    <div class="sources-header">
+      <h2>Quelldateien</h2>
+      <p>Originaldokumente als Referenz — Links bitte mit den tatsächlichen URLs ersetzen.</p>
+    </div>
+    <div class="sources-grid">
+      <a href="#" class="source-card" target="_blank" rel="noopener">
+        <div class="source-file-icon icon-pptx">PPT</div>
+        <div class="source-info">
+          <p class="source-name">Mosaic Roadmap 2026</p>
+          <p class="source-type">PowerPoint Präsentation</p>
+        </div>
+        <svg class="source-open" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
+      </a>
+      <a href="#" class="source-card" target="_blank" rel="noopener">
+        <div class="source-file-icon icon-pdf">PDF</div>
+        <div class="source-info">
+          <p class="source-name">Technische Spezifikation</p>
+          <p class="source-type">PDF Dokument</p>
+        </div>
+        <svg class="source-open" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
+      </a>
+      <a href="#" class="source-card" target="_blank" rel="noopener">
+        <div class="source-file-icon icon-pdf">PDF</div>
+        <div class="source-info">
+          <p class="source-name">Datenmodell-Dokumentation</p>
+          <p class="source-type">PDF Dokument</p>
+        </div>
+        <svg class="source-open" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function applyTheme(mode) {
+  themeMode = mode;
+  document.documentElement.setAttribute('data-theme', mode);
+  const btn = document.querySelector('[data-theme-toggle]');
+  if (btn) btn.innerHTML = mode === 'dark' ? '<span aria-hidden="true">☀</span>' : '<span aria-hidden="true">☾</span>';
+}
+document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => applyTheme(themeMode === 'dark' ? 'light' : 'dark'));
+applyTheme(themeMode);
+</script>
+</body>
+</html>
