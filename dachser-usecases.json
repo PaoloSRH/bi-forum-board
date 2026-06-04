@@ -1,20 +1,68 @@
 [
   {
-    "title": "Titel des ersten Usecases",
-    "text": "Beschreibung des Usecases. Was ist das Problem, das gelöst werden soll? Welchen Nutzen bringt der Usecase? Für wen ist er relevant?",
+    "title": "DB2 Table Live Mosaic Modell",
+    "text": "Einzelne DB2 Tabelle (zB StR Order) werden als Live Mosaic Modell bereitgestellt. Es ist auch möglich Felder zu übersetzen und eine saubere Ordnerstruktur mit angebundenen Dimensionen umzusetzen. Power User können die Modelle einfach nutzen und miteinander kombinieren.",
+    "topic": "mosaic",
+    "demo": true
+  },
+  {
+    "title": "Consumer Agent",
+    "text": "Ein Agent für Consumer, der z.B. unter Get Started in der Library bereitgestellt wird. Der User bekommt Infos wie er in Strategy One startet, welche Berichte für ihn relevant sind oder wen er bei Problemen kontaktiert. Ein FAQ deckt die wichtigsten Fragen ab und Klickzahlen zeigen die wichtigsten Reports.",
     "topic": "agents",
     "demo": true
   },
   {
-    "title": "Titel des zweiten Usecases",
-    "text": "Beschreibung des zweiten Usecases.",
+    "title": "Power User Agent",
+    "text": "Ein Agent für Power User, der das FAQ als unstrukturierte Daten beinhaltet. Dort werden diverse Beispiele und Fragen beantwortet, der Power User kann also Fragen zum Dashboard Bau dort stellen. Außerdem generelle Informationen für Power User wie Ansprechpartner etc.",
+    "topic": "agents",
+    "demo": false
+  },
+  {
+    "title": "DWH Sales Aggregation Tabellen Live Mosaic",
+    "text": "Die Aggregationstabellen von Sales werden direkt in Mosaic angebunden. Dadurch können Anpassungen flexibel von diversen Personen vorgenommen werden. Das Modell dient als SPOT und kann für Self-Service, Agents und Standard Reports genutzt werden. In der Ordnerstruktur sind alle Objekte und Metriken sauber hinterlegt.",
+    "topic": "mosaic",
+    "demo": true
+  },
+  {
+    "title": "DB2 Table Live Mosaic Modell",
+    "text": "Einzelne",
     "topic": "mosaic",
     "demo": false
   },
   {
-    "title": "Titel des dritten Usecases",
-    "text": "Beschreibung des dritten Usecases.",
-    "topic": "agents",
+    "title": "Legacy MDM Replacement Modelle",
+    "text": "Statt MDMs in der Semantik anzulegen werden soe in Mosaic umgesetzt. Das SQL ist dadurch transparenter (sobald in GIT) und Anpassungen sind schneller und flexibler. Druch die Ordnerstruktur kann der Power User viel einfacher damit arbeiten. ",
+    "topic": "mosaic",
+    "demo": false
+  },
+  {
+    "title": "Dashboard Mosaic Modell)",
+    "text": "Heute können Power User kaum eigene Dashboard bauen, bei denen verschiedene Tabellen aggregiert angebunden werden sollen. Jetzt kann zB FL sich ein Customer Service Dashboard bauen, bei dem unterschiedliche Aggergationen in einem Mosaic Modell verknüpft werden und der Power User nur noch das Dashboard baut. ",
+    "topic": "mosaic",
+    "demo": false
+  },
+  {
+    "title": "DWH E-Report - Customer Monitor",
+    "text": "E-Reports die auf großen Cubes basieren (Customer Monitor, TH, ...) können davon profitieren, wenn die Cubes über Mosaic modelliert werden. Das manuelle joinen im Dashboard entfällt, komplexe Kalkulationen und Definitionen landen im Datenmodell - das Modell kann für diverse Anforderungen genutzt werden und nicht nur für das eine Dashboard",
+    "topic": "mosaic",
+    "demo": false
+  },
+  {
+    "title": "Legacy Report: Admin Bench Dashboard",
+    "text": "Auch auf Cubes basierende Dashboard im Legacy Projekt können stark davon profitieren, im Mosaic Modell modeliert zu werden. Die saubere Ordnerstruktur und der Spot für das Thema (Admin Bench, Claims, ...) bieten ein starkes Modell, das für diverse Anforderungen genutzt werden kann.",
+    "topic": "mosaic",
+    "demo": false
+  },
+  {
+    "title": "Controlling Prompted Reports ersetzen",
+    "text": "Controlling kann ihre Prompted Reports mit Live Mosaic Modellen ersetzen - das war bisher nicht möglich. Ab sofort können die Live-Modelle jedoch auch in Excel genutzt werden, d.h. ein Modell kann in Strategy One für Dashboard aber z.B. auch Excel für schnelle Downloads verwendet werden.",
+    "topic": "mosaic",
+    "demo": false
+  },
+  {
+    "title": "Dachser DWH TEST Anbindung and PROD Produkte",
+    "text": "Durch die Mosaic Modellierung kann einfach neuer Content auf DWH TEST an Produkte auf Strategy One PROD angebunden werden. Damit müssen Power User nicht mehr auf ihren Prod Content verzichten, um zu testen. Durch das einfach kopieren von Mosaic Modellen kann auch einfach eine 2te Version zum Testen erstellt werden. Die Strategy One Testumgebung wird dadurch überflüssig.",
+    "topic": "mosaic",
     "demo": false
   }
 ]
