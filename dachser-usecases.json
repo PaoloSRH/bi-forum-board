@@ -31,12 +31,12 @@
   },
   {
     "title": "Multi-Daten Dashboard Mosaic Modell",
-    "text": "Heute können Power User kaum eigene Dashboard bauen, bei denen verschiedene Daten/Tabellen aggregiert angebunden werden sollen. Mit Mosaic kann zB FL sich ein Customer Service Dashboard bauen, bei dem unterschiedliche Aggergationen in einem Mosaic Modell verknüpft werden und der Power User nur noch den eigentlichen Report baut.",
+    "text": "Heute können Power User kaum eigene Dashboard bauen, bei denen verschiedene Daten / Tabellen aggregiert angebunden werden sollen. Mit Mosaic kann zB FL sich ein Customer Service Dashboard bauen, bei dem unterschiedliche Aggregationen in einem Mosaic Modell verknüpft werden und der Power User nur noch den eigentlichen Report baut.",
     "topic": "mosaic",
     "demo": false
   },
   {
-    "title": "DWH E-Report - Customer Monitor",
+    "title": "DWH Enterprise Report: Customer Monitor",
     "text": "E-Reports die auf großen Cubes basieren (Customer Monitor, TH, ...) können davon profitieren, wenn die Cubes über Mosaic modelliert werden. Das manuelle joinen im Dashboard entfällt, komplexe Kalkulationen und Definitionen landen im Datenmodell - das Modell kann für diverse Anforderungen genutzt werden und nicht nur für das eine Dashboard",
     "topic": "mosaic",
     "demo": false
