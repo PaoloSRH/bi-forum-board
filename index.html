@@ -1419,8 +1419,8 @@ textarea:focus {
       <input id="title" placeholder="z. B. AI Support Assistant" maxlength="100" oninput="updateCharCount('title',100)" />
       <span class="char-count" id="title-char"><span id="title-count">0</span>/100</span>
       <label for="text">Beschreibung</label>
-      <textarea id="text" placeholder="Welches Problem löst der Usecase?" rows="4" maxlength="500" oninput="updateCharCount('text',500)"></textarea>
-      <span class="char-count" id="text-char"><span id="text-count">0</span>/500</span>
+      <textarea id="text" placeholder="Welches Problem löst der Usecase?" rows="4" maxlength="1000" oninput="updateCharCount('text',1000)"></textarea>
+      <span class="char-count" id="text-char"><span id="text-count">0</span>/1000</span>
     </div>
     <div class="modal-actions">
       <button id="saveButton" class="btn" type="button" onclick="addNote()">Speichern</button>
@@ -1632,7 +1632,7 @@ window.openEditModal = (id) => {
   document.getElementById('text').value = n.text || '';
   selectCategory(n.topic || 'agents');
   updateCharCount('title', 100);
-  updateCharCount('text', 500);
+  updateCharCount('text', 1000);
   openDialog('modal');
 };
 
