@@ -1436,7 +1436,7 @@ textarea:focus {
         <h2 id="nameModalTitle">Willkommen</h2>
         <p class="modal-subtitle" id="nameModalSubtitle">Wähle einen Namen und ein Icon für deine Beiträge.</p>
       </div>
-      <button class="icon-action" id="nameModalCloseBtn" type="button" onclick="closeDialog('nameModal')" aria-label="Dialog schließen" style="display:none"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg></button>
+      <button class="icon-action" id="nameModalCloseBtn" type="button" onclick="closeNameModal()" aria-label="Dialog schließen" style="display:none"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg></button>
     </div>
     <label for="username">Dein Name</label>
     <input id="username" placeholder="Dein Name" />
@@ -1643,6 +1643,7 @@ window.closeModal = () => {
 };
 
 window.closeActiveUsersModal = () => closeDialog('activeUsersModal');
+window.closeNameModal = () => closeDialog('nameModal');
 
 window.addNote = async function() {
   const title = document.getElementById('title').value.trim();
