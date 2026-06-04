@@ -282,10 +282,6 @@ textarea:focus-visible,
 }
 
 .topbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-  align-items: stretch;
   margin-bottom: 20px;
 }
 
@@ -329,9 +325,8 @@ textarea:focus-visible,
   border-radius: var(--radius-xl);
   padding: 12px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  min-width: 360px;
 }
 
 .kpi {
@@ -1041,24 +1036,142 @@ textarea:focus {
   }
 }
 
+.hamburger {
+  width: 34px;
+  min-height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.16s ease;
+}
+
+.hamburger:hover {
+  background: var(--surface-soft);
+}
+
+.nav-drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(4px);
+}
+
+.nav-drawer-overlay.open {
+  display: block;
+}
+
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  width: min(300px, 88vw);
+  background: var(--surface-strong);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  padding: 20px;
+  transform: translateX(100%);
+  transition: transform 0.26s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-drawer.open {
+  transform: translateX(0);
+}
+
+.nav-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.nav-drawer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.nav-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  transition: all 0.16s ease;
+}
+
+.nav-drawer-link:hover {
+  background: var(--surface-soft);
+  border-color: var(--border);
+}
+
+.nav-drawer-link.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: transparent;
+}
+
+.nav-drawer-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+}
+
+.category-pills {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+  flex-wrap: wrap;
+}
+
+.category-pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.16s ease;
+}
+
+.category-pill:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.category-pill.selected {
+  background: var(--primary);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+}
+
 @media (max-width: 980px) {
   .header-inner {
     grid-template-columns: 1fr;
     justify-items: center;
   }
 
-  .header-center,
   .header-actions {
     width: 100%;
     justify-content: center;
-  }
-
-  .topbar {
-    grid-template-columns: 1fr;
-  }
-
-  .kpi-strip {
-    min-width: 0;
   }
 }
 
@@ -1074,12 +1187,6 @@ textarea:focus {
   .brand {
     flex-direction: column;
     text-align: center;
-  }
-
-  .nav-shell {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
 
   .user-chip {
@@ -1148,22 +1255,9 @@ textarea:focus {
 <header class="site-header">
   <div class="header-inner">
     <div class="brand">
-            <div class="brand-copy">
+      <div class="brand-copy">
         <p class="brand-title">BI Forum 2026</p>
       </div>
-    </div>
-
-    <div class="header-center">
-      <nav class="nav-shell" aria-label="Themennavigation">
-        <button class="nav-item active" data-tab="agents" type="button" onclick="switchTab('agents')">
-          <span class="nav-icon">A</span>
-          <span>Agents</span>
-        </button>
-        <button class="nav-item" data-tab="mosaic" type="button" onclick="switchTab('mosaic')">
-          <span class="nav-icon">M</span>
-          <span>Mosaic</span>
-        </button>
-      </nav>
     </div>
 
     <div class="header-actions">
@@ -1174,19 +1268,19 @@ textarea:focus {
         <span class="user-chip-icon" aria-hidden="true">👥</span>
         <span class="user-chip-count">0</span>
       </button>
+      <button class="hamburger" type="button" onclick="openNav()" aria-label="Navigation öffnen" aria-haspopup="true">
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none" aria-hidden="true">
+          <rect width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="5.5" width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="11" width="16" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
   </div>
 </header>
 
 <main class="page-shell">
-  <section class="topbar" aria-label="Board Überblick">
-    <div class="hero-card">
-      <div class="hero-copy">
-        <h1 id="boardTitle">Agents Board</h1>
-        <p id="boardSubtitle">Sammle gute Ideen, priorisiere spannende Usecases und halte Diskussionen an einem Ort zusammen.</p>
-      </div>
-    </div>
-
+  <div class="topbar">
     <div class="kpi-strip" aria-label="Kennzahlen">
       <div class="kpi">
         <span class="kpi-label">Usecases</span>
@@ -1201,7 +1295,7 @@ textarea:focus {
         <span class="kpi-value" id="kpiUsers">0</span>
       </div>
     </div>
-  </section>
+  </div>
 
   <section>
     <div id="board" class="board-grid" aria-live="polite"></div>
@@ -1220,6 +1314,11 @@ textarea:focus {
       <button class="icon-action" type="button" onclick="closeModal()" aria-label="Dialog schließen">✕</button>
     </div>
     <div class="modal-form">
+      <label>Kategorie</label>
+      <div class="category-pills">
+        <button type="button" class="category-pill selected" data-category="agents" onclick="selectCategory('agents')">Agents</button>
+        <button type="button" class="category-pill" data-category="mosaic" onclick="selectCategory('mosaic')">Mosaic</button>
+      </div>
       <label for="title">Titel</label>
       <input id="title" placeholder="z. B. AI Support Assistant" />
       <label for="text">Beschreibung</label>
@@ -1266,6 +1365,19 @@ textarea:focus {
   </div>
 </div>
 
+<div class="nav-drawer-overlay" id="navOverlay" onclick="closeNav()"></div>
+<aside class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="nav-drawer-header">
+    <p class="nav-drawer-title">Navigation</p>
+    <button class="icon-action" type="button" onclick="closeNav()" aria-label="Navigation schließen">✕</button>
+  </div>
+  <nav>
+    <button class="nav-drawer-link active" type="button">Board</button>
+    <div class="nav-drawer-divider"></div>
+    <button class="nav-drawer-link" type="button" style="opacity:0.45; cursor:default;" disabled>Weitere Seiten folgen …</button>
+  </nav>
+</aside>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, increment, onSnapshot, query, where, getDocs, getDoc, serverTimestamp, orderBy, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -1283,7 +1395,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const BOARD_ID = "bi-forum-2026";
 
-let currentTab = "agents";
+let selectedCategory = "agents";
 let editingNoteId = null;
 let selectedIcon = "●";
 let unsubscribeNotes = null;
@@ -1335,14 +1447,25 @@ function escapeHtml(text){
 
 function topicMeta(tab) {
   return tab === 'agents'
-    ? { label: 'Agents', short: 'A', subtitle: 'Erstelle Chatbots oder Agenten, die auch spezifische Aufgaben übernehmen können.' }
-    : { label: 'Mosaic', short: 'M', subtitle: 'Erstelle ad-hoc ein spezifisches Datenmodell, welches für diverse Anwendungen verwendet werden kann.' };
+    ? { label: 'Agents', short: 'A' }
+    : { label: 'Mosaic', short: 'M' };
 }
 
-function setBoardCopy() {
-  const meta = topicMeta(currentTab);
-  document.getElementById('boardTitle').textContent = `${meta.label} Board`;
-  document.getElementById('boardSubtitle').textContent = meta.subtitle;
+window.openNav = function() {
+  document.getElementById('navOverlay').classList.add('open');
+  document.getElementById('navDrawer').classList.add('open');
+}
+
+window.closeNav = function() {
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('navDrawer').classList.remove('open');
+}
+
+window.selectCategory = function(cat) {
+  selectedCategory = cat;
+  document.querySelectorAll('.category-pill').forEach(el => {
+    el.classList.toggle('selected', el.dataset.category === cat);
+  });
 }
 
 function openDialog(id) {
@@ -1355,22 +1478,13 @@ function closeDialog(id) {
   if (el) el.classList.remove('open');
 }
 
-window.switchTab = function(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  setBoardCopy();
-  updateUserDisplay();
-  subscribe();
-}
-
 window.openModal = () => {
   editingNoteId = null;
   document.getElementById('modalTitle').textContent = 'Neuer Usecase';
   document.getElementById('saveButton').textContent = 'Speichern';
   document.getElementById('title').value = '';
   document.getElementById('text').value = '';
+  selectCategory(selectedCategory);
   openDialog('modal');
 };
 
@@ -1402,7 +1516,7 @@ window.addNote = async function() {
   const noteData = {
     title,
     text,
-    topic: currentTab,
+    topic: selectedCategory,
     author: getCurrentUser(),
   };
 
@@ -1647,7 +1761,7 @@ async function updateAllCommentCounts(notes) {
 function createNoteCard(n, currentUser, isFeatured = false) {
   const hasVoted = (n.votedBy || []).includes(currentUser);
   const isAuthor = n.author === currentUser;
-  const meta = topicMeta(n.topic || currentTab);
+  const meta = topicMeta(n.topic || selectedCategory);
   const safeTitle = escapeHtml(n.title || 'Ohne Titel');
   const safeText = escapeHtml(n.text || '');
   const safeAuthor = escapeHtml(n.author || 'Unbekannt');
@@ -1701,7 +1815,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
 
 function subscribe(){
   if (unsubscribeNotes) unsubscribeNotes();
-  const q = query(collection(db,'boards',BOARD_ID,'notes'), where('topic','==',currentTab));
+  const q = query(collection(db,'boards',BOARD_ID,'notes'));
 
   unsubscribeNotes = onSnapshot(q, async (snap) => {
     let notes = snap.docs.map(d => ({...d.data(), id:d.id}));
@@ -1738,10 +1852,10 @@ window.addEventListener('keydown', (event) => {
     closeModal();
     closeDialog('nameModal');
     closeActiveUsersModal();
+    closeNav();
   }
 });
 
-setBoardCopy();
 updateUserDisplay();
 checkUsername();
 </script>
