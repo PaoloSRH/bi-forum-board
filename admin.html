@@ -665,6 +665,8 @@ function escapeHtml(t) {
   return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+const adminNotesData = {};
+
 function subscribeNotesList() {
   const listEl  = document.getElementById('noteList');
   const countEl = document.getElementById('listCount');
@@ -673,6 +675,7 @@ function subscribeNotesList() {
       .map(d => ({ ...d.data(), id: d.id }))
       .sort((a, b) => (b.votes || 0) - (a.votes || 0));
 
+    notes.forEach(n => { adminNotesData[n.id] = n; });
     countEl.textContent = `${notes.length} Usecase${notes.length !== 1 ? 's' : ''}`;
 
     if (notes.length === 0) {
@@ -697,7 +700,7 @@ function subscribeNotesList() {
             ${n.commentsCount || 0}
           </span>
         </span>
-        <button class="note-row-delete" type="button" onclick="adminDeleteNote('${n.id}', ${JSON.stringify(escapeHtml(n.title || 'Ohne Titel'))})" aria-label="Löschen">
+        <button class="note-row-delete" type="button" onclick="adminDeleteNote('${n.id}')" aria-label="Löschen">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V2.5h4V4"/><path d="M11.5 4 11 12H3L2.5 4"/><path d="M5.5 7v3M8.5 7v3"/></svg>
         </button>
       </div>
@@ -705,7 +708,8 @@ function subscribeNotesList() {
   });
 }
 
-window.adminDeleteNote = async function(id, title) {
+window.adminDeleteNote = async function(id) {
+  const title = adminNotesData[id]?.title || 'Ohne Titel';
   if (!confirm(`"${title}" wirklich löschen?`)) return;
   try {
     const commentsSnap = await getDocs(collection(db, 'boards', BOARD_ID, 'notes', id, 'comments'));
