@@ -79,9 +79,15 @@
 }
 * { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; }
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  animation: pageFadeIn 0.28s ease;
   font-family: "Inter", system-ui, sans-serif;
   color: var(--text);
   background:
@@ -920,6 +926,19 @@ window.exportCSV = async function() {
     btn.disabled = false;
   }
 }
+
+function navigateTo(url) {
+  document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+  document.body.style.opacity = '0';
+  document.body.style.transform = 'translateY(-4px)';
+  setTimeout(() => { window.location.href = url; }, 200);
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a || a.target || a.getAttribute('href').startsWith('#')) return;
+  const href = a.getAttribute('href');
+  if (href && !href.startsWith('http')) { e.preventDefault(); navigateTo(a.href); }
+});
 </script>
 </body>
 </html>

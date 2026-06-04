@@ -97,11 +97,17 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: "Inter", system-ui, sans-serif;
   color: var(--text);
+  animation: pageFadeIn 0.28s ease;
   background:
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 22%),
     radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 18%),
@@ -380,10 +386,15 @@ textarea:focus-visible,
   border-color: var(--border-strong);
 }
 
-.note.featured {
-  border-color: rgba(37, 99, 235, 0.24);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 78%, var(--primary-soft)) 0%, var(--surface) 100%);
-  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.14);
+.note--agents.featured {
+  border-color: rgba(37,99,235,0.35);
+  background: linear-gradient(160deg, rgba(37,99,235,0.07) 0%, var(--surface) 55%);
+  box-shadow: 0 22px 52px rgba(37,99,235,0.18);
+}
+.note--mosaic.featured {
+  border-color: rgba(124,58,237,0.35);
+  background: linear-gradient(160deg, rgba(124,58,237,0.07) 0%, var(--surface) 55%);
+  box-shadow: 0 22px 52px rgba(124,58,237,0.18);
 }
 
 .note--agents { border-left: 4px solid rgba(37, 99, 235, 0.55); }
@@ -1172,8 +1183,46 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
 .board-toolbar {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 14px;
+  flex-wrap: wrap;
 }
+
+.filter-pills {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.filter-pill {
+  padding: 5px 12px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.16s ease;
+}
+.filter-pill:hover { color: var(--text); }
+.filter-pill.active { background: var(--surface-strong); border-color: var(--border); color: var(--text); box-shadow: var(--shadow-sm); }
+.filter-pill[data-filter="agents"].active { color: #2563eb; background: rgba(37,99,235,0.10); border-color: rgba(37,99,235,0.2); }
+.filter-pill[data-filter="mosaic"].active  { color: #7c3aed; background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.2); }
+[data-theme="dark"] .filter-pill[data-filter="agents"].active { color: #60a5fa; }
+[data-theme="dark"] .filter-pill[data-filter="mosaic"].active  { color: #a78bfa; }
+
+.featured-badge {
+  margin-left: auto; flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em;
+  color: #d97706; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);
+}
+[data-theme="dark"] .featured-badge { color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.22); }
 
 .sort-btn {
   display: inline-flex;
@@ -1342,6 +1391,11 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
     </div>
   </div>
   <div class="board-toolbar">
+    <div class="filter-pills" role="group" aria-label="Kategorie filtern">
+      <button class="filter-pill active" type="button" data-filter="all"    onclick="setFilter('all')">Alle</button>
+      <button class="filter-pill"        type="button" data-filter="agents" onclick="setFilter('agents')">Agents</button>
+      <button class="filter-pill"        type="button" data-filter="mosaic" onclick="setFilter('mosaic')">Mosaic</button>
+    </div>
     <button class="sort-btn" type="button" id="sortToggle" onclick="toggleSort()">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v10M2 9l2 3 2-3M10 12V2M8 5l2-3 2 3"/></svg>
       <span id="sortLabel">Meiste Votes</span>
@@ -1443,24 +1497,24 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
     <button class="icon-action" type="button" onclick="closeNav()" aria-label="Navigation schließen"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg></button>
   </div>
   <nav>
-    <button class="nav-drawer-link active" type="button">
+    <a class="nav-drawer-link active" href="index.html">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h6M5 10h4"/></svg>
       Usecases
-    </button>
-    <button class="nav-drawer-link" type="button" onclick="window.location.href='roadmap.html'">
+    </a>
+    <a class="nav-drawer-link" href="roadmap.html">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12 5 4l4 5 3-3 2 6"/><circle cx="5" cy="4" r="1" fill="currentColor" stroke="none"/></svg>
       Roadmap Mosaic
-    </button>
+    </a>
     <div class="nav-drawer-divider"></div>
     <a class="nav-drawer-link" href="profile.html">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
       Profil bearbeiten
     </a>
     <div class="nav-drawer-divider"></div>
-    <button class="nav-drawer-link" type="button" onclick="window.location.href='admin.html'">
+    <a class="nav-drawer-link" href="admin.html">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
       Admin
-    </button>
+    </a>
   </nav>
 </aside>
 
@@ -1487,6 +1541,7 @@ let selectedIcon = "●";
 let unsubscribeNotes = null;
 let themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 let sortBy = 'votes';
+let filterBy = 'all';
 let lastNotes = [];
 let pendingDeleteId = null;
 const commentSubscriptions = new Map();
@@ -1943,10 +1998,19 @@ function renderNotes(notes) {
   commentSubscriptions.forEach(unsub => unsub());
   commentSubscriptions.clear();
   const currentUser = getCurrentUser();
-  const sorted = sortNotes(notes);
-  document.getElementById('board').innerHTML = sorted
-    .map((n, i) => createNoteCard(n, currentUser, i === 0 && (n.votes || 0) > 0 && sortBy === 'votes'))
-    .join('');
+  const filtered = filterBy === 'all' ? notes : notes.filter(n => n.topic === filterBy);
+  const sorted = sortNotes(filtered);
+  if (sorted.length === 0) {
+    document.getElementById('board').innerHTML = `
+      <div class="empty-state">
+        <h3>Keine Usecases in dieser Kategorie</h3>
+        <p>Wechsle den Filter oder erstelle einen neuen Usecase.</p>
+      </div>`;
+  } else {
+    document.getElementById('board').innerHTML = sorted
+      .map((n, i) => createNoteCard(n, currentUser, i === 0 && (n.votes || 0) > 0 && sortBy === 'votes'))
+      .join('');
+  }
   openCommentIds.forEach(noteId => {
     if (document.getElementById(`comments-${noteId}`)) subscribeComments(noteId);
   });
@@ -1957,6 +2021,14 @@ window.toggleSort = function() {
   const next = SORT_OPTIONS[(idx + 1) % SORT_OPTIONS.length];
   sortBy = next.key;
   document.getElementById('sortLabel').textContent = next.label;
+  if (lastNotes.length) renderNotes(lastNotes);
+}
+
+window.setFilter = function(filter) {
+  filterBy = filter;
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
   if (lastNotes.length) renderNotes(lastNotes);
 }
 
@@ -2000,6 +2072,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
             <span class="eyebrow-author">${safeAuthor}</span>
             <span class="eyebrow-sep">·</span>
             <span class="note-ts" data-ts="${n.ts?.seconds || 0}">${formatTimestamp(n.ts)}</span>
+            ${isFeatured ? `<span class="featured-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M5 .5 6.2 3.6l3.3.3-2.4 2.1.7 3.2L5 7.6l-2.8 1.6.7-3.2L.5 3.9l3.3-.3z"/></svg> #1</span>` : ''}
           </div>
           <h2 class="note-title ${isAuthor ? 'editable' : ''}" ${isAuthor ? `onclick="${editHandler}"` : ''}>${safeTitle}</h2>
         </div>
@@ -2084,6 +2157,23 @@ function refreshTimestamps() {
 }
 
 setInterval(refreshTimestamps, 60_000);
+
+function navigateTo(url) {
+  document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+  document.body.style.opacity = '0';
+  document.body.style.transform = 'translateY(-4px)';
+  setTimeout(() => { window.location.href = url; }, 200);
+}
+
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a || a.target || a.href.includes('#') || a.href.startsWith('javascript')) return;
+  const url = a.getAttribute('href');
+  if (url && !url.startsWith('http') || a.hostname === location.hostname) {
+    e.preventDefault();
+    navigateTo(a.href);
+  }
+});
 
 updateUserDisplay();
 checkUsername();
