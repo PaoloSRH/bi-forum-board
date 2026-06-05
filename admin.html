@@ -976,7 +976,9 @@ window.exportCSV = async function() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `bi-forum-export-${new Date().toISOString().slice(0,10)}.xlsx`;
+    const today = new Date();
+    const dateStr = `${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${today.getFullYear()}`;
+    a.download = `BI Forum 2026 - Agents and Mosaic - ${dateStr}.xlsx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
