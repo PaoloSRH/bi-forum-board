@@ -594,8 +594,8 @@ function updateEventStatus() {
     const diff = new Date('2026-06-10T09:00:00') - now;
     const days = Math.floor(diff / 86400000);
     const hours = Math.floor((diff % 86400000) / 3600000);
-    text = days > 0 ? `BI Forum Agents & Mosaic Sessions starten in ${days} Tag${days!==1?'en':''}`
-                    : `BI Forum Agents & Mosaic Sessions starten in ${hours} Stunde${hours!==1?'n':''}`;
+    text = days > 0 ? `Start der Session in ${days} Tag${days!==1?'en':''}`
+                    : `Start der Session in ${hours} Stunde${hours!==1?'n':''}`;
     cls = 'future';
   } else if (today === EVENT_DATE) {
     if (cur < S1_START) {
