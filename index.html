@@ -2021,7 +2021,7 @@ function animateCount(el, to) {
   if (from === to) return;
   const start = performance.now();
   const tick = (now) => {
-    const p = Math.min((now - start) / 520, 1);
+    const p = Math.min((now - start) / 1200, 1);
     const eased = 1 - Math.pow(1 - p, 3);
     el.textContent = Math.round(from + (to - from) * eased);
     if (p < 1) requestAnimationFrame(tick);
