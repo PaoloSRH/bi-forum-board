@@ -2414,7 +2414,7 @@ function createNoteCard(n, currentUser, isFeatured = false) {
             <span class="eyebrow-sep">·</span>
             <span class="note-ts" data-ts="${n.ts?.seconds || 0}">${formatTimestamp(n.ts)}</span>
             ${n.demo ? `<span class="eyebrow-sep">·</span><span class="demo-label">Demo</span>` : ''}
-            ${n.ts && (Date.now()/1000 - (n.ts.seconds||0)) < 600 ? `<span class="new-badge">Neu</span>` : ''}
+            ${n.ts && (Date.now()/1000 - (n.ts.seconds||0)) < 1200 ? `<span class="new-badge">Neu</span>` : ''}
             ${isFeatured ? `<span class="featured-badge"><svg width="9" height="9" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M5 .5 6.2 3.6l3.3.3-2.4 2.1.7 3.2L5 7.6l-2.8 1.6.7-3.2L.5 3.9l3.3-.3z"/></svg> #1</span>` : ''}
           </div>
           <h2 class="note-title">${safeTitle}</h2>
