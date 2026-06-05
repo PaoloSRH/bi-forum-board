@@ -70,9 +70,8 @@ input { cursor: text; }
 }
 .header-inner {
   max-width: 1160px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  display: flex; justify-content: flex-end; align-items: center; gap: 6px;
 }
-.brand-title { margin: 0; font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; }
 .header-actions { display: flex; align-items: center; gap: 6px; }
 .theme-toggle, .hamburger {
   min-height: 32px; border-radius: 10px; border: 1px solid var(--border);
@@ -120,16 +119,18 @@ input { cursor: text; }
 /* Page */
 .page-shell { max-width: var(--content); margin: 0 auto; padding: 40px 16px 80px; }
 
+.page-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
+}
+
 /* Profile card */
 .profile-card {
-  padding: 32px;
-  border-radius: var(--radius-xl);
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
+  padding: 0;
 }
 .profile-card h1 {
-  margin: 0 0 6px; font-size: 1.3rem; letter-spacing: -0.03em;
+  margin: 0 0 6px; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em;
 }
 .profile-card > p {
   margin: 0 0 28px; color: var(--text-muted); font-size: 0.9rem;
@@ -170,7 +171,7 @@ a.nav-drawer-link:visited { text-decoration: none; }
 [data-theme="dark"] .autosave-hint.visible { color: #4ade80; }
 
 @media (max-width: 640px) {
-  .profile-card { padding: 22px; }
+  .profile-card { padding: 0; }
   .icon-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .icon-option { font-size: 1.1rem; padding: 7px 4px; }
 }
@@ -234,9 +235,15 @@ a.nav-drawer-link:visited { text-decoration: none; }
 </aside>
 
 <main class="page-shell">
+  <div style="text-align:center; padding: 28px 0 20px;">
+    <div class="page-eyebrow">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+      BI FORUM 2026: Agents &amp; Mosaic
+    </div>
+    <h1 style="margin:0 0 8px;font-size:1.8rem;font-weight:800;letter-spacing:-0.04em;">Profil bearbeiten</h1>
+    <p style="margin:0;color:var(--text-muted);font-size:0.95rem;">Ändere deinen Namen oder wähle ein neues Profilbild.</p>
+  </div>
   <div class="profile-card">
-    <h1>Profil bearbeiten</h1>
-    <p>Ändere deinen Namen oder wähle ein neues Profilbild.</p>
 
     <label for="username">Dein Name</label>
     <input class="input-name" id="username" type="text" placeholder="Dein Name" autocomplete="off" />
