@@ -151,6 +151,47 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   line-height: 1.65; max-width: 52ch;
 }
 
+/* Day progress */
+.day-progress-wrap {
+  margin-bottom: 28px; padding: 18px 20px;
+  border-radius: 22px; background: var(--surface);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.day-progress-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px; font-size: 0.76rem; font-weight: 700;
+  color: var(--text-muted); letter-spacing: 0.02em;
+}
+.day-progress-track {
+  height: 10px; border-radius: 5px;
+  background: var(--surface-soft); border: 1px solid var(--border);
+  overflow: visible; position: relative;
+}
+.day-progress-bar {
+  height: 100%; border-radius: 5px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative; min-width: 0;
+}
+.day-progress-marker {
+  position: absolute; top: -3px; width: 2px; height: 16px;
+  background: var(--border-strong); border-radius: 1px;
+}
+.day-progress-marker-label {
+  position: absolute; top: 18px; font-size: 0.68rem;
+  font-weight: 600; color: var(--text-soft); white-space: nowrap;
+  transform: translateX(-50%);
+}
+.event-status {
+  margin-top: 12px; text-align: center;
+  font-size: 0.88rem; font-weight: 700; letter-spacing: 0.01em;
+}
+.event-status.active   { color: var(--success); }
+.event-status.upcoming { color: var(--primary); }
+.event-status.break    { color: var(--s2); }
+.event-status.done     { color: var(--text-muted); }
+.event-status.future   { color: var(--text-muted); }
+
 /* Sessions */
 .sessions { display: grid; gap: 16px; margin-bottom: 40px; }
 
@@ -383,6 +424,26 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
     <p>Heute früh dreht sich alles um <strong>Strategy One Agents &amp; Mosaic</strong> — von der Vorstellung der Themen bis zum eigenen Ausprobieren. Nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
   </div>
 
+  <!-- Day progress -->
+  <div class="day-progress-wrap">
+    <div class="day-progress-header">
+      <span>09:00</span>
+      <span>10. Juni 2026</span>
+      <span>12:30</span>
+    </div>
+    <div class="day-progress-track" id="progressTrack">
+      <div class="day-progress-bar" id="progressBar" style="width:0%"></div>
+      <!-- Markers: 10:30 = 42.9%, 11:00 = 57.1% of 09:00–12:30 -->
+      <div class="day-progress-marker" style="left:42.86%">
+        <span class="day-progress-marker-label">10:30</span>
+      </div>
+      <div class="day-progress-marker" style="left:57.14%">
+        <span class="day-progress-marker-label">11:00</span>
+      </div>
+    </div>
+    <div class="event-status" id="eventStatus">—</div>
+  </div>
+
   <!-- Sessions -->
   <div class="sessions">
 
@@ -498,25 +559,82 @@ function navigateTo(url) {
   document.body.style.transform = 'translateY(-4px)';
   setTimeout(() => { window.location.href = url; }, 200);
 }
-function updateSessionStatus() {
-  const now = new Date();
-  const mins = now.getHours() * 60 + now.getMinutes();
-  document.querySelectorAll('.session-live').forEach(el => el.remove());
-  const active = (mins >= 9*60 && mins < 10*60+30) ? '.session-1 .session-top'
-               : (mins >= 11*60 && mins < 12*60+30) ? '.session-2 .session-top'
-               : null;
-  if (active) {
-    const top = document.querySelector(active);
-    if (top) {
-      const badge = document.createElement('span');
-      badge.className = 'session-live';
-      badge.textContent = 'Läuft gerade';
-      top.appendChild(badge);
-    }
-  }
+const EVENT_DATE = '2026-06-10';
+const S1_START = 9*60, S1_END = 10*60+30;
+const S2_START = 11*60, S2_END = 12*60+30;
+const DAY_DURATION = S2_END - S1_START; // 210 min
+
+function formatCountdown(mins) {
+  if (mins <= 0) return '0min';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? (m > 0 ? `${h}h ${m}min` : `${h}h`) : `${m}min`;
 }
-updateSessionStatus();
-setInterval(updateSessionStatus, 60_000);
+
+function updateEventStatus() {
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const cur = now.getHours() * 60 + now.getMinutes();
+  const statusEl = document.getElementById('eventStatus');
+  const barEl    = document.getElementById('progressBar');
+
+  // Progress bar
+  let pct = 0;
+  if (today === EVENT_DATE && cur >= S1_START && cur <= S2_END)
+    pct = Math.min(100, ((cur - S1_START) / DAY_DURATION) * 100);
+  else if (today > EVENT_DATE || cur > S2_END) pct = 100;
+  if (barEl) barEl.style.width = pct + '%';
+
+  // Live session badges
+  document.querySelectorAll('.session-live').forEach(el => el.remove());
+
+  // Status text
+  let text = '', cls = 'future';
+
+  if (today < EVENT_DATE) {
+    const diff = new Date('2026-06-10T09:00:00') - now;
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    text = days > 0 ? `BI Forum startet in ${days} Tag${days!==1?'en':''}`
+                    : `BI Forum startet in ${hours} Stunde${hours!==1?'n':''}`;
+    cls = 'future';
+  } else if (today === EVENT_DATE) {
+    if (cur < S1_START) {
+      text = `Session 1 startet in ${formatCountdown(S1_START - cur)}`;
+      cls = 'upcoming';
+    } else if (cur < S1_END) {
+      addLiveBadge('.session-1 .session-top');
+      text = `Session 1 läuft — noch ${formatCountdown(S1_END - cur)}`;
+      cls = 'active';
+    } else if (cur < S2_START) {
+      text = `Pause · Session 2 startet in ${formatCountdown(S2_START - cur)}`;
+      cls = 'break';
+    } else if (cur < S2_END) {
+      addLiveBadge('.session-2 .session-top');
+      text = `Session 2 läuft — noch ${formatCountdown(S2_END - cur)}`;
+      cls = 'active';
+    } else {
+      text = 'BI Forum 2026 — Sessions abgeschlossen';
+      cls = 'done';
+    }
+  } else {
+    text = 'BI Forum 2026 — abgeschlossen';
+    cls = 'done';
+  }
+
+  if (statusEl) { statusEl.textContent = text; statusEl.className = `event-status ${cls}`; }
+}
+
+function addLiveBadge(selector) {
+  const top = document.querySelector(selector);
+  if (!top) return;
+  const badge = document.createElement('span');
+  badge.className = 'session-live';
+  badge.textContent = 'Läuft gerade';
+  top.appendChild(badge);
+}
+
+updateEventStatus();
+setInterval(updateEventStatus, 60_000);
 
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href]');
