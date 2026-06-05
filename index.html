@@ -391,6 +391,47 @@ textarea:focus-visible,
   100% { background-position:  200% 0; }
 }
 
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+@keyframes dotPop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.note--entering {
+  animation: cardSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) var(--entry-delay, 0s) both;
+}
+
+.vote-dot--pop {
+  animation: dotPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 96px;
+  z-index: 29;
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text-muted);
+  display: inline-grid;
+  place-items: center;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.22s ease, transform 0.22s ease, color 0.16s ease, background 0.16s ease;
+  pointer-events: none;
+  cursor: pointer;
+}
+.back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top:hover { color: var(--text); background: var(--surface-soft); }
+
 .skeleton-card {
   min-height: 260px;
   padding: 22px;
@@ -1503,6 +1544,10 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
   </section>
 </main>
 
+<button class="back-to-top" id="backToTop" aria-label="Nach oben" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9 7 4l5 5"/></svg>
+</button>
+
 <button class="fab" type="button" onclick="openModal()" aria-label="Neuen Usecase erstellen">
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 4v14M4 11h14"/></svg>
 </button>
@@ -1657,6 +1702,7 @@ const BOARD_ID = "bi-forum-2026";
 
 let selectedCategory = "agents";
 let editingNoteId = null;
+let pendingScrollNoteId = null;
 let selectedIcon = "●";
 let unsubscribeNotes = null;
 let themeMode = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -1859,13 +1905,14 @@ window.addNote = async function() {
       });
       showToast('Usecase aktualisiert');
     } else {
-      await addDoc(collection(db,'boards',BOARD_ID,'notes'), {
+      const newRef = await addDoc(collection(db,'boards',BOARD_ID,'notes'), {
         ...noteData,
         votes: 0,
         votedBy: [],
         commentsCount: 0,
         ts: serverTimestamp(),
       });
+      pendingScrollNoteId = newRef.id;
       showToast('Usecase hinzugefügt');
     }
     closeModal();
@@ -2113,6 +2160,17 @@ window.vote = async function(id){
     } else {
       const countEl = document.getElementById(`vote-count-${id}`);
       if (countEl) { countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump'); }
+      // Dot pop animation
+      const noteEl = document.getElementById(`note-${id}`);
+      if (noteEl) {
+        const dot = noteEl.querySelectorAll('.vote-dot')[newCount - 1];
+        if (dot) { dot.classList.remove('vote-dot--pop'); void dot.offsetWidth; dot.classList.add('vote-dot--pop'); }
+      }
+      // Confetti on max votes
+      if (newCount === 3) {
+        const btn = document.querySelector(`#note-${id} .vote-toggle`);
+        if (btn) launchConfetti(btn);
+      }
     }
   } catch(err) {
     showToast('Fehler beim Voten');
@@ -2190,9 +2248,17 @@ function renderNotes(notes) {
   const openCommentIds = [...commentSubscriptions.keys()];
   commentSubscriptions.forEach(unsub => unsub());
   commentSubscriptions.clear();
+
+  // FLIP — record First positions of existing cards
+  const firstPos = {};
+  document.querySelectorAll('#board .note[id]').forEach(el => {
+    firstPos[el.id] = el.getBoundingClientRect().top;
+  });
+
   const currentUser = getCurrentUser();
   const filtered = filterBy === 'all' ? notes : notes.filter(n => n.topic === filterBy);
   const sorted = sortNotes(filtered);
+
   if (sorted.length === 0) {
     document.getElementById('board').innerHTML = `
       <div class="empty-state">
@@ -2203,7 +2269,42 @@ function renderNotes(notes) {
     document.getElementById('board').innerHTML = sorted
       .map((n, i) => createNoteCard(n, currentUser, i === 0 && (n.votes || 0) > 0 && sortBy === 'votes'))
       .join('');
+
+    const hasExisting = Object.keys(firstPos).length > 0;
+    document.querySelectorAll('#board .note[id]').forEach((el, i) => {
+      const first = firstPos[el.id];
+      if (first !== undefined && hasExisting) {
+        // Existing card: FLIP animation
+        const delta = first - el.getBoundingClientRect().top;
+        if (Math.abs(delta) > 2) {
+          el.style.transform = `translateY(${delta}px)`;
+          el.style.transition = 'none';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            el.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            el.style.transform = '';
+            setTimeout(() => { el.style.transition = ''; }, 420);
+          }));
+        }
+      } else {
+        // New card: staggered entry animation
+        el.style.setProperty('--entry-delay', `${i * 0.05}s`);
+        el.classList.add('note--entering');
+      }
+    });
+
+    // Scroll to newly created card
+    if (pendingScrollNoteId) {
+      const newCard = document.getElementById(`note-${pendingScrollNoteId}`);
+      if (newCard) {
+        setTimeout(() => {
+          newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          newCard.classList.add('just-added');
+        }, 250);
+        pendingScrollNoteId = null;
+      }
+    }
   }
+
   openCommentIds.forEach(noteId => {
     if (document.getElementById(`comments-${noteId}`)) subscribeComments(noteId);
   });
@@ -2387,6 +2488,37 @@ document.getElementById('board').addEventListener('click', e => {
   note.appendChild(ripple);
   setTimeout(() => ripple.remove(), 560);
 });
+
+function launchConfetti(originEl) {
+  const rect = originEl.getBoundingClientRect();
+  const colors = ['#fbbf24','#f59e0b','#60a5fa','#a78bfa','#34d399','#f87171'];
+  for (let i = 0; i < 24; i++) {
+    const p = document.createElement('div');
+    const size = 4 + Math.random() * 5;
+    p.style.cssText = `position:fixed;z-index:9999;width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'2px'};
+      left:${rect.left+rect.width/2}px;top:${rect.top+rect.height/2}px;
+      pointer-events:none;`;
+    document.body.appendChild(p);
+    const angle = Math.random() * 2 * Math.PI;
+    const speed = 70 + Math.random() * 110;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed - 120;
+    let t = 0;
+    const tick = setInterval(() => {
+      t += 0.016;
+      const opacity = Math.max(0, 1 - t * 1.6);
+      p.style.transform = `translate(${vx*t}px,${vy*t + 160*t*t}px) rotate(${t*360}deg)`;
+      p.style.opacity = opacity;
+      if (opacity <= 0) { clearInterval(tick); p.remove(); }
+    }, 16);
+  }
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop')?.classList.toggle('visible', window.scrollY > 320);
+}, { passive: true });
 
 function navigateTo(url) {
   document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
