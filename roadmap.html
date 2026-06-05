@@ -10,24 +10,15 @@
 <style>
 :root, [data-theme="light"] {
   color-scheme: light;
-  --bg: #f4f7fb;
-  --bg-elevated: #eef3f8;
-  --surface: rgba(255,255,255,0.82);
-  --surface-strong: #ffffff;
-  --surface-soft: #f8fafc;
-  --border: rgba(15,23,42,0.08);
-  --border-strong: rgba(15,23,42,0.14);
-  --text: #0f172a;
-  --text-muted: #64748b;
-  --text-soft: #94a3b8;
-  --primary: #7c3aed;
-  --primary-hover: #6d28d9;
-  --primary-soft: rgba(124,58,237,0.10);
-  --shadow-sm: 0 2px 8px rgba(15,23,42,0.04);
-  --shadow-md: 0 12px 30px rgba(15,23,42,0.08);
+  --bg: #f4f7fb; --bg-elevated: #eef3f8;
+  --surface: rgba(255,255,255,0.82); --surface-strong: #ffffff; --surface-soft: #f8fafc;
+  --border: rgba(15,23,42,0.08); --border-strong: rgba(15,23,42,0.14);
+  --text: #0f172a; --text-muted: #64748b; --text-soft: #94a3b8;
+  --primary: #7c3aed; --primary-hover: #6d28d9; --primary-soft: rgba(124,58,237,0.10);
+  --success: #15803d; --success-soft: rgba(21,128,61,0.10);
+  --shadow-sm: 0 2px 8px rgba(15,23,42,0.04); --shadow-md: 0 12px 30px rgba(15,23,42,0.08);
   --shadow-lg: 0 18px 50px rgba(15,23,42,0.12);
-  --radius-xl: 28px;
-  --content: 860px;
+  --radius-xl: 28px; --content: 860px;
 }
 [data-theme="dark"] {
   color-scheme: dark;
@@ -36,6 +27,7 @@
   --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
   --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
   --primary: #a78bfa; --primary-hover: #8b5cf6; --primary-soft: rgba(167,139,250,0.14);
+  --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
   --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
 }
@@ -47,24 +39,23 @@
     --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
     --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
     --primary: #a78bfa; --primary-hover: #8b5cf6; --primary-soft: rgba(167,139,250,0.14);
+    --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
     --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
   }
 }
 
-* { box-sizing: border-box; }
-html { -webkit-font-smoothing: antialiased; }
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0;
-  min-height: 100vh;
+  margin: 0; min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif; color: var(--text);
   animation: pageFadeIn 0.28s ease;
-  font-family: "Inter", system-ui, sans-serif;
-  color: var(--text);
   background:
     radial-gradient(circle at top left, rgba(124,58,237,0.10), transparent 22%),
     radial-gradient(circle at top right, rgba(139,92,246,0.07), transparent 18%),
@@ -75,22 +66,20 @@ a { color: inherit; }
 
 /* Header */
 .site-header {
-  position: sticky; top: 0; z-index: 40;
-  padding: 8px 16px;
+  position: sticky; top: 0; z-index: 40; padding: 8px 16px;
   backdrop-filter: blur(20px);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   border-bottom: 1px solid var(--border);
 }
 .header-inner {
   max-width: var(--content); margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto;
-  gap: 10px; align-items: center;
+  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
 }
 .brand-title { margin: 0; font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; }
 .header-actions { display: flex; align-items: center; gap: 6px; }
 .theme-toggle, .hamburger {
-  min-height: 32px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  min-height: 32px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
   display: inline-grid; place-items: center; transition: all 0.16s ease;
 }
 .theme-toggle { width: 34px; }
@@ -105,10 +94,9 @@ a { color: inherit; }
 .nav-drawer-overlay.open { display: block; }
 .nav-drawer {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 60;
-  width: min(300px, 88vw);
-  background: var(--surface-strong); border-left: 1px solid var(--border);
-  box-shadow: var(--shadow-lg); padding: 20px;
-  transform: translateX(100%); transition: transform 0.26s ease;
+  width: min(300px, 88vw); background: var(--surface-strong);
+  border-left: 1px solid var(--border); box-shadow: var(--shadow-lg);
+  padding: 20px; transform: translateX(100%); transition: transform 0.26s ease;
   display: flex; flex-direction: column;
 }
 .nav-drawer.open { transform: translateX(0); }
@@ -117,22 +105,21 @@ a { color: inherit; }
 }
 .nav-drawer-title { font-size: 1rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
 .nav-drawer-close {
-  width: 34px; height: 34px; border-radius: 10px;
-  border: 1px solid var(--border); background: var(--surface); color: var(--text);
-  display: inline-grid; place-items: center; transition: all 0.16s ease;
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); display: inline-grid;
+  place-items: center; transition: all 0.16s ease;
 }
 .nav-drawer-close:hover { background: var(--surface-soft); }
 .nav-drawer-link {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 11px 14px; border-radius: 12px;
-  border: 1px solid transparent; background: transparent;
-  color: var(--text); font-size: 0.9rem; font-weight: 600;
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 11px 14px; border-radius: 12px; border: 1px solid transparent;
+  background: transparent; color: var(--text); font-size: 0.9rem; font-weight: 600;
   text-align: left; text-decoration: none; transition: all 0.16s ease;
 }
 .nav-drawer-link:hover { background: var(--surface-soft); border-color: var(--border); }
 .nav-drawer-link.active { background: var(--primary-soft); color: var(--primary); }
-a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
-a.nav-drawer-link.active:visited { color: var(--primary); }
+a.nav-drawer-link, a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
+a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primary); }
 .nav-drawer-divider { height: 1px; background: var(--border); margin: 10px 0; }
 
 /* Page */
@@ -140,14 +127,10 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 
 /* Hero */
 .hero {
-  padding: 28px;
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(12px);
-  margin-bottom: 36px;
-  border-left: 4px solid var(--primary);
+  padding: 28px; border-radius: var(--radius-xl);
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-md); backdrop-filter: blur(12px);
+  margin-bottom: 28px; border-left: 4px solid var(--primary);
 }
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 6px;
@@ -157,81 +140,136 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 .hero h1 { margin: 0 0 8px; font-size: 1.5rem; letter-spacing: -0.03em; }
 .hero p  { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 60ch; }
 
+/* Phase legend */
+.phase-legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: 14px;
+  background: var(--surface-soft); border: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.phase-legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 600; }
+.phase-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-now    { background: var(--success); }
+.dot-next   { background: var(--primary); }
+.dot-later  { background: var(--text-soft); }
+
+/* Overview image */
+.overview-img-wrap {
+  border-radius: var(--radius-xl); overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow-md);
+  cursor: zoom-in; margin-bottom: 36px; position: relative;
+  background: var(--surface-soft);
+}
+.overview-img-wrap img {
+  width: 100%; display: block; transition: transform 0.2s ease;
+}
+.overview-img-wrap:hover img { transform: scale(1.01); }
+.overview-img-label {
+  position: absolute; bottom: 10px; right: 12px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(0,0,0,0.55); color: white;
+  font-size: 0.72rem; font-weight: 600; backdrop-filter: blur(4px);
+}
+
 /* Timeline */
-.timeline-section { margin-bottom: 48px; }
+.timeline-section { margin-bottom: 40px; }
 .timeline-section > h2 {
   font-size: 1rem; font-weight: 700; letter-spacing: -0.01em;
   margin: 0 0 20px; color: var(--text-muted);
   display: flex; align-items: center; gap: 8px;
 }
-.timeline-section > h2::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
+.timeline-section > h2::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 .timeline { position: relative; padding-left: 32px; }
 .timeline::before {
-  content: '';
-  position: absolute; left: 8px; top: 10px; bottom: 10px;
-  width: 2px;
-  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 20%, transparent));
-  border-radius: 1px;
+  content: ''; position: absolute; left: 8px; top: 10px; bottom: 10px;
+  width: 2px; border-radius: 1px;
 }
+.timeline--now::before   { background: linear-gradient(180deg, var(--success), color-mix(in srgb, var(--success) 20%, transparent)); }
+.timeline--next::before  { background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 20%, transparent)); }
+.timeline--later::before { background: linear-gradient(180deg, var(--text-soft), transparent); }
 
-.timeline-quarter { position: relative; margin-bottom: 28px; }
+.timeline-quarter { position: relative; margin-bottom: 24px; }
 .timeline-quarter:last-child { margin-bottom: 0; }
 
 .quarter-dot {
   position: absolute; left: -27px; top: 4px;
   width: 16px; height: 16px; border-radius: 50%;
-  background: var(--primary);
   border: 2.5px solid var(--bg);
-  box-shadow: 0 0 0 3px var(--primary-soft);
 }
+.quarter-dot.now    { background: var(--success); box-shadow: 0 0 0 3px var(--success-soft); }
+.quarter-dot.next   { background: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.quarter-dot.later  { background: var(--text-soft); box-shadow: 0 0 0 3px rgba(148,163,184,0.15); }
 
 .quarter-header { margin-bottom: 12px; }
 .quarter-label {
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--primary); display: block; margin-bottom: 2px;
+  text-transform: uppercase; display: block; margin-bottom: 2px;
 }
+.quarter-label.now   { color: var(--success); }
+.quarter-label.next  { color: var(--primary); }
+.quarter-label.later { color: var(--text-soft); }
 .quarter-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
 
 .timeline-items { display: grid; gap: 8px; }
-
 .timeline-item {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  padding: 14px 16px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .timeline-item:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
-
 .item-title { font-size: 0.9rem; font-weight: 600; margin: 0 0 4px; }
-.item-desc  { font-size: 0.82rem; color: var(--text-muted); margin: 0 0 10px; line-height: 1.55; }
+.item-desc  { font-size: 0.82rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
 
-.item-source {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 0.76rem; font-weight: 600;
-  color: var(--text-soft);
-  text-decoration: none;
-  padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface-soft);
-  transition: all 0.16s ease;
+/* Detail images */
+.detail-images {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px;
 }
-.item-source:hover {
-  color: var(--primary);
-  border-color: var(--primary);
-  background: var(--primary-soft);
+.detail-thumb {
+  height: 110px; border-radius: 10px;
+  border: 1px solid var(--border); cursor: zoom-in;
+  object-fit: cover; flex-shrink: 0;
+  transition: all 0.18s ease; background: var(--surface-soft);
 }
+.detail-thumb:hover {
+  border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-md);
+}
+.detail-images-label {
+  display: block; font-size: 0.75rem; font-weight: 600;
+  color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.02em;
+}
+
+/* Lightbox */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.92); cursor: zoom-out;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 100%; max-height: 90vh; object-fit: contain;
+  border-radius: 8px; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.lightbox-close {
+  position: fixed; top: 18px; right: 18px; z-index: 301;
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.12); color: white;
+  display: inline-grid; place-items: center; cursor: pointer;
+  transition: background 0.16s ease;
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.22); }
 
 @media (max-width: 640px) {
   .page-shell { padding: 20px 14px 60px; }
   .hero { padding: 20px; }
   .timeline { padding-left: 26px; }
   .quarter-dot { left: -22px; }
+  .detail-thumb { height: 80px; }
+  .phase-legend { gap: 10px; }
 }
 </style>
 </head>
@@ -239,9 +277,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 
 <header class="site-header">
   <div class="header-inner">
-    <div class="brand">
-      <p class="brand-title">BI Forum 2026: Agents &amp; Mosaic</p>
-    </div>
+    <p class="brand-title">BI Forum 2026: Agents &amp; Mosaic</p>
     <div class="header-actions">
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>
@@ -287,6 +323,14 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
   </nav>
 </aside>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Schließen">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg>
+  </button>
+  <img id="lightboxImg" src="" alt="" />
+</div>
+
 <main class="page-shell">
 
   <!-- Hero -->
@@ -296,151 +340,123 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
       Mosaic · BI Forum 2026
     </div>
     <h1>Roadmap Mosaic</h1>
-    <p>Übersicht der geplanten Phasen und Meilensteine für die Einführung des Mosaic Datenmodells — von der Konzeption bis zum unternehmensweiten Rollout.</p>
+    <p>Übersicht der geplanten Themen und Meilensteine für die Einführung und den Ausbau von Mosaic — von aktuellen Initiativen bis zur mittelfristigen Vision.</p>
   </div>
 
-  <!-- Timeline -->
+  <!-- Phase legend -->
+  <div class="phase-legend">
+    <span class="phase-legend-item"><span class="phase-dot dot-now"></span>Now — Aktuell in Umsetzung</span>
+    <span class="phase-legend-item"><span class="phase-dot dot-next"></span>Next — Kurzfristig geplant</span>
+    <span class="phase-legend-item"><span class="phase-dot dot-later"></span>Later — Mittelfristige Vision</span>
+  </div>
+
+  <!-- Main overview image — Datei: images/roadmap/overview.jpg -->
+  <div class="overview-img-wrap" onclick="openLightbox('images/roadmap/overview.jpg')">
+    <img src="images/roadmap/overview.jpg" alt="Mosaic Roadmap Übersicht — Now, Next, Later" />
+    <span class="overview-img-label">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z"/></svg>
+      Vollansicht
+    </span>
+  </div>
+
+  <!-- NOW -->
   <div class="timeline-section">
-    <h2>2026</h2>
-    <div class="timeline">
+    <h2>Now</h2>
+    <div class="timeline timeline--now">
 
-      <!-- Q1 -->
       <div class="timeline-quarter">
-        <div class="quarter-dot"></div>
+        <div class="quarter-dot now"></div>
         <div class="quarter-header">
-          <span class="quarter-label">Q1 2026</span>
-          <h3 class="quarter-title">Fundament & Anforderungen</h3>
+          <span class="quarter-label now">Aktuell in Umsetzung</span>
+          <h3 class="quarter-title">Thema 1 — Platzhalter</h3>
         </div>
         <div class="timeline-items">
           <div class="timeline-item">
-            <p class="item-title">Stakeholder-Workshops & Anforderungsanalyse</p>
-            <p class="item-desc">Erhebung fachlicher Anforderungen aus allen relevanten Bereichen, Definition der Use Cases und Priorisierung.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 1.1</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
           <div class="timeline-item">
-            <p class="item-title">Datenmodell-Architektur definiert</p>
-            <p class="item-desc">Konzeption der logischen und physischen Datenstruktur, Abstimmung mit IT-Architektur und Data Governance.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 1.2</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
-          <div class="timeline-item">
-            <p class="item-title">Proof of Concept erfolgreich abgeschlossen</p>
-            <p class="item-desc">Validierung der technischen Machbarkeit anhand eines ausgewählten Datenbereichs. Ergebnisse präsentiert und freigegeben.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
+        </div>
+        <!-- Detailbilder Now — Dateien: images/roadmap/now-1.jpg, now-2.jpg, now-3.jpg -->
+        <div class="detail-images">
+          <span class="detail-images-label">Detailansichten</span>
+        </div>
+        <div class="detail-images">
+          <img class="detail-thumb" src="images/roadmap/now-1.jpg" alt="Now Detail 1" onclick="openLightbox('images/roadmap/now-1.jpg')" />
+          <img class="detail-thumb" src="images/roadmap/now-2.jpg" alt="Now Detail 2" onclick="openLightbox('images/roadmap/now-2.jpg')" />
+          <img class="detail-thumb" src="images/roadmap/now-3.jpg" alt="Now Detail 3" onclick="openLightbox('images/roadmap/now-3.jpg')" />
         </div>
       </div>
 
-      <!-- Q2 -->
+    </div>
+  </div>
+
+  <!-- NEXT -->
+  <div class="timeline-section">
+    <h2>Next</h2>
+    <div class="timeline timeline--next">
+
       <div class="timeline-quarter">
-        <div class="quarter-dot"></div>
+        <div class="quarter-dot next"></div>
         <div class="quarter-header">
-          <span class="quarter-label">Q2 2026</span>
-          <h3 class="quarter-title">Entwicklung & Integration</h3>
+          <span class="quarter-label next">Kurzfristig geplant</span>
+          <h3 class="quarter-title">Thema 2 — Platzhalter</h3>
         </div>
         <div class="timeline-items">
           <div class="timeline-item">
-            <p class="item-title">Implementierung Core Datenmodell</p>
-            <p class="item-desc">Aufbau des zentralen Mosaic-Datenmodells inklusive Datenpipelines, Transformationslogik und Qualitätsprüfungen.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 2.1</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
           <div class="timeline-item">
-            <p class="item-title">Anbindung CRM- & ERP-Quellsysteme</p>
-            <p class="item-desc">Technische Integration der Hauptquellsysteme, Einrichtung automatisierter Datenflüsse und Monitoring.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 2.2</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
-          <div class="timeline-item">
-            <p class="item-title">Interne Qualitätssicherung & Testing</p>
-            <p class="item-desc">Datenqualitätsprüfungen, Abgleich mit Quellsystemen und User Acceptance Testing mit Key Usern.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
+        </div>
+        <!-- Detailbilder Next — Dateien: images/roadmap/next-1.jpg, next-2.jpg, next-3.jpg -->
+        <div class="detail-images">
+          <span class="detail-images-label">Detailansichten</span>
+        </div>
+        <div class="detail-images">
+          <img class="detail-thumb" src="images/roadmap/next-1.jpg" alt="Next Detail 1" onclick="openLightbox('images/roadmap/next-1.jpg')" />
+          <img class="detail-thumb" src="images/roadmap/next-2.jpg" alt="Next Detail 2" onclick="openLightbox('images/roadmap/next-2.jpg')" />
+          <img class="detail-thumb" src="images/roadmap/next-3.jpg" alt="Next Detail 3" onclick="openLightbox('images/roadmap/next-3.jpg')" />
         </div>
       </div>
 
-      <!-- Q3 -->
-      <div class="timeline-quarter">
-        <div class="quarter-dot"></div>
-        <div class="quarter-header">
-          <span class="quarter-label">Q3 2026</span>
-          <h3 class="quarter-title">Pilot & Anbindung</h3>
-        </div>
-        <div class="timeline-items">
-          <div class="timeline-item">
-            <p class="item-title">Pilotphase mit ausgewählten Fachbereichen</p>
-            <p class="item-desc">Gesteuerter Rollout in 2 Pilotbereichen, Sammlung von Feedback und iterative Verbesserung des Modells.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
-          <div class="timeline-item">
-            <p class="item-title">Power BI & Excel-Anbindung produktiv</p>
-            <p class="item-desc">Bereitstellung zertifizierter Datensätze für Power BI und Excel, Erstellung von Standard-Report-Vorlagen.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
-          <div class="timeline-item">
-            <p class="item-title">Schulungen & Self-Service-Dokumentation</p>
-            <p class="item-desc">Durchführung von Anwender-Schulungen, Erstellung von How-to-Guides und einer internen Wissensdatenbank.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
-        </div>
-      </div>
+    </div>
+  </div>
 
-      <!-- Q4 -->
+  <!-- LATER -->
+  <div class="timeline-section">
+    <h2>Later</h2>
+    <div class="timeline timeline--later">
+
       <div class="timeline-quarter">
-        <div class="quarter-dot"></div>
+        <div class="quarter-dot later"></div>
         <div class="quarter-header">
-          <span class="quarter-label">Q4 2026</span>
-          <h3 class="quarter-title">Rollout & Skalierung</h3>
+          <span class="quarter-label later">Mittelfristige Vision</span>
+          <h3 class="quarter-title">Thema 3 — Platzhalter</h3>
         </div>
         <div class="timeline-items">
           <div class="timeline-item">
-            <p class="item-title">Unternehmensweiter Go-Live</p>
-            <p class="item-desc">Vollständige Freigabe des Mosaic-Modells für alle Fachbereiche. Ablösung bestehender Insellösungen.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 3.1</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
           <div class="timeline-item">
-            <p class="item-title">Automatisiertes Monitoring & Alerting</p>
-            <p class="item-desc">Einrichtung von Datenqualitäts-Monitoring, automatischen Alerts bei Abweichungen und einem zentralen Operations-Dashboard.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
+            <p class="item-title">Item 3.2</p>
+            <p class="item-desc">Beschreibung des Items — bitte mit echtem Inhalt ersetzen.</p>
           </div>
-          <div class="timeline-item">
-            <p class="item-title">Erweiterung um Advanced Analytics</p>
-            <p class="item-desc">Aufbau von Prognosemodellen und KI-gestützten Analysen auf Basis des Mosaic-Datenmodells als nächster Ausbauschritt.</p>
-            <a href="#" class="item-source" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h7v7"/><path d="M12 2 5.5 8.5"/><path d="M2 5v7h7"/></svg>
-              Quelle
-            </a>
-          </div>
+        </div>
+        <!-- Detailbilder Later — Dateien: images/roadmap/later-1.jpg, later-2.jpg -->
+        <div class="detail-images">
+          <span class="detail-images-label">Detailansichten</span>
+        </div>
+        <div class="detail-images">
+          <img class="detail-thumb" src="images/roadmap/later-1.jpg" alt="Later Detail 1" onclick="openLightbox('images/roadmap/later-1.jpg')" />
+          <img class="detail-thumb" src="images/roadmap/later-2.jpg" alt="Later Detail 2" onclick="openLightbox('images/roadmap/later-2.jpg')" />
         </div>
       </div>
 
@@ -463,6 +479,7 @@ function applyTheme(mode) {
 document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => applyTheme(themeMode === 'dark' ? 'light' : 'dark'));
 applyTheme(themeMode);
 
+// Nav drawer
 const navOverlay = document.getElementById('navOverlay');
 const navDrawer  = document.getElementById('navDrawer');
 function openNav()  { navOverlay.classList.add('open'); navDrawer.classList.add('open'); }
@@ -470,8 +487,20 @@ function closeNav() { navOverlay.classList.remove('open'); navDrawer.classList.r
 document.getElementById('navOpen').addEventListener('click', openNav);
 document.getElementById('navClose').addEventListener('click', closeNav);
 navOverlay.addEventListener('click', closeNav);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeNav(); closeLightbox(); } });
 
+// Lightbox
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Page transitions
 function navigateTo(url) {
   document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
   document.body.style.opacity = '0';
