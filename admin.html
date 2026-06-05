@@ -627,7 +627,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
     <h2>Admin-Zugang</h2>
     <p>Gib das Admin-Passwort ein, um fortzufahren.</p>
     <input id="passwordInput" type="password" placeholder="Passwort" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter') checkPassword()" />
+      onkeydown="if(event.key==='Enter') checkPassword()" style="width:100%;" />
     <div class="login-error" id="loginError">Versuchst du dich gerade echt in den Admin-Bereich zu hacken? 🤨</div>
     <div style="margin-top:16px;">
       <button class="btn btn-primary" style="width:100%; justify-content:center;" type="button" onclick="checkPassword()">
