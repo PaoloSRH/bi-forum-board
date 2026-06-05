@@ -1875,16 +1875,20 @@ window.selectIcon = function(icon){
 window.saveUsername = function(){
   const v = document.getElementById('username').value.trim();
   if(!v) return;
-  const isUpdate = !!localStorage.getItem('username');
+  const isFirstTime = !localStorage.getItem('username');
   localStorage.setItem('username', v);
   setUserIcon(v, selectedIcon);
   window.username = v;
   const closeBtn = document.getElementById('nameModalCloseBtn');
   if (closeBtn) closeBtn.style.display = 'none';
   closeDialog('nameModal');
+  if (isFirstTime) {
+    navigateTo('agenda.html');
+    return;
+  }
   updateUserDisplay();
   subscribe();
-  if (isUpdate) showToast('Profil aktualisiert');
+  showToast('Profil aktualisiert');
 }
 
 window.openProfileModal = function() {
