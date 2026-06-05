@@ -183,7 +183,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   transform: translateX(-50%);
 }
 .event-status {
-  margin-top: 12px; text-align: center;
+  margin-top: 30px; text-align: center;
   font-size: 0.88rem; font-weight: 700; letter-spacing: 0.01em;
 }
 .event-status.active   { color: var(--success); }
@@ -594,8 +594,8 @@ function updateEventStatus() {
     const diff = new Date('2026-06-10T09:00:00') - now;
     const days = Math.floor(diff / 86400000);
     const hours = Math.floor((diff % 86400000) / 3600000);
-    text = days > 0 ? `BI Forum startet in ${days} Tag${days!==1?'en':''}`
-                    : `BI Forum startet in ${hours} Stunde${hours!==1?'n':''}`;
+    text = days > 0 ? `BI Forum Agents & Mosaic Sessions starten in ${days} Tag${days!==1?'en':''}`
+                    : `BI Forum Agents & Mosaic Sessions starten in ${hours} Stunde${hours!==1?'n':''}`;
     cls = 'future';
   } else if (today === EVENT_DATE) {
     if (cur < S1_START) {
