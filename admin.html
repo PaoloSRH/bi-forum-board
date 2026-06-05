@@ -452,18 +452,60 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
   align-items: center;
   gap: 4px;
 }
+.note-row-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; flex-shrink: 0; }
+.note-row-edit,
 .note-row-delete {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-soft);
-  display: inline-grid;
-  place-items: center;
-  flex-shrink: 0;
-  transition: all 0.16s ease;
+  width: 30px; height: 30px; border-radius: 8px; border: none;
+  background: transparent; color: var(--text-soft);
+  display: inline-grid; place-items: center; flex-shrink: 0;
+  transition: all 0.16s ease; cursor: pointer;
 }
-.note-row-delete:hover { color: var(--danger); background: var(--danger-soft); }
+.note-row-edit:hover  { color: var(--primary); background: var(--primary-soft); }
+.note-row-delete:hover { color: var(--danger);  background: var(--danger-soft); }
+
+/* Edit modal */
+.edit-modal {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  padding: 18px; justify-content: center; align-items: center;
+  background: rgba(15,23,42,0.46); backdrop-filter: blur(10px);
+}
+.edit-modal.open { display: flex; }
+.edit-modal-content {
+  width: min(520px, 100%); padding: 26px;
+  border-radius: var(--radius-xl); background: var(--surface-strong);
+  border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+}
+.edit-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-bottom: 16px;
+}
+.edit-modal-header h2 { margin: 0; font-size: 1.1rem; letter-spacing: -0.02em; }
+.edit-modal-close {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); display: inline-grid;
+  place-items: center; cursor: pointer; transition: all 0.16s ease;
+}
+.edit-modal-close:hover { background: var(--surface-soft); }
+.edit-label { display: block; margin: 14px 0 6px; font-size: 0.9rem; font-weight: 600; }
+.edit-input, .edit-textarea {
+  width: 100%; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--surface-soft);
+  color: var(--text); font: inherit; font-size: 15px; transition: all 0.18s ease;
+}
+.edit-textarea { min-height: 130px; resize: vertical; }
+.edit-input:focus, .edit-textarea:focus {
+  outline: none; border-color: rgba(37,99,235,0.34);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.10); background: var(--surface-strong);
+}
+.edit-cat-pills { display: flex; gap: 8px; margin: 8px 0 4px; }
+.edit-cat-pill {
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-soft);
+  color: var(--text-muted); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.16s ease;
+}
+.edit-cat-pill.active { background: var(--primary); color: white; border-color: transparent; }
+.edit-actions { display: grid; gap: 10px; margin-top: 20px; }
 .notes-empty {
   padding: 32px 20px;
   text-align: center;
@@ -480,7 +522,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
   .note-row-top    { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
   .note-row-bottom { display: flex; align-items: center; gap: 8px; }
   .note-row-title  { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .note-row-delete { margin-left: auto; }
+  .note-row-actions { margin-left: auto; }
 }
 </style>
 </head>
@@ -537,6 +579,31 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
     </a>
   </nav>
 </aside>
+
+<!-- Edit Modal -->
+<div class="edit-modal" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+  <div class="edit-modal-content">
+    <div class="edit-modal-header">
+      <h2 id="editModalTitle">Usecase bearbeiten</h2>
+      <button class="edit-modal-close" type="button" onclick="closeEditModal()" aria-label="Schließen">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg>
+      </button>
+    </div>
+    <label class="edit-label">Kategorie</label>
+    <div class="edit-cat-pills">
+      <button class="edit-cat-pill active" type="button" data-cat="agents" onclick="setEditCategory('agents')">Agents</button>
+      <button class="edit-cat-pill" type="button" data-cat="mosaic" onclick="setEditCategory('mosaic')">Mosaic</button>
+    </div>
+    <label class="edit-label" for="editTitle">Titel</label>
+    <input class="edit-input" id="editTitle" type="text" placeholder="Titel" />
+    <label class="edit-label" for="editText">Beschreibung</label>
+    <textarea class="edit-textarea" id="editText" placeholder="Beschreibung" maxlength="1000"></textarea>
+    <div class="edit-actions">
+      <button class="btn btn-primary" type="button" onclick="adminSaveEdit()">Speichern</button>
+      <button class="btn btn-secondary" type="button" onclick="closeEditModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
 
 <!-- Login Screen -->
 <div id="loginScreen" class="login-wrap">
@@ -685,7 +752,7 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, orderBy, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6M04k0RT5BXJC-Ilb1b392hzEBXq8J-A",
@@ -817,14 +884,71 @@ function subscribeNotesList() {
               ${n.commentsCount || 0}
             </span>
           </span>
-          <button class="note-row-delete" type="button" onclick="adminDeleteNote('${n.id}')" aria-label="Löschen">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V2.5h4V4"/><path d="M11.5 4 11 12H3L2.5 4"/><path d="M5.5 7v3M8.5 7v3"/></svg>
-          </button>
+          <div class="note-row-actions">
+            <button class="note-row-edit" type="button" onclick="adminEditNote('${n.id}')" aria-label="Bearbeiten">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 12 4 4.5 11.5H2.5V9.5L10 2Z"/><path d="M8.5 3.5 10.5 5.5"/></svg>
+            </button>
+            <button class="note-row-delete" type="button" onclick="adminDeleteNote('${n.id}')" aria-label="Löschen">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10"/><path d="M5 4V2.5h4V4"/><path d="M11.5 4 11 12H3L2.5 4"/><path d="M5.5 7v3M8.5 7v3"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     `).join('');
   });
 }
+
+let editingNoteId = null;
+let editCategory = 'agents';
+
+window.adminEditNote = function(id) {
+  const n = adminNotesData[id];
+  if (!n) return;
+  editingNoteId = id;
+  editCategory = n.topic || 'agents';
+  document.getElementById('editTitle').value = n.title || '';
+  document.getElementById('editText').value = n.text || '';
+  document.querySelectorAll('.edit-cat-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === editCategory);
+  });
+  document.getElementById('editModal').classList.add('open');
+}
+
+window.closeEditModal = function() {
+  editingNoteId = null;
+  document.getElementById('editModal').classList.remove('open');
+}
+
+window.setEditCategory = function(cat) {
+  editCategory = cat;
+  document.querySelectorAll('.edit-cat-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+}
+
+window.adminSaveEdit = async function() {
+  if (!editingNoteId) return;
+  const title = document.getElementById('editTitle').value.trim();
+  const text  = document.getElementById('editText').value.trim();
+  if (!title) { document.getElementById('editTitle').focus(); return; }
+  try {
+    await updateDoc(doc(db, 'boards', BOARD_ID, 'notes', editingNoteId), {
+      title, text, topic: editCategory, updatedAt: serverTimestamp()
+    });
+    closeEditModal();
+    setStatus('', '', '');
+    await loadStats();
+  } catch(err) {
+    alert('Fehler: ' + err.message);
+  }
+}
+
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeEditModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeEditModal();
+});
 
 window.adminDeleteNote = async function(id) {
   const title = adminNotesData[id]?.title || 'Ohne Titel';
