@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agenda — BI Forum 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb; --bg-elevated: #eef3f8;
+  --surface: rgba(255,255,255,0.82); --surface-strong: #ffffff; --surface-soft: #f8fafc;
+  --border: rgba(15,23,42,0.08); --border-strong: rgba(15,23,42,0.14);
+  --text: #0f172a; --text-muted: #64748b; --text-soft: #94a3b8;
+  --primary: #2563eb; --primary-hover: #1d4ed8; --primary-soft: rgba(37,99,235,0.10);
+  --mosaic: #7c3aed; --mosaic-soft: rgba(124,58,237,0.10);
+  --success: #15803d; --success-soft: rgba(21,128,61,0.10);
+  --shadow-sm: 0 2px 8px rgba(15,23,42,0.04); --shadow-md: 0 12px 30px rgba(15,23,42,0.08);
+  --shadow-lg: 0 18px 50px rgba(15,23,42,0.12);
+  --radius-xl: 28px; --content: 760px;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220; --bg-elevated: #111827;
+  --surface: rgba(17,24,39,0.82); --surface-strong: #111827; --surface-soft: #172033;
+  --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+  --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
+  --primary: #60a5fa; --primary-hover: #3b82f6; --primary-soft: rgba(96,165,250,0.16);
+  --mosaic: #a78bfa; --mosaic-soft: rgba(167,139,250,0.14);
+  --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+  --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0b1220; --bg-elevated: #111827;
+    --surface: rgba(17,24,39,0.82); --surface-strong: #111827; --surface-soft: #172033;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+    --text: #e5edf8; --text-muted: #94a3b8; --text-soft: #64748b;
+    --primary: #60a5fa; --primary-hover: #3b82f6; --primary-soft: rgba(96,165,250,0.16);
+    --mosaic: #a78bfa; --mosaic-soft: rgba(167,139,250,0.14);
+    --success: #4ade80; --success-soft: rgba(74,222,128,0.10);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2); --shadow-md: 0 14px 34px rgba(0,0,0,0.28);
+    --shadow-lg: 0 22px 56px rgba(0,0,0,0.38);
+  }
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  margin: 0; min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif; color: var(--text);
+  animation: pageFadeIn 0.28s ease;
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,0.10), transparent 22%),
+    radial-gradient(circle at top right, rgba(124,58,237,0.07), transparent 18%),
+    linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 42%, var(--bg) 100%);
+}
+button { font: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 40; padding: 8px 16px;
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+}
+.brand-title { margin: 0; font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; }
+.header-actions { display: flex; align-items: center; gap: 6px; }
+.theme-toggle, .hamburger {
+  min-height: 32px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
+  display: inline-grid; place-items: center; transition: all 0.16s ease;
+}
+.theme-toggle { width: 34px; }
+.hamburger { width: 34px; }
+.hamburger:hover { background: var(--surface-soft); }
+
+/* Nav drawer */
+.nav-drawer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 50;
+  background: rgba(15,23,42,0.38); backdrop-filter: blur(4px);
+}
+.nav-drawer-overlay.open { display: block; }
+.nav-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 60;
+  width: min(300px, 88vw); background: var(--surface-strong);
+  border-left: 1px solid var(--border); box-shadow: var(--shadow-lg);
+  padding: 20px; transform: translateX(100%); transition: transform 0.26s ease;
+  display: flex; flex-direction: column;
+}
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+}
+.nav-drawer-title { font-size: 1rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.nav-drawer-close {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); display: inline-grid;
+  place-items: center; transition: all 0.16s ease;
+}
+.nav-drawer-close:hover { background: var(--surface-soft); }
+.nav-drawer-link {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 11px 14px; border-radius: 12px; border: 1px solid transparent;
+  background: transparent; color: var(--text); font-size: 0.9rem; font-weight: 600;
+  text-align: left; text-decoration: none; transition: all 0.16s ease;
+}
+.nav-drawer-link:hover { background: var(--surface-soft); border-color: var(--border); }
+.nav-drawer-link.active { background: var(--primary-soft); color: var(--primary); }
+a.nav-drawer-link, a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
+a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primary); }
+.nav-drawer-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+/* Page */
+.page-shell { max-width: var(--content); margin: 0 auto; padding: 32px 16px 80px; }
+
+/* Welcome hero */
+.welcome-hero {
+  text-align: center;
+  padding: 40px 24px 32px;
+  margin-bottom: 36px;
+}
+.welcome-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px;
+}
+.welcome-hero h1 {
+  margin: 0 0 12px; font-size: 2rem; letter-spacing: -0.04em; font-weight: 800;
+}
+.welcome-hero p {
+  margin: 0 auto; color: var(--text-muted); font-size: 1rem;
+  line-height: 1.65; max-width: 52ch;
+}
+
+/* Sessions */
+.sessions { display: grid; gap: 16px; margin-bottom: 40px; }
+
+.session-card {
+  padding: 24px 26px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+.session-card.session-1 { border-left: 4px solid var(--mosaic); }
+.session-card.session-2 { border-left: 4px solid var(--primary); }
+
+.session-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent 50%);
+  pointer-events: none;
+}
+
+.session-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px; margin-bottom: 16px;
+}
+.session-time {
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+}
+.session-1 .session-time { color: var(--mosaic); }
+.session-2 .session-time { color: var(--primary); }
+
+.session-badge {
+  flex-shrink: 0; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px;
+}
+.session-1 .session-badge { background: var(--mosaic-soft); color: var(--mosaic); }
+.session-2 .session-badge { background: var(--primary-soft); color: var(--primary); }
+
+.session-title {
+  font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+.session-subtitle {
+  font-size: 0.88rem; font-weight: 600; color: var(--text-muted); margin: 0 0 14px;
+}
+.session-speaker {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--surface-soft); border: 1px solid var(--border);
+  font-size: 0.84rem; font-weight: 600; margin-bottom: 16px;
+}
+.session-desc {
+  color: var(--text-muted); font-size: 0.9rem;
+  line-height: 1.65; margin: 0;
+}
+
+.session-hint {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-top: 16px; padding: 12px 14px; border-radius: 14px;
+  background: var(--surface-soft); border: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
+}
+.session-hint-icon { flex-shrink: 0; margin-top: 1px; }
+
+/* App guide */
+.guide-section {
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+.guide-section h2 {
+  margin: 0 0 6px; font-size: 1.1rem; letter-spacing: -0.02em;
+}
+.guide-section > p {
+  margin: 0 0 24px; color: var(--text-muted); font-size: 0.9rem;
+}
+.guide-steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.guide-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px; border-radius: 16px;
+  background: var(--surface-soft); border: 1px solid var(--border);
+}
+.guide-step-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center; flex-shrink: 0;
+  font-size: 1rem;
+}
+.guide-step-icon.blue   { background: var(--primary-soft); }
+.guide-step-icon.purple { background: var(--mosaic-soft); }
+.guide-step-icon.green  { background: var(--success-soft); }
+.guide-step-icon.amber  { background: rgba(245,158,11,0.12); }
+.guide-step-body h3 { margin: 0 0 3px; font-size: 0.88rem; font-weight: 700; }
+.guide-step-body p  { margin: 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+.cta-row {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px;
+}
+.btn-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px; border-radius: 14px; border: 1px solid transparent;
+  font-size: 0.9rem; font-weight: 600; transition: all 0.18s ease; cursor: pointer;
+}
+.btn-cta.primary {
+  background: var(--primary); color: white;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.2);
+}
+.btn-cta.primary:hover { background: var(--primary-hover); }
+.btn-cta.secondary {
+  background: var(--surface-strong); color: var(--text);
+  border-color: var(--border);
+}
+.btn-cta.secondary:hover { background: var(--surface-soft); }
+
+@media (max-width: 640px) {
+  .page-shell { padding: 20px 14px 60px; }
+  .welcome-hero { padding: 24px 16px 20px; }
+  .welcome-hero h1 { font-size: 1.5rem; }
+  .session-card { padding: 20px; }
+  .session-time { font-size: 1.2rem; }
+  .guide-steps { grid-template-columns: 1fr; }
+  .guide-section { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <p class="brand-title">BI Forum 2026: Agents &amp; Mosaic</p>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
+        <span aria-hidden="true">◐</span>
+      </button>
+      <button class="hamburger" type="button" id="navOpen" aria-label="Navigation öffnen">
+        <svg width="16" height="13" viewBox="0 0 16 13" fill="none" aria-hidden="true">
+          <rect width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="5.5" width="16" height="2" rx="1" fill="currentColor"/>
+          <rect y="11" width="16" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="nav-drawer-overlay" id="navOverlay"></div>
+<aside class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="nav-drawer-header">
+    <p class="nav-drawer-title">Navigation</p>
+    <button class="nav-drawer-close" type="button" id="navClose" aria-label="Navigation schließen">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M1 1 10 10M10 1 1 10"/></svg>
+    </button>
+  </div>
+  <nav>
+    <a class="nav-drawer-link active" href="agenda.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+      Agenda
+    </a>
+    <a class="nav-drawer-link" href="index.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h6M5 10h4"/></svg>
+      Usecases
+    </a>
+    <a class="nav-drawer-link" href="roadmap.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12 5 4l4 5 3-3 2 6"/><circle cx="5" cy="4" r="1" fill="currentColor" stroke="none"/></svg>
+      Roadmap Mosaic
+    </a>
+    <a class="nav-drawer-link" href="roadmap-agents.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1v4M8 11v4M1 8h4M11 8h4"/></svg>
+      Roadmap Agents
+    </a>
+    <div class="nav-drawer-divider"></div>
+    <a class="nav-drawer-link" href="profile.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+      Profil bearbeiten
+    </a>
+    <div class="nav-drawer-divider"></div>
+    <a class="nav-drawer-link" href="admin.html">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      Admin
+    </a>
+  </nav>
+</aside>
+
+<main class="page-shell">
+
+  <!-- Welcome -->
+  <div class="welcome-hero">
+    <div class="welcome-eyebrow">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
+      BI Forum 2026
+    </div>
+    <h1>Willkommen!</h1>
+    <p>Heute dreht sich alles um <strong>Strategy One Agents &amp; Mosaic</strong> — von der Vorstellung der Themen bis zum eigenen Ausprobieren. Nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
+  </div>
+
+  <!-- Sessions -->
+  <div class="sessions">
+
+    <!-- Session 1 -->
+    <div class="session-card session-1">
+      <div class="session-top">
+        <div class="session-time">09:00 – 10:30</div>
+        <span class="session-badge">Session 1</span>
+      </div>
+      <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
+      <p class="session-subtitle">Externer Vortrag</p>
+      <div class="session-speaker">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+        Johannes Silhan
+      </div>
+      <p class="session-desc">Johannes stellt die Themen <strong>Agents</strong> und <strong>Mosaic</strong> aus Strategy One Sicht vor — mit Einblick in aktuelle Funktionen, Roadmap und Möglichkeiten für Dachser.</p>
+      <div class="session-hint">
+        <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+        <span>Du kannst die App schon während dieser Session nutzen — entsteht während des Vortrags eine Idee, trage sie direkt als Usecase ein.</span>
+      </div>
+    </div>
+
+    <!-- Session 2 -->
+    <div class="session-card session-2">
+      <div class="session-top">
+        <div class="session-time">11:00 – 12:30</div>
+        <span class="session-badge">Session 2</span>
+      </div>
+      <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
+      <p class="session-subtitle">Hands-on Session</p>
+      <p class="session-desc">Jetzt seid ihr dran — probiert <strong>Mosaic</strong> und die <strong>Agents</strong> selbst aus. Nutzt gleichzeitig die App, um Usecases einzutragen, zu voten und zu kommentieren. Die gesammelten Ideen helfen uns, die richtigen Themen für Dachser zu priorisieren.</p>
+      <div class="session-hint">
+        <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+        <span>Die Roadmap-Seiten zeigen, was bereits geplant ist — stöbere dort für weitere Inspiration.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- App Guide -->
+  <div class="guide-section">
+    <h2>So nutzt du die App</h2>
+    <p>In vier einfachen Schritten von der Idee zur Priorisierung.</p>
+    <div class="guide-steps">
+      <div class="guide-step">
+        <div class="guide-step-icon purple">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--mosaic)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12 5 4l4 5 3-3 2 6"/></svg>
+        </div>
+        <div class="guide-step-body">
+          <h3>Roadmap lesen</h3>
+          <p>Schau in die Agents &amp; Mosaic Roadmap — sie gibt Kontext und inspiriert neue Ideen.</p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-icon blue">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg>
+        </div>
+        <div class="guide-step-body">
+          <h3>Usecase erstellen</h3>
+          <p>Trage deine Idee mit Titel und Beschreibung ein — wähle Agents oder Mosaic als Kategorie.</p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-icon amber">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2 9.8 6.5l4.7.4-3.5 3 1 4.6L8 12l-4 2.5 1-4.6-3.5-3 4.7-.4z"/></svg>
+        </div>
+        <div class="guide-step-body">
+          <h3>Voten</h3>
+          <p>Verteile bis zu 3 Votes pro Usecase — dein Gesamtbudget entspricht der Anzahl an Usecases.</p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-icon green">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a6 6 0 0 1-6 6 6.06 6.06 0 0 1-2.5-.535L2 15.5l1.035-3.5A5.96 5.96 0 0 1 2 9a6 6 0 0 1 12 0Z"/></svg>
+        </div>
+        <div class="guide-step-body">
+          <h3>Kommentieren</h3>
+          <p>Diskutiere Ideen, stelle Fragen oder ergänze Gedanken direkt an den Usecases.</p>
+        </div>
+      </div>
+    </div>
+    <div class="cta-row">
+      <a class="btn-cta primary" href="index.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h6M5 10h4"/></svg>
+        Zu den Usecases
+      </a>
+      <a class="btn-cta secondary" href="roadmap.html">
+        Roadmap Mosaic
+      </a>
+      <a class="btn-cta secondary" href="roadmap-agents.html">
+        Roadmap Agents
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+let themeMode = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function applyTheme(mode) {
+  themeMode = mode;
+  localStorage.setItem('theme', mode);
+  document.documentElement.setAttribute('data-theme', mode);
+  const btn = document.querySelector('[data-theme-toggle]');
+  if (btn) btn.innerHTML = mode === 'dark'
+    ? '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4 4.8 4.8M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>'
+    : '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5Z"/></svg>';
+}
+document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => applyTheme(themeMode === 'dark' ? 'light' : 'dark'));
+applyTheme(themeMode);
+
+const navOverlay = document.getElementById('navOverlay');
+const navDrawer  = document.getElementById('navDrawer');
+function openNav()  { navOverlay.classList.add('open'); navDrawer.classList.add('open'); }
+function closeNav() { navOverlay.classList.remove('open'); navDrawer.classList.remove('open'); }
+document.getElementById('navOpen').addEventListener('click', openNav);
+document.getElementById('navClose').addEventListener('click', closeNav);
+navOverlay.addEventListener('click', closeNav);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
+
+function navigateTo(url) {
+  document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+  document.body.style.opacity = '0';
+  document.body.style.transform = 'translateY(-4px)';
+  setTimeout(() => { window.location.href = url; }, 200);
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a || a.target || a.getAttribute('href').startsWith('#')) return;
+  const href = a.getAttribute('href');
+  if (href && !href.startsWith('http')) { e.preventDefault(); navigateTo(a.href); }
+});
+</script>
+</body>
+</html>
