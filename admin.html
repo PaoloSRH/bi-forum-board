@@ -524,6 +524,18 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
   .note-row-title  { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .note-row-actions { margin-left: auto; }
 }
+
+.gradient-h1 {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="dark"] .gradient-h1 {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 </style>
 </head>
 <body>
@@ -1140,6 +1152,17 @@ document.addEventListener('click', e => {
   const href = a.getAttribute('href');
   if (href && !href.startsWith('http')) { e.preventDefault(); navigateTo(a.href); }
 });
+
+let _tX=0,_tY=0;
+document.addEventListener('touchstart',e=>{_tX=e.touches[0].clientX;_tY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-_tX;
+  const dy=Math.abs(e.changedTouches[0].clientY-_tY);
+  if(dy>60)return;
+  if(_tX>window.innerWidth*0.72&&dx<-45)openNav();
+  if(document.getElementById('navDrawer')?.classList.contains('open')&&dx>45)closeNav();
+},{passive:true});
+
 </script>
 </body>
 </html>

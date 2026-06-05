@@ -300,6 +300,18 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   .guide-steps { grid-template-columns: 1fr; }
   .guide-section { padding: 20px; }
 }
+
+.gradient-h1 {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="dark"] .gradient-h1 {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 </style>
 </head>
 <body>
@@ -367,7 +379,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg>
       BI FORUM 2026: Agents &amp; Mosaic
     </div>
-    <h1>Willkommen!</h1>
+    <h1 class="gradient-h1">Willkommen!</h1>
     <p>Heute früh dreht sich alles um <strong>Strategy One Agents &amp; Mosaic</strong> — von der Vorstellung der Themen bis zum eigenen Ausprobieren. Nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
   </div>
 
@@ -512,6 +524,17 @@ document.addEventListener('click', e => {
   const href = a.getAttribute('href');
   if (href && !href.startsWith('http')) { e.preventDefault(); navigateTo(a.href); }
 });
+
+let _tX=0,_tY=0;
+document.addEventListener('touchstart',e=>{_tX=e.touches[0].clientX;_tY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-_tX;
+  const dy=Math.abs(e.changedTouches[0].clientY-_tY);
+  if(dy>60)return;
+  if(_tX>window.innerWidth*0.72&&dx<-45)openNav();
+  if(document.getElementById('navDrawer')?.classList.contains('open')&&dx>45)closeNav();
+},{passive:true});
+
 </script>
 </body>
 </html>

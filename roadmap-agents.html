@@ -270,6 +270,22 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   .detail-thumb { height: 80px; }
   .phase-legend { gap: 10px; }
 }
+
+.gradient-h1 {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="dark"] .gradient-h1 {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.timeline-quarter { opacity: 0; transform: translateX(-20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.timeline-quarter.revealed { opacity: 1; transform: translateX(0); }
+.timeline-item { opacity: 0; transform: translateY(14px); transition: opacity 0.4s ease, transform 0.4s ease; }
+.timeline-item.revealed { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -347,7 +363,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
       <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="10" height="10" rx="2"/><path d="M5 7h4M7 5v4"/></svg>
       Agents · BI Forum 2026
     </div>
-    <h1>Roadmap Agents</h1>
+    <h1 class="gradient-h1">Roadmap Agents</h1>
     <p>Gesamtübersicht aller Roadmap Themen im ersten Screenshot. Danach folgen ein paar ausgewählte Themen mit mehr Detailinfos.</p>
   </div>
 
@@ -483,6 +499,24 @@ document.addEventListener('click', e => {
   const href = a.getAttribute('href');
   if (href && !href.startsWith('http')) { e.preventDefault(); navigateTo(a.href); }
 });
+
+// Scroll-Reveal
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); revealObserver.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.timeline-quarter, .timeline-item').forEach(el => revealObserver.observe(el));
+
+// Swipe
+let _tX=0,_tY=0;
+document.addEventListener('touchstart',e=>{_tX=e.touches[0].clientX;_tY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-_tX;
+  const dy=Math.abs(e.changedTouches[0].clientY-_tY);
+  if(dy>60)return;
+  if(_tX>window.innerWidth*0.72&&dx<-45)openNav();
+  if(document.getElementById('navDrawer')?.classList.contains('open')&&dx>45)closeNav();
+},{passive:true});
+
 </script>
 </body>
 </html>
