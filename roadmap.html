@@ -73,7 +73,7 @@ a { color: inherit; }
 }
 .header-inner {
   max-width: var(--content); margin: 0 auto;
-  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  display: flex; justify-content: flex-end; align-items: center; gap: 6px;
 }
 .brand-title { margin: 0; font-size: 0.94rem; font-weight: 700; letter-spacing: -0.02em; }
 .header-actions { display: flex; align-items: center; gap: 6px; }
@@ -127,18 +127,17 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
 /* Hero */
 .hero {
-  padding: 28px; border-radius: var(--radius-xl);
-  background: var(--surface); border: 1px solid var(--border);
-  box-shadow: var(--shadow-md); backdrop-filter: blur(12px);
-  margin-bottom: 28px; border-left: 4px solid var(--primary);
+  text-align: center;
+  padding: 28px 0 20px;
+  margin-bottom: 8px;
 }
 .hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--primary); margin-bottom: 10px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
 }
-.hero h1 { margin: 0 0 8px; font-size: 1.5rem; letter-spacing: -0.03em; }
-.hero p  { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 60ch; }
+.hero h1 { margin: 0 0 10px; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; }
+.hero p  { margin: 0 auto; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 56ch; }
 
 /* Phase legend */
 .phase-legend {
@@ -277,7 +276,6 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
 <header class="site-header">
   <div class="header-inner">
-    <p class="brand-title">BI Forum 2026: Agents &amp; Mosaic</p>
     <div class="header-actions">
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>

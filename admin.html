@@ -108,10 +108,10 @@ input { cursor: text; }
 .header-inner {
   max-width: var(--content);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
+  gap: 6px;
 }
 .header-title {
   font-size: 0.94rem;
@@ -530,7 +530,6 @@ a.nav-drawer-link.active:visited { color: var(--primary); }
 
 <header class="site-header">
   <div class="header-inner">
-    <p class="header-title">BI Forum 2026: Agents &amp; Mosaic</p>
     <div class="header-actions">
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>

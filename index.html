@@ -165,10 +165,20 @@ textarea:focus-visible,
 .header-inner {
   max-width: var(--content);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
+  gap: 6px;
+}
+
+.page-hero {
+  text-align: center;
+  padding: 28px 0 20px;
+}
+.page-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
 }
 
 .brand {
@@ -1400,12 +1410,6 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
 
 <header class="site-header">
   <div class="header-inner">
-    <div class="brand">
-      <div class="brand-copy">
-        <p class="brand-title">BI Forum 2026: Agents & Mosaic</p>
-      </div>
-    </div>
-
     <div class="header-actions">
       <button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme wechseln">
         <span aria-hidden="true">◐</span>
@@ -1422,6 +1426,14 @@ a.nav-drawer-link:visited { text-decoration: none; color: var(--text); }
 </header>
 
 <main class="page-shell">
+  <div class="page-hero">
+    <div class="page-eyebrow">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M5 7h6M5 10h4"/></svg>
+      BI FORUM 2026: Agents &amp; Mosaic
+    </div>
+    <h1 style="margin:0;font-size:1.8rem;font-weight:800;letter-spacing:-0.04em;">Usecases</h1>
+  </div>
+
   <div class="topbar">
     <div class="kpi-bar" aria-label="Kennzahlen">
       <span class="kpi-chip">
