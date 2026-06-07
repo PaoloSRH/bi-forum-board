@@ -187,8 +187,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   position: relative;
   overflow: hidden;
 }
-.session-card.session-1 { border-left: 4px solid var(--s1); }
-.session-card.session-2 { border-left: 4px solid var(--s2); }
+.session-card:has(.session-badge) { border-left: 4px solid var(--primary); }
 
 .session-card::before {
   content: '';
@@ -221,8 +220,6 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 .session-time {
   font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1;
 }
-.session-1 .session-time { color: var(--s1); }
-.session-2 .session-time { color: var(--s2); }
 
 .session-badge {
   flex-shrink: 0; font-size: 0.68rem; font-weight: 700;
@@ -230,8 +227,6 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   padding: 3px 10px; border-radius: 999px;
   background: var(--primary-soft); color: var(--primary);
 }
-.session-1 .session-badge { background: var(--s1-soft); color: var(--s1); }
-.session-2 .session-badge { background: var(--s2-soft); color: var(--s2); }
 
 .session-title {
   font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em;
