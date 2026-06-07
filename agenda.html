@@ -220,6 +220,10 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 .session-time {
   font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1;
 }
+.session-time-note {
+  font-size: 0.78rem; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--text-muted); vertical-align: middle;
+}
 
 .session-badge {
   flex-shrink: 0; font-size: 0.68rem; font-weight: 700;
@@ -285,6 +289,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   -webkit-tap-highlight-color: transparent; outline: none;
 }
 .day-accordion-header:hover { background: var(--surface-soft); }
+.day-accordion-header.suppress-hover:hover { background: transparent; }
 .day-accordion-header:focus-visible {
   outline: 2px solid var(--primary); outline-offset: -2px;
 }
@@ -312,6 +317,9 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
 .day-flow { display: grid; gap: 14px; }
 .day-flow + .agenda-group { margin-top: 22px; }
+.day-flow + .session-card,
+.sessions + .session-card,
+.agenda-group + .session-card { margin-top: 22px; }
 
 .agenda-group { margin-top: 22px; }
 .agenda-group:first-child { margin-top: 0; }
@@ -642,10 +650,10 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
             <div class="session-card session-event" id="session-dinner-di">
               <div class="session-top">
-                <div class="session-time">ab 18:30</div>
+                <div class="session-time">ab 18:30 <span class="session-time-note">(open end)</span></div>
                 <span class="session-badge badge-event">Team-Event</span>
               </div>
-              <h2 class="session-title">Dinner: Restaurant Swagat <span class="agenda-sub">(open end)</span></h2>
+              <h2 class="session-title">Dinner: Restaurant Swagat</h2>
               <p class="session-subtitle">Alle</p>
               <a class="session-location" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Swagat%2C+Klostersteige+7%2C+87435+Kempten" target="_blank" rel="noopener">
                 <svg class="session-location-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5s5-4.7 5-8.3a5 5 0 1 0-10 0c0 3.6 5 8.3 5 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>
@@ -738,10 +746,10 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
             <div class="session-card session-event" id="session-dinner-mi">
               <div class="session-top">
-                <div class="session-time">ab 18:30</div>
+                <div class="session-time">ab 18:30 <span class="session-time-note">(open end)</span></div>
                 <span class="session-badge badge-event">Team-Event</span>
               </div>
-              <h2 class="session-title">„Krimidinner" – Restaurant Alte Schmiede <span class="agenda-sub">(open end)</span></h2>
+              <h2 class="session-title">„Krimidinner" – Restaurant Alte Schmiede</h2>
               <p class="session-subtitle">Outro: Hotel Bar (Big Box Hotel, Kempten) · Alle</p>
               <a class="session-location" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Alte+Schmiede%2C+Kempten" target="_blank" rel="noopener">
                 <svg class="session-location-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5s5-4.7 5-8.3a5 5 0 1 0-10 0c0 3.6 5 8.3 5 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>
@@ -857,17 +865,17 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
             </div>
 
-            <div class="agenda-group">
-              <p class="agenda-group-label">Abend · individuell</p>
-              <div class="agenda-list">
-                <div class="agenda-row">
-                  <div class="agenda-time">ab 20:00</div>
-                  <div class="agenda-main">
-                    <div class="agenda-title">Drinks &amp; Mini-Pizzas @Ritterkeller mit Christoph W. <span class="agenda-sub">(open end)</span></div>
-                    <div class="agenda-who">Individuell — Essen &amp; Abendprogramm frei wählbar</div>
-                  </div>
-                </div>
+            <div class="session-card session-event" id="session-dinner-do">
+              <div class="session-top">
+                <div class="session-time">ab 20:00 <span class="session-time-note">(open end)</span></div>
+                <span class="session-badge badge-event">Team-Event</span>
               </div>
+              <h2 class="session-title">Drinks &amp; Mini-Pizzas @Ritterkeller</h2>
+              <p class="session-subtitle">mit Christoph W. · Individuell — Essen &amp; Abendprogramm frei wählbar</p>
+              <a class="session-location" href="https://www.google.com/maps/search/?api=1&query=Ritterkeller%2C+Kempten" target="_blank" rel="noopener">
+                <svg class="session-location-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5s5-4.7 5-8.3a5 5 0 1 0-10 0c0 3.6 5 8.3 5 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>
+                <span class="session-location-text">Ritterkeller, Kempten</span>
+              </a>
             </div>
 
           </div>
@@ -988,6 +996,13 @@ function toggleDay(headerEl) {
   const isOpen = acc.classList.contains('open');
   acc.classList.toggle('open', !isOpen);
   headerEl.setAttribute('aria-expanded', String(!isOpen));
+
+  // After a click the cursor sits motionless over the header, so its
+  // :hover highlight stays "marked" until the pointer actually moves
+  // again. Suppress it right after the click and let the next real
+  // pointer movement bring the hover style back.
+  headerEl.classList.add('suppress-hover');
+  window.addEventListener('pointermove', () => headerEl.classList.remove('suppress-hover'), { once: true });
 }
 
 (function initAgendaDays() {
@@ -1043,7 +1058,7 @@ const SCHEDULE = [
   { date: '2026-06-11', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
   { date: '2026-06-11', start: '14:00', end: '14:30', title: 'BI Forum: Offizieller Abschluss', live: true, badgeSel: '#session-end-do .session-top' },
   { date: '2026-06-11', start: '15:00', end: '16:30', title: 'Flex Time', live: false },
-  { date: '2026-06-11', start: '20:00', end: '23:59', title: 'Drinks @Ritterkeller', live: true },
+  { date: '2026-06-11', start: '20:00', end: '23:59', title: 'Drinks @Ritterkeller', live: true, badgeSel: '#session-dinner-do .session-top' },
 ].map(item => ({
   ...item,
   startDate: new Date(`${item.date}T${item.start}:00`),
