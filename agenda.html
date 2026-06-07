@@ -187,7 +187,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   position: relative;
   overflow: hidden;
 }
-.session-card:has(.session-badge) { border-left: 4px solid var(--primary); }
+.session-card:has(.session-badge):not(.session-event) { border-left: 4px solid var(--primary); }
 
 .session-card::before {
   content: '';
@@ -227,6 +227,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   padding: 3px 10px; border-radius: 999px;
   background: var(--primary-soft); color: var(--primary);
 }
+.session-badge.badge-event { background: var(--mosaic-soft); color: var(--mosaic); }
 
 .session-title {
   font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em;
@@ -253,6 +254,18 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
 }
 .session-hint-icon { flex-shrink: 0; margin-top: 1px; }
+
+.session-location {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.84rem; font-weight: 600; color: var(--text-muted);
+  text-decoration: none; border-radius: 999px;
+  margin-top: 2px; transition: color 0.15s ease;
+}
+.session-location:hover { color: var(--primary); }
+.session-location-icon { flex-shrink: 0; color: var(--text-soft); transition: color 0.15s ease; }
+.session-location:hover .session-location-icon { color: var(--primary); }
+.session-location-text { text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+.session-location:hover .session-location-text { text-decoration-color: var(--primary); }
 
 /* Day accordion */
 .agenda-days { display: grid; gap: 14px; margin-bottom: 40px; }
@@ -572,7 +585,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
                 <h2 class="session-title">Cerebro aka Dachser Datenplattform</h2>
                 <div class="session-speaker">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
-                  R. Hütter (Gast)
+                  Roland Hütter (Gast)
                 </div>
               </div>
 
@@ -584,11 +597,15 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
                 </div>
               </div>
 
-              <div class="agenda-row">
-                <div class="agenda-time">13:45 – 14:00</div>
-                <div class="agenda-main">
-                  <div class="agenda-title">BI Forum: Offizieller Start &amp; Begrüßung</div>
-                  <div class="agenda-who">Christoph W.</div>
+              <div class="session-card" id="session-start-di">
+                <div class="session-top">
+                  <div class="session-time">13:45 – 14:00</div>
+                  <span class="session-badge">Plenum</span>
+                </div>
+                <h2 class="session-title">BI Forum: Offizieller Start &amp; Begrüßung</h2>
+                <div class="session-speaker">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+                  Christoph W.
                 </div>
               </div>
 
@@ -623,21 +640,17 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 
             </div>
 
-            <div class="agenda-group">
-              <p class="agenda-group-label">Team-Event · Restaurant</p>
-              <div class="agenda-list">
-                <div class="agenda-row">
-                  <div class="agenda-time">ab 18:30</div>
-                  <div class="agenda-main">
-                    <div class="agenda-title">Dinner: Restaurant Swagat <span class="agenda-sub">(open end)</span></div>
-                    <div class="agenda-who">Alle</div>
-                    <div class="agenda-note">
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
-                      <span>Klostersteige 7, 87435 Kempten — 10 Min. Fußweg vom Hotel</span>
-                    </div>
-                  </div>
-                </div>
+            <div class="session-card session-event" id="session-dinner-di">
+              <div class="session-top">
+                <div class="session-time">ab 18:30</div>
+                <span class="session-badge badge-event">Team-Event</span>
               </div>
+              <h2 class="session-title">Dinner: Restaurant Swagat <span class="agenda-sub">(open end)</span></h2>
+              <p class="session-subtitle">Alle</p>
+              <a class="session-location" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Swagat%2C+Klostersteige+7%2C+87435+Kempten" target="_blank" rel="noopener">
+                <svg class="session-location-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5s5-4.7 5-8.3a5 5 0 1 0-10 0c0 3.6 5 8.3 5 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>
+                <span class="session-location-text">Klostersteige 7, 87435 Kempten — 10 Min. Fußweg vom Hotel</span>
+              </a>
             </div>
 
           </div>
@@ -723,21 +736,20 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
               </div>
             </div>
 
-            <div class="agenda-group">
-              <p class="agenda-group-label">Abend · Event Location</p>
-              <div class="agenda-list">
-                <div class="agenda-row">
-                  <div class="agenda-time">ab 18:30</div>
-                  <div class="agenda-main">
-                    <div class="agenda-title">„Krimidinner" – Restaurant Alte Schmiede <span class="agenda-sub">(open end)</span></div>
-                    <div class="agenda-sub">Outro: Hotel Bar (Big Box Hotel, Kempten)</div>
-                    <div class="agenda-who">Alle</div>
-                    <div class="agenda-note">
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
-                      <span><strong>Hinweis:</strong> Alle BI-Mitglieder übernachten im Hotel. Memminger Str. 68, 87439 Kempten — 26 Min. Fußweg vom Hotel</span>
-                    </div>
-                  </div>
-                </div>
+            <div class="session-card session-event" id="session-dinner-mi">
+              <div class="session-top">
+                <div class="session-time">ab 18:30</div>
+                <span class="session-badge badge-event">Team-Event</span>
+              </div>
+              <h2 class="session-title">„Krimidinner" – Restaurant Alte Schmiede <span class="agenda-sub">(open end)</span></h2>
+              <p class="session-subtitle">Outro: Hotel Bar (Big Box Hotel, Kempten) · Alle</p>
+              <a class="session-location" href="https://www.google.com/maps/search/?api=1&query=Restaurant+Alte+Schmiede%2C+Kempten" target="_blank" rel="noopener">
+                <svg class="session-location-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5s5-4.7 5-8.3a5 5 0 1 0-10 0c0 3.6 5 8.3 5 8.3z"/><circle cx="8" cy="6.2" r="1.7"/></svg>
+                <span class="session-location-text">Restaurant Alte Schmiede, Kempten</span>
+              </a>
+              <div class="session-hint">
+                <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                <span><strong>Hinweis:</strong> Alle BI-Mitglieder übernachten im Hotel. Memminger Str. 68, 87439 Kempten — 26 Min. Fußweg vom Hotel</span>
               </div>
             </div>
 
@@ -811,7 +823,7 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
                 <h2 class="session-title">Cerebro: Teradata Hands-on</h2>
                 <div class="session-speaker">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
-                  R. Hütter
+                  Roland Hütter
                 </div>
               </div>
 
@@ -823,11 +835,15 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
                 </div>
               </div>
 
-              <div class="agenda-row">
-                <div class="agenda-time">14:00 – 14:30</div>
-                <div class="agenda-main">
-                  <div class="agenda-title">BI Forum: Offizieller Abschluss</div>
-                  <div class="agenda-who">Christoph W.</div>
+              <div class="session-card" id="session-end-do">
+                <div class="session-top">
+                  <div class="session-time">14:00 – 14:30</div>
+                  <span class="session-badge">Plenum</span>
+                </div>
+                <h2 class="session-title">BI Forum: Offizieller Abschluss</h2>
+                <div class="session-speaker">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+                  Christoph W.
                 </div>
               </div>
 
@@ -1008,24 +1024,24 @@ const SCHEDULE = [
   { date: '2026-06-09', start: '10:30', end: '11:00', title: 'Pause', live: false },
   { date: '2026-06-09', start: '11:00', end: '12:30', title: 'IT Insights: Cerebro', live: true },
   { date: '2026-06-09', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
-  { date: '2026-06-09', start: '13:45', end: '14:00', title: 'BI Forum: Start & Begrüßung', live: true },
+  { date: '2026-06-09', start: '13:45', end: '14:00', title: 'BI Forum: Start & Begrüßung', live: true, badgeSel: '#session-start-di .session-top' },
   { date: '2026-06-09', start: '14:00', end: '15:15', title: 'Workshop: Technical Debts @BI', live: true },
   { date: '2026-06-09', start: '15:15', end: '15:45', title: 'Pause', live: false },
   { date: '2026-06-09', start: '15:45', end: '16:45', title: 'Interaktives Q&A', live: true },
-  { date: '2026-06-09', start: '18:30', end: '23:59', title: 'Dinner: Restaurant Swagat', live: true },
+  { date: '2026-06-09', start: '18:30', end: '23:59', title: 'Dinner: Restaurant Swagat', live: true, badgeSel: '#session-dinner-di .session-top' },
 
   { date: '2026-06-10', start: '09:00', end: '10:30', title: 'Strategy One – Agents & Mosaic I', live: true, badgeSel: '.session-1 .session-top' },
   { date: '2026-06-10', start: '10:30', end: '11:00', title: 'Pause', live: false },
   { date: '2026-06-10', start: '11:00', end: '12:30', title: 'Strategy One – Agents & Mosaic II', live: true, badgeSel: '.session-2 .session-top' },
   { date: '2026-06-10', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
   { date: '2026-06-10', start: '14:00', end: '16:30', title: 'Flex Time', live: false },
-  { date: '2026-06-10', start: '18:30', end: '23:59', title: '„Krimidinner"', live: true },
+  { date: '2026-06-10', start: '18:30', end: '23:59', title: '„Krimidinner"', live: true, badgeSel: '#session-dinner-mi .session-top' },
 
   { date: '2026-06-11', start: '09:00', end: '10:30', title: 'Demo: Apache NiFi & TM1', live: true },
   { date: '2026-06-11', start: '10:30', end: '11:00', title: 'Pause', live: false },
   { date: '2026-06-11', start: '11:00', end: '12:30', title: 'Cerebro: Teradata Hands-on', live: true },
   { date: '2026-06-11', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
-  { date: '2026-06-11', start: '14:00', end: '14:30', title: 'BI Forum: Offizieller Abschluss', live: true },
+  { date: '2026-06-11', start: '14:00', end: '14:30', title: 'BI Forum: Offizieller Abschluss', live: true, badgeSel: '#session-end-do .session-top' },
   { date: '2026-06-11', start: '15:00', end: '16:30', title: 'Flex Time', live: false },
   { date: '2026-06-11', start: '20:00', end: '23:59', title: 'Drinks @Ritterkeller', live: true },
 ].map(item => ({
