@@ -152,9 +152,13 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 }
 
 /* Live status */
+.hero-status-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 10px; margin-top: 20px;
+}
 .live-status {
   display: inline-flex; align-items: center; gap: 9px;
-  margin-top: 20px; padding: 9px 18px;
+  padding: 9px 18px;
   border-radius: 999px; background: var(--surface);
   border: 1px solid var(--border); box-shadow: var(--shadow-sm);
   font-size: 0.84rem; font-weight: 600; color: var(--text-muted);
@@ -173,6 +177,18 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 .live-status.break .live-status-dot { background: var(--s2); }
 .live-status.upcoming { color: var(--primary); }
 .live-status.upcoming .live-status-dot { background: var(--primary); }
+
+.live-status-jump {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 999px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--primary); font-size: 0.84rem; font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.live-status-jump:hover { background: var(--primary-soft); border-color: var(--primary); }
+.live-status-jump svg { flex-shrink: 0; transition: transform 0.15s ease; }
+.live-status-jump:hover svg { transform: translateX(2px); }
 
 /* Sessions */
 .sessions { display: grid; gap: 16px; margin-bottom: 40px; }
@@ -243,9 +259,14 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 }
 .session-speaker {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 12px; border-radius: 999px;
+  padding: 6px 12px 6px 6px; border-radius: 999px;
   background: var(--surface-soft); border: 1px solid var(--border);
   font-size: 0.84rem; font-weight: 600; margin-bottom: 16px;
+}
+.session-speaker-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.02em; color: #fff;
 }
 .session-desc {
   color: var(--text-muted); font-size: 0.9rem;
@@ -510,9 +531,15 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
     <h1 class="gradient-h1">Willkommen!</h1>
     <p>Vom Get-Together am Montagabend bis zum offiziellen Abschluss am Donnerstag — hier findest du die Agenda der gesamten BI Week mit Forum 2026. Klappe die Tage auf, um alle Details zu sehen, und nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
 
-    <div class="live-status" id="liveStatus">
-      <span class="live-status-dot" aria-hidden="true"></span>
-      <span id="liveStatusText">—</span>
+    <div class="hero-status-row">
+      <div class="live-status" id="liveStatus">
+        <span class="live-status-dot" aria-hidden="true"></span>
+        <span id="liveStatusText">—</span>
+      </div>
+      <a href="#" class="live-status-jump" id="liveStatusJump" hidden>
+        <span id="liveStatusJumpText"></span>
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
     </div>
   </div>
 
@@ -1044,6 +1071,59 @@ function toggleDay(headerEl) {
       acc.classList.add('open');
       header.setAttribute('aria-expanded', 'true');
     }
+  });
+
+  // "Zu [Tag] springen"-Link neben dem Live-Status: öffnet den
+  // relevanten Tag (heute, oder den nächsten bevorstehenden) und
+  // scrollt ihn in den sichtbaren Bereich.
+  const jumpLink = document.getElementById('liveStatusJump');
+  const jumpText = document.getElementById('liveStatusJumpText');
+  const activeDay = days[activeIdx];
+  if (jumpLink && jumpText && activeDay) {
+    const dayName = activeDay.querySelector('.day-name')?.textContent.trim().split(',')[0] || '';
+    jumpText.textContent = dates[activeIdx] === todayStr ? 'Heute ansehen' : `${dayName} ansehen`;
+    jumpLink.hidden = false;
+    jumpLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const header = activeDay.querySelector('.day-accordion-header');
+      if (!activeDay.classList.contains('open')) {
+        activeDay.classList.add('open');
+        header?.setAttribute('aria-expanded', 'true');
+      }
+      activeDay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+})();
+
+(function initSpeakerAvatars() {
+  const palette = ['#2563eb', '#7c3aed', '#0d9488', '#ea580c', '#db2777', '#15803d', '#9333ea', '#0891b2'];
+
+  function hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function initialsFor(name) {
+    const clean = name.replace(/\(.*?\)/g, '').trim();
+    const people = clean.split(/[+/]/).map(s => s.trim()).filter(Boolean);
+    if (people.length > 1) return people.map(p => p.charAt(0).toUpperCase()).join('').slice(0, 2);
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
+
+  document.querySelectorAll('.session-speaker').forEach(el => {
+    const icon = el.querySelector('svg');
+    const name = el.textContent.trim();
+    if (!icon || !name) return;
+    const initials = initialsFor(name);
+    const avatar = document.createElement('span');
+    avatar.className = 'session-speaker-avatar';
+    avatar.style.background = palette[hash(initials) % palette.length];
+    avatar.textContent = initials;
+    avatar.setAttribute('aria-hidden', 'true');
+    icon.replaceWith(avatar);
   });
 })();
 
