@@ -284,8 +284,12 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
 }
 .session-hint-icon { flex-shrink: 0; margin-top: 1px; }
-.session-hint a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
-.session-hint a:hover { color: var(--primary-hover); }
+.session-hint a {
+  color: var(--text-muted); font-weight: 600; text-decoration: underline;
+  text-decoration-color: var(--border-strong); text-underline-offset: 2px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.session-hint a:hover { color: var(--primary); text-decoration-color: var(--primary); }
 
 .session-location {
   display: inline-flex; align-items: center; gap: 7px;
