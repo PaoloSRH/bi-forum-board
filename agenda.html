@@ -276,6 +276,72 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 }
 .session-hint-icon { flex-shrink: 0; margin-top: 1px; }
 
+/* Day accordion */
+.agenda-days { display: grid; gap: 14px; margin-bottom: 40px; }
+
+.day-accordion {
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+.day-accordion-header {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; padding: 20px 24px; background: transparent; border: none;
+  text-align: left; color: var(--text); transition: background 0.16s ease;
+}
+.day-accordion-header:hover { background: var(--surface-soft); }
+.day-heading { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.day-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
+.day-today-badge {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; background: var(--primary-soft); color: var(--primary);
+}
+.day-location { margin-top: 3px; font-size: 0.8rem; font-weight: 600; color: var(--text-soft); }
+.day-chevron { flex-shrink: 0; color: var(--text-muted); transition: transform 0.24s ease; }
+.day-accordion.open .day-chevron { transform: rotate(180deg); }
+
+.day-accordion-body {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s ease;
+}
+.day-accordion.open .day-accordion-body { grid-template-rows: 1fr; }
+.day-accordion-body > div { overflow: hidden; }
+.day-accordion-content { padding: 0 24px 26px; }
+
+.day-intro {
+  margin: 0 0 8px; color: var(--text-muted); font-size: 0.92rem; line-height: 1.65;
+}
+
+.agenda-group { margin-top: 22px; }
+.agenda-group:first-child { margin-top: 0; }
+.agenda-group-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-soft); margin: 0 0 10px;
+}
+.agenda-list { display: grid; gap: 8px; }
+.agenda-row {
+  display: flex; gap: 16px; padding: 13px 16px;
+  border-radius: 14px; background: var(--surface-soft); border: 1px solid var(--border);
+}
+.agenda-row.is-muted { opacity: 0.65; }
+.agenda-time {
+  flex-shrink: 0; width: 96px; font-size: 0.84rem; font-weight: 700;
+  letter-spacing: -0.01em; color: var(--text);
+}
+.agenda-main { flex: 1; min-width: 0; }
+.agenda-title { font-size: 0.92rem; font-weight: 700; letter-spacing: -0.01em; }
+.agenda-title + .agenda-title { margin-top: 6px; }
+.agenda-sub { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); }
+.agenda-who { font-size: 0.78rem; font-weight: 600; color: var(--text-soft); margin-top: 6px; }
+.agenda-note {
+  display: flex; align-items: flex-start; gap: 8px; margin-top: 12px;
+  font-size: 0.8rem; color: var(--text-soft); line-height: 1.55;
+}
+.agenda-note svg { flex-shrink: 0; margin-top: 1px; }
+
 /* App guide */
 .guide-section {
   padding: 28px;
@@ -340,6 +406,10 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   .session-time { font-size: 1.2rem; }
   .guide-steps { grid-template-columns: 1fr; }
   .guide-section { padding: 20px; }
+  .day-accordion-header { padding: 16px 18px; }
+  .day-accordion-content { padding: 0 18px 20px; }
+  .agenda-row { flex-direction: column; gap: 4px; }
+  .agenda-time { width: auto; }
 }
 
 .gradient-h1 {
@@ -421,64 +491,389 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
       BI FORUM 2026: Agents &amp; Mosaic
     </div>
     <h1 class="gradient-h1">Willkommen!</h1>
-    <p>Heute früh dreht sich alles um <strong>Strategy One Agents &amp; Mosaic</strong> — von der Vorstellung der Themen bis zum eigenen Ausprobieren. Nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
+    <p>Vom Get-Together am Montagabend bis zum offiziellen Abschluss am Donnerstag — hier findest du die Agenda der gesamten BI Week mit Forum 2026. Klappe die Tage auf, um alle Details zu sehen, und nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
   </div>
 
-  <!-- Day progress -->
-  <div class="day-progress-wrap">
-    <div class="day-progress-header">
-      <span>09:00</span>
-      <span>10. Juni 2026</span>
-      <span>12:30</span>
-    </div>
-    <div class="day-progress-track" id="progressTrack">
-      <div class="day-progress-bar" id="progressBar" style="width:0%"></div>
-      <!-- Markers: 10:30 = 42.9%, 11:00 = 57.1% of 09:00–12:30 -->
-      <div class="day-progress-marker" style="left:42.86%">
-        <span class="day-progress-marker-label">10:30</span>
-      </div>
-      <div class="day-progress-marker" style="left:57.14%">
-        <span class="day-progress-marker-label">11:00</span>
-      </div>
-    </div>
-    <div class="event-status" id="eventStatus">—</div>
-  </div>
+  <!-- Agenda days -->
+  <div class="agenda-days" id="agendaDays">
 
-  <!-- Sessions -->
-  <div class="sessions">
-
-    <!-- Session 1 -->
-    <div class="session-card session-1">
-      <div class="session-top">
-        <div class="session-time">09:00 – 10:30</div>
-        <span class="session-badge">Session 1</span>
-      </div>
-      <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
-      <p class="session-subtitle">Externer Vortrag</p>
-      <div class="session-speaker">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
-        Johannes Silhan
-      </div>
-      <p class="session-desc">Johannes stellt die Themen <strong>Agents</strong> und <strong>Mosaic</strong> aus Strategy One Sicht vor — mit Einblick in aktuelle Funktionen, Roadmap und Möglichkeiten für Dachser.</p>
-      <div class="session-hint">
-        <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
-        <span>Du kannst die App schon während dieser Session nutzen — entsteht während des Vortrags eine Idee, trage sie direkt als Usecase ein.</span>
+    <!-- Monday -->
+    <div class="day-accordion" data-date="2026-06-08">
+      <button class="day-accordion-header" type="button" aria-expanded="false" aria-controls="day-mo-body" onclick="toggleDay(this)">
+        <div>
+          <div class="day-heading">
+            <span class="day-name">Montag, 8. Juni</span>
+            <span class="day-today-badge" hidden>Heute</span>
+          </div>
+          <div class="day-location">Anreise &amp; Get-Together</div>
+        </div>
+        <svg class="day-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="day-accordion-body" id="day-mo-body">
+        <div>
+          <div class="day-accordion-content">
+            <div class="agenda-group">
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">bis 18:00</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Anreise / Bilaterale Gespräche</div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">ab 18:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Get-Together <span class="agenda-sub">(Event mit Drinks, ohne Essen)</span></div>
+                    <div class="agenda-who">Alle</div>
+                    <div class="agenda-note">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                      <span>Treffpunkt: Kreuzung Schützenstraße &amp; An der Stadtmauer — 9 Min. Fußweg vom Hotel</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Session 2 -->
-    <div class="session-card session-2">
-      <div class="session-top">
-        <div class="session-time">11:00 – 12:30</div>
-        <span class="session-badge">Session 2</span>
+    <!-- Tuesday -->
+    <div class="day-accordion" data-date="2026-06-09">
+      <button class="day-accordion-header" type="button" aria-expanded="false" aria-controls="day-di-body" onclick="toggleDay(this)">
+        <div>
+          <div class="day-heading">
+            <span class="day-name">Dienstag, 9. Juni</span>
+            <span class="day-today-badge" hidden>Heute</span>
+          </div>
+          <div class="day-location">DNC / Warehouse</div>
+        </div>
+        <svg class="day-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="day-accordion-body" id="day-di-body">
+        <div>
+          <div class="day-accordion-content">
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Meeting</p>
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">09:00 – 10:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Team-Meetings <span class="agenda-sub">(jedes BI-Team, Agenda &amp; Räume durch TL)</span></div>
+                    <div class="agenda-who">Teams / Breakout</div>
+                  </div>
+                </div>
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">10:30 – 11:00</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Pause</div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">11:00 – 12:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">IT Insights: Cerebro aka Dachser Datenplattform</div>
+                    <div class="agenda-who">R. Hütter (Gast)</div>
+                  </div>
+                </div>
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">12:45 – 13:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Mittagessen <span class="agenda-sub">· DNC Academy (kaltes Buffet)</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">13:45 – 14:00</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">BI Forum: Offizieller Start &amp; Begrüßung</div>
+                    <div class="agenda-who">Christoph W.</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">14:00 – 15:15</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Workshop / Diskussion: Technical Debts @BI</div>
+                    <div class="agenda-who">Gunnar + Christoph W.</div>
+                  </div>
+                </div>
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">15:15 – 15:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Pause</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">15:45 – 16:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Interaktives Q&amp;A <span class="agenda-sub">– live &amp; Mentimeter</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Team-Event · Restaurant</p>
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">ab 18:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Dinner: Restaurant Swagat <span class="agenda-sub">(open end)</span></div>
+                    <div class="agenda-who">Alle</div>
+                    <div class="agenda-note">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                      <span>Klostersteige 7, 87435 Kempten — 10 Min. Fußweg vom Hotel</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
-      <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
-      <p class="session-subtitle">Hands-on Session</p>
-      <p class="session-desc">Jetzt seid ihr dran — probiert <strong>Mosaic</strong> und die <strong>Agents</strong> selbst aus. Nutzt gleichzeitig die App, um Usecases einzutragen, zu voten und zu kommentieren. Die gesammelten Ideen helfen uns, die richtigen Themen für Dachser zu priorisieren.</p>
-      <p class="session-desc" style="margin-top:10px;"><strong>Stefan</strong> und <strong>Paolo</strong> stehen zur Verfügung, um einen Einblick in erste Mosaic Modelle und Agents zu geben. Diese sind in der App mit <strong style="color:#059669;text-transform:uppercase;letter-spacing:0.04em;">Demo</strong> markiert — ihr könnt auch direkt einen Link zu den Demo-Usecases bekommen und sie an eurem eigenen PC ausprobieren.</p>
-      <div class="session-hint">
-        <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
-        <span>Die Roadmap-Seiten zeigen, wie Strategy One Agents &amp; Mosaic weiterentwickelt werden — stöbere dort für weitere Inspiration und neue Usecase-Ideen.</span>
+    </div>
+
+    <!-- Wednesday -->
+    <div class="day-accordion" data-date="2026-06-10">
+      <button class="day-accordion-header" type="button" aria-expanded="false" aria-controls="day-mi-body" onclick="toggleDay(this)">
+        <div>
+          <div class="day-heading">
+            <span class="day-name">Mittwoch, 10. Juni</span>
+            <span class="day-today-badge" hidden>Heute</span>
+          </div>
+          <div class="day-location">DNC / Warehouse</div>
+        </div>
+        <svg class="day-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="day-accordion-body" id="day-mi-body">
+        <div>
+          <div class="day-accordion-content">
+
+            <p class="day-intro">Heute früh dreht sich alles um <strong>Strategy One Agents &amp; Mosaic</strong> — von der Vorstellung der Themen bis zum eigenen Ausprobieren. Nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
+
+            <!-- Day progress -->
+            <div class="day-progress-wrap">
+              <div class="day-progress-header">
+                <span>09:00</span>
+                <span>10. Juni 2026</span>
+                <span>12:30</span>
+              </div>
+              <div class="day-progress-track" id="progressTrack">
+                <div class="day-progress-bar" id="progressBar" style="width:0%"></div>
+                <!-- Markers: 10:30 = 42.9%, 11:00 = 57.1% of 09:00–12:30 -->
+                <div class="day-progress-marker" style="left:42.86%">
+                  <span class="day-progress-marker-label">10:30</span>
+                </div>
+                <div class="day-progress-marker" style="left:57.14%">
+                  <span class="day-progress-marker-label">11:00</span>
+                </div>
+              </div>
+              <div class="event-status" id="eventStatus">—</div>
+            </div>
+
+            <!-- Sessions -->
+            <div class="sessions">
+
+              <!-- Session 1 -->
+              <div class="session-card session-1">
+                <div class="session-top">
+                  <div class="session-time">09:00 – 10:30</div>
+                  <span class="session-badge">Session 1</span>
+                </div>
+                <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
+                <p class="session-subtitle">Externer Vortrag</p>
+                <div class="session-speaker">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+                  Johannes Silhan
+                </div>
+                <p class="session-desc">Johannes stellt die Themen <strong>Agents</strong> und <strong>Mosaic</strong> aus Strategy One Sicht vor — mit Einblick in aktuelle Funktionen, Roadmap und Möglichkeiten für Dachser.</p>
+                <div class="session-hint">
+                  <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                  <span>Du kannst die App schon während dieser Session nutzen — entsteht während des Vortrags eine Idee, trage sie direkt als Usecase ein.</span>
+                </div>
+              </div>
+
+              <!-- Session 2 -->
+              <div class="session-card session-2">
+                <div class="session-top">
+                  <div class="session-time">11:00 – 12:30</div>
+                  <span class="session-badge">Session 2</span>
+                </div>
+                <h2 class="session-title">Strategy One – Agents &amp; Mosaic</h2>
+                <p class="session-subtitle">Hands-on Session</p>
+                <p class="session-desc">Jetzt seid ihr dran — probiert <strong>Mosaic</strong> und die <strong>Agents</strong> selbst aus. Nutzt gleichzeitig die App, um Usecases einzutragen, zu voten und zu kommentieren. Die gesammelten Ideen helfen uns, die richtigen Themen für Dachser zu priorisieren.</p>
+                <p class="session-desc" style="margin-top:10px;"><strong>Stefan</strong> und <strong>Paolo</strong> stehen zur Verfügung, um einen Einblick in erste Mosaic Modelle und Agents zu geben. Diese sind in der App mit <strong style="color:#059669;text-transform:uppercase;letter-spacing:0.04em;">Demo</strong> markiert — ihr könnt auch direkt einen Link zu den Demo-Usecases bekommen und sie an eurem eigenen PC ausprobieren.</p>
+                <div class="session-hint">
+                  <svg class="session-hint-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                  <span>Die Roadmap-Seiten zeigen, wie Strategy One Agents &amp; Mosaic weiterentwickelt werden — stöbere dort für weitere Inspiration und neue Usecase-Ideen.</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Mittagessen &amp; Flex Time</p>
+              <div class="agenda-list">
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">12:45 – 13:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Mittagessen <span class="agenda-sub">· DNC Restaurant</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">14:00 – 16:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Flex Time <span class="agenda-sub">zum Austauschen, Erkunden oder Netzwerken</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Abend · Event Location</p>
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">ab 18:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">„Krimidinner" – Restaurant Alte Schmiede <span class="agenda-sub">(open end)</span></div>
+                    <div class="agenda-sub">Outro: Hotel Bar (Big Box Hotel, Kempten)</div>
+                    <div class="agenda-who">Alle</div>
+                    <div class="agenda-note">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                      <span><strong>Hinweis:</strong> Alle BI-Mitglieder übernachten im Hotel. Memminger Str. 68, 87439 Kempten — 26 Min. Fußweg vom Hotel</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thursday -->
+    <div class="day-accordion" data-date="2026-06-11">
+      <button class="day-accordion-header" type="button" aria-expanded="false" aria-controls="day-do-body" onclick="toggleDay(this)">
+        <div>
+          <div class="day-heading">
+            <span class="day-name">Donnerstag, 11. Juni</span>
+            <span class="day-today-badge" hidden>Heute</span>
+          </div>
+          <div class="day-location">DNC</div>
+        </div>
+        <svg class="day-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="day-accordion-body" id="day-do-body">
+        <div>
+          <div class="day-accordion-content">
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Meeting</p>
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">09:00 – 10:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Gruppe 1 <span class="agenda-sub">(Raum: Warehouse)</span>: Apache NiFi (Demo)</div>
+                    <div class="agenda-title">Gruppe 2 <span class="agenda-sub">(Raum: Marketplace)</span>: neuer TM1 Client + Web (Demo)</div>
+                    <div class="agenda-who">Alena / Antoine · Manfred</div>
+                    <div class="agenda-note">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+                      <span>Bitte mit eurem TL klären, wo ihr teilnehmt — Gruppen</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">10:30 – 11:00</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Pause</div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">11:00 – 12:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Cerebro: Teradata Hands-on mit R. Hütter</div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row is-muted">
+                  <div class="agenda-time">12:45 – 13:45</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Mittagessen <span class="agenda-sub">· DNC Restaurant</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">14:00 – 14:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">BI Forum: Offizieller Abschluss</div>
+                    <div class="agenda-who">Christoph W.</div>
+                  </div>
+                </div>
+                <div class="agenda-row">
+                  <div class="agenda-time">15:00 – 16:30</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Flex Time <span class="agenda-sub">zum Austauschen, Erkunden oder Netzwerken</span></div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="agenda-group">
+              <p class="agenda-group-label">Abend · individuell</p>
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">ab 20:00</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Drinks &amp; Mini-Pizzas @Ritterkeller mit Christoph W. <span class="agenda-sub">(open end)</span></div>
+                    <div class="agenda-who">Individuell — Essen &amp; Abendprogramm frei wählbar</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Friday -->
+    <div class="day-accordion" data-date="2026-06-12">
+      <button class="day-accordion-header" type="button" aria-expanded="false" aria-controls="day-fr-body" onclick="toggleDay(this)">
+        <div>
+          <div class="day-heading">
+            <span class="day-name">Freitag, 12. Juni</span>
+            <span class="day-today-badge" hidden>Heute</span>
+          </div>
+          <div class="day-location">Abreise</div>
+        </div>
+        <svg class="day-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="day-accordion-body" id="day-fr-body">
+        <div>
+          <div class="day-accordion-content">
+            <div class="agenda-group">
+              <div class="agenda-list">
+                <div class="agenda-row">
+                  <div class="agenda-time">ganztägig</div>
+                  <div class="agenda-main">
+                    <div class="agenda-title">Bilaterale Gespräche oder Abreise</div>
+                    <div class="agenda-who">Alle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -559,6 +954,33 @@ function navigateTo(url) {
   document.body.style.transform = 'translateY(-4px)';
   setTimeout(() => { window.location.href = url; }, 200);
 }
+function toggleDay(headerEl) {
+  const acc = headerEl.closest('.day-accordion');
+  const isOpen = acc.classList.contains('open');
+  acc.classList.toggle('open', !isOpen);
+  headerEl.setAttribute('aria-expanded', String(!isOpen));
+}
+
+(function initAgendaDays() {
+  const days = Array.from(document.querySelectorAll('.day-accordion'));
+  const dates = days.map(d => d.dataset.date);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  let activeIdx = dates.indexOf(todayStr);
+  if (activeIdx === -1) {
+    activeIdx = dates.findIndex(d => d > todayStr);
+    if (activeIdx === -1) activeIdx = dates.length - 1;
+  }
+  days.forEach((acc, i) => {
+    const header = acc.querySelector('.day-accordion-header');
+    const badge = acc.querySelector('.day-today-badge');
+    if (dates[i] === todayStr && badge) badge.hidden = false;
+    if (i === activeIdx) {
+      acc.classList.add('open');
+      header.setAttribute('aria-expanded', 'true');
+    }
+  });
+})();
+
 const EVENT_DATE = '2026-06-10';
 const S1_START = 9*60, S1_END = 10*60+30;
 const S2_START = 11*60, S2_END = 12*60+30;
