@@ -263,10 +263,14 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   background: var(--surface-soft); border: 1px solid var(--border);
   font-size: 0.84rem; font-weight: 600; margin-bottom: 16px;
 }
+.session-speaker-avatars { display: inline-flex; flex-shrink: 0; }
 .session-speaker-avatar {
   display: inline-flex; align-items: center; justify-content: center;
-  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  box-sizing: border-box; flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
   font-size: 0.66rem; font-weight: 700; letter-spacing: 0.02em; color: #fff;
+}
+.session-speaker-avatars .session-speaker-avatar:not(:first-child) {
+  margin-left: -7px; border: 2px solid var(--surface-soft);
 }
 .session-desc {
   color: var(--text-muted); font-size: 0.9rem;
@@ -1064,13 +1068,8 @@ function toggleDay(headerEl) {
     if (activeIdx === -1) activeIdx = dates.length - 1;
   }
   days.forEach((acc, i) => {
-    const header = acc.querySelector('.day-accordion-header');
     const badge = acc.querySelector('.day-today-badge');
     if (dates[i] === todayStr && badge) badge.hidden = false;
-    if (i === activeIdx) {
-      acc.classList.add('open');
-      header.setAttribute('aria-expanded', 'true');
-    }
   });
 
   // "Zu [Tag] springen"-Link neben dem Live-Status: öffnet den
@@ -1098,17 +1097,25 @@ function toggleDay(headerEl) {
 (function initSpeakerAvatars() {
   const palette = ['#2563eb', '#7c3aed', '#0d9488', '#ea580c', '#db2777', '#15803d', '#9333ea', '#0891b2'];
 
+  // Initialen, die sich nicht zuverlässig aus dem angezeigten (oft
+  // abgekürzten) Namen ableiten lassen — z.B. weil nur der Vorname
+  // gezeigt wird, der Nachname aber mit einem anderen Buchstaben beginnt.
+  const INITIALS_OVERRIDES = {
+    'Gunnar': 'GF',
+    'Manfred': 'MH',
+    'Alena': 'AL',
+    'Antoine': 'AK',
+  };
+
   function hash(str) {
     let h = 0;
     for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
     return h;
   }
 
-  function initialsFor(name) {
-    const clean = name.replace(/\(.*?\)/g, '').trim();
-    const people = clean.split(/[+/]/).map(s => s.trim()).filter(Boolean);
-    if (people.length > 1) return people.map(p => p.charAt(0).toUpperCase()).join('').slice(0, 2);
-    const parts = clean.split(/\s+/).filter(Boolean);
+  function initialsFor(person) {
+    if (INITIALS_OVERRIDES[person]) return INITIALS_OVERRIDES[person];
+    const parts = person.split(/\s+/).filter(Boolean);
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   }
@@ -1117,13 +1124,21 @@ function toggleDay(headerEl) {
     const icon = el.querySelector('svg');
     const name = el.textContent.trim();
     if (!icon || !name) return;
-    const initials = initialsFor(name);
-    const avatar = document.createElement('span');
-    avatar.className = 'session-speaker-avatar';
-    avatar.style.background = palette[hash(initials) % palette.length];
-    avatar.textContent = initials;
-    avatar.setAttribute('aria-hidden', 'true');
-    icon.replaceWith(avatar);
+    const clean = name.replace(/\(.*?\)/g, '').trim();
+    const people = clean.split(/[+/]/).map(s => s.trim()).filter(Boolean);
+
+    const group = document.createElement('span');
+    group.className = 'session-speaker-avatars';
+    people.forEach(person => {
+      const initials = initialsFor(person);
+      const avatar = document.createElement('span');
+      avatar.className = 'session-speaker-avatar';
+      avatar.style.background = palette[hash(initials) % palette.length];
+      avatar.textContent = initials;
+      avatar.setAttribute('aria-hidden', 'true');
+      group.appendChild(avatar);
+    });
+    icon.replaceWith(group);
   });
 })();
 
