@@ -151,6 +151,29 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   line-height: 1.65; max-width: 52ch;
 }
 
+/* Live status */
+.live-status {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin-top: 20px; padding: 9px 18px;
+  border-radius: 999px; background: var(--surface);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  font-size: 0.84rem; font-weight: 600; color: var(--text-muted);
+  backdrop-filter: blur(10px);
+}
+.live-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: var(--text-soft);
+}
+.live-status.active { color: var(--success); }
+.live-status.active .live-status-dot {
+  background: var(--success);
+  animation: livePulse 1.4s ease-in-out infinite;
+}
+.live-status.break { color: var(--s2); }
+.live-status.break .live-status-dot { background: var(--s2); }
+.live-status.upcoming { color: var(--primary); }
+.live-status.upcoming .live-status-dot { background: var(--primary); }
+
 /* Sessions */
 .sessions { display: grid; gap: 16px; margin-bottom: 40px; }
 
@@ -251,8 +274,12 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
   width: 100%; display: flex; align-items: center; justify-content: space-between;
   gap: 14px; padding: 20px 24px; background: transparent; border: none;
   text-align: left; color: var(--text); transition: background 0.16s ease;
+  -webkit-tap-highlight-color: transparent; outline: none;
 }
 .day-accordion-header:hover { background: var(--surface-soft); }
+.day-accordion-header:focus-visible {
+  outline: 2px solid var(--primary); outline-offset: -2px;
+}
 .day-heading { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .day-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
 .day-today-badge {
@@ -455,6 +482,11 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
     </div>
     <h1 class="gradient-h1">Willkommen!</h1>
     <p>Vom Get-Together am Montagabend bis zum offiziellen Abschluss am Donnerstag — hier findest du die Agenda der gesamten BI Week mit Forum 2026. Klappe die Tage auf, um alle Details zu sehen, und nutze diese App, um Ideen festzuhalten, zu priorisieren und mit anderen zu diskutieren.</p>
+
+    <div class="live-status" id="liveStatus">
+      <span class="live-status-dot" aria-hidden="true"></span>
+      <span id="liveStatusText">—</span>
+    </div>
   </div>
 
   <!-- Agenda days -->
@@ -967,34 +999,109 @@ function toggleDay(headerEl) {
   });
 })();
 
-const EVENT_DATE = '2026-06-10';
-const S1_START = 9*60, S1_END = 10*60+30;
-const S2_START = 11*60, S2_END = 12*60+30;
+// Offizieller Start: Get-Together am Montag, 18:45 Uhr
+const OFFICIAL_START = new Date('2026-06-08T18:45:00');
 
-function updateLiveBadges() {
-  const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-  const cur = now.getHours() * 60 + now.getMinutes();
+// Komplettes Wochenprogramm — chronologisch. `live: true` = eigenständiger
+// Programmpunkt ("läuft gerade"), `live: false` = Pause/Lücke (zeigt
+// Countdown zum nächsten Programmpunkt). `badgeSel` markiert die Session-
+// Karte, die bei "läuft gerade" das Live-Badge bekommen soll.
+const SCHEDULE = [
+  { date: '2026-06-08', start: '18:45', end: '23:59', title: 'Get-Together', live: true },
 
-  document.querySelectorAll('.session-live').forEach(el => el.remove());
+  { date: '2026-06-09', start: '09:00', end: '10:30', title: 'Team-Meetings', live: true },
+  { date: '2026-06-09', start: '10:30', end: '11:00', title: 'Pause', live: false },
+  { date: '2026-06-09', start: '11:00', end: '12:30', title: 'IT Insights: Cerebro', live: true },
+  { date: '2026-06-09', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
+  { date: '2026-06-09', start: '13:45', end: '14:00', title: 'BI Forum: Start & Begrüßung', live: true },
+  { date: '2026-06-09', start: '14:00', end: '15:15', title: 'Workshop: Technical Debts @BI', live: true },
+  { date: '2026-06-09', start: '15:15', end: '15:45', title: 'Pause', live: false },
+  { date: '2026-06-09', start: '15:45', end: '16:45', title: 'Interaktives Q&A', live: true },
+  { date: '2026-06-09', start: '18:30', end: '23:59', title: 'Dinner: Restaurant Swagat', live: true },
 
-  if (today === EVENT_DATE) {
-    if (cur >= S1_START && cur < S1_END) addLiveBadge('.session-1 .session-top');
-    else if (cur >= S2_START && cur < S2_END) addLiveBadge('.session-2 .session-top');
-  }
+  { date: '2026-06-10', start: '09:00', end: '10:30', title: 'Strategy One – Agents & Mosaic I', live: true, badgeSel: '.session-1 .session-top' },
+  { date: '2026-06-10', start: '10:30', end: '11:00', title: 'Pause', live: false },
+  { date: '2026-06-10', start: '11:00', end: '12:30', title: 'Strategy One – Agents & Mosaic II', live: true, badgeSel: '.session-2 .session-top' },
+  { date: '2026-06-10', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
+  { date: '2026-06-10', start: '14:00', end: '16:30', title: 'Flex Time', live: false },
+  { date: '2026-06-10', start: '18:30', end: '23:59', title: '„Krimidinner"', live: true },
+
+  { date: '2026-06-11', start: '09:00', end: '10:30', title: 'Demo: Apache NiFi & TM1', live: true },
+  { date: '2026-06-11', start: '10:30', end: '11:00', title: 'Pause', live: false },
+  { date: '2026-06-11', start: '11:00', end: '12:30', title: 'Cerebro: Teradata Hands-on', live: true },
+  { date: '2026-06-11', start: '12:45', end: '13:45', title: 'Mittagessen', live: false },
+  { date: '2026-06-11', start: '14:00', end: '14:30', title: 'BI Forum: Offizieller Abschluss', live: true },
+  { date: '2026-06-11', start: '15:00', end: '16:30', title: 'Flex Time', live: false },
+  { date: '2026-06-11', start: '20:00', end: '23:59', title: 'Drinks @Ritterkeller', live: true },
+].map(item => ({
+  ...item,
+  startDate: new Date(`${item.date}T${item.start}:00`),
+  endDate: new Date(`${item.date}T${item.end}:00`),
+}));
+
+function formatCountdown(ms) {
+  const totalMin = Math.max(0, Math.round(ms / 60000));
+  const days = Math.floor(totalMin / 1440);
+  const hours = Math.floor((totalMin % 1440) / 60);
+  const mins = totalMin % 60;
+  if (days > 0)  return `${days} Tag${days !== 1 ? 'en' : ''}`;
+  if (hours > 0) return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+  return `${mins}min`;
 }
 
 function addLiveBadge(selector) {
   const top = document.querySelector(selector);
-  if (!top) return;
+  if (!top || top.querySelector('.session-live')) return;
   const badge = document.createElement('span');
   badge.className = 'session-live';
   badge.textContent = 'Läuft gerade';
   top.appendChild(badge);
 }
 
-updateLiveBadges();
-setInterval(updateLiveBadges, 60_000);
+function updateLiveStatus() {
+  const statusEl = document.getElementById('liveStatus');
+  const textEl   = document.getElementById('liveStatusText');
+  if (!statusEl || !textEl) return;
+
+  const now   = new Date();
+  const nowMs = now.getTime();
+
+  document.querySelectorAll('.session-live').forEach(el => el.remove());
+
+  const current = SCHEDULE.find(i => nowMs >= i.startDate.getTime() && nowMs < i.endDate.getTime());
+  const next    = SCHEDULE.find(i => i.startDate.getTime() > nowMs);
+
+  let text = '', cls = 'future';
+
+  if (current) {
+    if (current.live) {
+      if (current.badgeSel) addLiveBadge(current.badgeSel);
+      text = `${current.title} läuft — noch ${formatCountdown(current.endDate - now)}`;
+      cls = 'active';
+    } else if (next) {
+      text = `${current.title} · ${next.title} startet in ${formatCountdown(next.startDate - now)}`;
+      cls = 'break';
+    } else {
+      text = current.title;
+      cls = 'break';
+    }
+  } else if (nowMs < OFFICIAL_START.getTime()) {
+    text = `BI Forum 2026 startet in ${formatCountdown(OFFICIAL_START - now)}`;
+    cls = 'future';
+  } else if (next) {
+    text = `${next.title} startet in ${formatCountdown(next.startDate - now)}`;
+    cls = 'upcoming';
+  } else {
+    text = 'BI Forum 2026 — Sessions abgeschlossen';
+    cls = 'done';
+  }
+
+  textEl.textContent = text;
+  statusEl.className = `live-status ${cls}`;
+}
+
+updateLiveStatus();
+setInterval(updateLiveStatus, 60_000);
 
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href]');
