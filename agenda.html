@@ -273,7 +273,17 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
 .session-location:hover .session-location-text { text-decoration-color: var(--primary); }
 
 /* Day accordion */
-.agenda-days { display: grid; gap: 14px; margin-bottom: 40px; }
+.agenda-days { display: grid; gap: 14px; margin-bottom: 24px; }
+
+.page-note {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 40px; padding: 16px 20px; border-radius: var(--radius-xl);
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); backdrop-filter: blur(12px);
+  font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;
+}
+.page-note strong { color: var(--text); }
+.page-note-icon { flex-shrink: 0; margin-top: 2px; color: var(--primary); }
 
 .day-accordion {
   border-radius: var(--radius-xl);
@@ -921,6 +931,11 @@ a.nav-drawer-link.active, a.nav-drawer-link.active:visited { color: var(--primar
       </div>
     </div>
 
+  </div>
+
+  <div class="page-note">
+    <svg class="page-note-icon" width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+    <span>Für die Reisekostenabrechnung <strong>Veranstaltungsnummer 111</strong> angeben.</span>
   </div>
 
   <!-- App Guide -->
